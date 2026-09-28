@@ -1,0 +1,8 @@
+Diagnostics:
+  UnusedIncludes: None
+---
+If:
+  PathMatch: .*\.(h|hpp)
+CompileFlags:
+  Remove: [-std=c17]
+  Add: [-xc++, -std=c++20]
