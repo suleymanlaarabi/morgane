@@ -1,22 +1,25 @@
 {
-    "id": "client",
-    "type": "application",
-    "value": {
-        "author": "Jane Doe",
-        "description": "Putting birds on wookies",
-        "clangd": true,
-        "language": "cpp",
-        "use": ["siecs"]
-    },
-    "lang.cpp": {
-      "cpp-standard": "c++20"
-    },
-    "bundle": {
-      "repositories": {
-        "sireflect": "https://github.com/suleymanlaarabi/sireflect",
-        "sijson": "https://github.com/suleymanlaarabi/sijson",
-        "sicore":  "https://github.com/suleymanlaarabi/sicore",
-        "siecs":  "https://github.com/suleymanlaarabi/siecs"
-      }
+  "id": "client",
+  "type": "application",
+  "value": {
+    "author": "Jane Doe",
+    "description": "Putting birds on wookies",
+    "clangd": true,
+    "language": "cpp",
+    "use": ["siecs"]
+  },
+  "lang.cpp": {
+    "cpp-standard": "c++20",
+    "include": ["/path/raylib/include"],
+    "libpath": ["/path/raylib/lib"],
+    "lib": ["raylib", "m", "pthread", "dl", "rt", "X11"]
+  },
+  "bundle": {
+    "repositories": {
+      "sireflect": "https://github.com/suleymanlaarabi/sireflect",
+      "sijson": "https://github.com/suleymanlaarabi/sijson",
+      "sicore": "https://github.com/suleymanlaarabi/sicore",
+      "siecs": "https://github.com/suleymanlaarabi/siecs"
     }
+  }
 }
