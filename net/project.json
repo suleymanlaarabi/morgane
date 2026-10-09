@@ -1,0 +1,32 @@
+{
+  "id": "sinet",
+  "type": "package",
+  "value": {
+    "author": "Suleyman Laarabi",
+    "description": "UDP networking modules for SIECS",
+    "public": true,
+    "clangd": true,
+    "language": "cpp",
+    "use": ["siecs", "sireflect"],
+    "sources": ["src", "../server/net", "../client/net"]
+  },
+  "lang.cpp": {
+    "cpp-standard": "c++23",
+    "export-symbols": true,
+    "include": ["include", "src"],
+    "lib": ["pthread"]
+  },
+  "dependee": {
+    "lang.cpp": {
+      "lib": ["pthread"]
+    }
+  },
+  "bundle": {
+    "repositories": {
+      "siecs": "https://github.com/suleymanlaarabi/siecs",
+      "sireflect": "https://github.com/suleymanlaarabi/sireflect",
+      "sijson": "https://github.com/suleymanlaarabi/sijson",
+      "sicore": "https://github.com/suleymanlaarabi/sicore"
+    }
+  }
+}

@@ -1,22 +1,29 @@
 {
-    "id": "server",
-    "type": "application",
-    "value": {
-        "author": "John Doe",
-        "description": "A fitness tracker for project managers",
-        "clangd": true,
-        "language": "cpp",
-        "use": ["siecs"]
-    },
-    "lang.cpp": {
-      "cpp-standard": "c++20"
-    },
-    "bundle": {
-      "repositories": {
-        "sireflect": "https://github.com/suleymanlaarabi/sireflect",
-        "sijson": "https://github.com/suleymanlaarabi/sijson",
-        "sicore":  "https://github.com/suleymanlaarabi/sicore",
-        "siecs":  "https://github.com/suleymanlaarabi/siecs"
-      }
+  "id": "server",
+  "type": "application",
+  "value": {
+    "author": "John Doe",
+    "description": "A fitness tracker for project managers",
+    "clangd": true,
+    "language": "cpp",
+      "use": ["siecs", "sinet"],
+      "sources": ["src"]
+  },
+  "lang.cpp": {
+    "cpp-standard": "c++23",
+    "include": [
+      ".."
+    ],
+    "lib": [
+      "pthread"
+    ]
+  },
+  "bundle": {
+    "repositories": {
+      "sireflect": "https://github.com/suleymanlaarabi/sireflect",
+      "sijson": "https://github.com/suleymanlaarabi/sijson",
+      "sicore": "https://github.com/suleymanlaarabi/sicore",
+      "siecs": "https://github.com/suleymanlaarabi/siecs"
     }
+  }
 }

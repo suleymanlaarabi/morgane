@@ -5,4 +5,4 @@ If:
   PathMatch: .*\.(h|hpp)
 CompileFlags:
   Remove: [-std=c17]
-  Add: [-xc++, -std=c++20]
+  Add: [-xc++, -std=c++23]

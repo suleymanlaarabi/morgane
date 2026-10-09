@@ -6,13 +6,26 @@
     "description": "Putting birds on wookies",
     "clangd": true,
     "language": "cpp",
-    "use": ["siecs"]
+      "use": ["siecs", "sinet"],
+      "sources": ["src"]
   },
   "lang.cpp": {
-    "cpp-standard": "c++20",
-    "include": ["/path/raylib/include"],
-    "libpath": ["/path/raylib/lib"],
-    "lib": ["raylib", "m", "pthread", "dl", "rt", "X11"]
+    "cpp-standard": "c++23",
+    "include": [
+      "/path/raylib/include",
+      ".."
+    ],
+    "libpath": [
+      "/path/raylib/lib"
+    ],
+    "lib": [
+      "raylib",
+      "m",
+      "pthread",
+      "dl",
+      "rt",
+      "X11"
+    ]
   },
   "bundle": {
     "repositories": {
