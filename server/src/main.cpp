@@ -8,5 +8,6 @@ int main() {
         .tick_rate = 30,
         .max_clients = 128,
     });
+
     ecs::run();
 }
