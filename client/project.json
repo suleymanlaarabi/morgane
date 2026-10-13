@@ -6,8 +6,8 @@
     "description": "Putting birds on wookies",
     "clangd": true,
     "language": "cpp",
-      "use": ["siecs", "sinet"],
-      "sources": ["src"]
+      "use": ["siecs", "siecs_spatial", "sinet"],
+      "sources": ["src", "raylib"]
   },
   "lang.cpp": {
     "cpp-standard": "c++23",

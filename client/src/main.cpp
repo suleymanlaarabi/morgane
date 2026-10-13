@@ -1,6 +1,6 @@
 #include <client.h>
+#include <client/raylib/ray.h>
 #include <sinet/client.h>
-#include <raylib.h>
 
 int main() {
     ecs::init();
@@ -8,13 +8,20 @@ int main() {
         .address = "127.0.0.1",
         .port = 4242,
     });
-
-    InitWindow(1920, 1080, "Morgane");
-    ecs::system("WindowEvents").immediate().each([] {
-        PollInputEvents();
-        if (WindowShouldClose())
-            ecs::quit();
+    ecs::import<ray::Window>(ray::WindowConfig{
+        .width = 1920,
+        .height = 1080,
+        .title = "Morgane",
     });
+
+    ecs::entity::create().set(Position2d{ 0, 0 }, ray::Camera{ .zoom = 3 });
+    ecs::entity::create().set(
+        Position2d{ -100, 0 },
+        Velocity2d{ 40, 0 },
+        ray::Sprite{
+            .texture = ray::load_texture("assets/r-typesheet42.gif"),
+            .source = { 0, 0, 33, 17 },
+        }
+    );
     ecs::run();
-    CloseWindow();
 }
