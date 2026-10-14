@@ -1,3 +1,4 @@
+#include <game/components.h>
 #include <server.h>
 #include <sinet/server.h>
 
@@ -8,6 +9,7 @@ int main() {
         .tick_rate = 30,
         .max_clients = 128,
     });
+    game::register_components();
 
     ecs::run();
 }
