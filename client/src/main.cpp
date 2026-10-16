@@ -43,8 +43,7 @@ int main() {
         });
 
     ecs::entity::create().set(Position2d{0, 0}, ray::Camera{.zoom = 3});
-    SceneManager::get().install();
+    ecs::import<scene::Scenes>(scenes::config());
     scenes::register_all();
-    SceneManager::get().switchTo("menu");
     ecs::run();
 }

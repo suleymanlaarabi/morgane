@@ -34,6 +34,17 @@ void gameEnter(ecs::entity root)
     ship.child_of(root);
 }
 
+scene::ScenesConfig scenes::config()
+{
+    return {
+        .scenes = {
+            {"menu", menuEnter},
+            {"game", gameEnter},
+        },
+        .initial = "menu",
+    };
+}
+
 void scenes::register_all()
 {
     ecs::component<MenuTag>();
@@ -41,12 +52,8 @@ void scenes::register_all()
     ecs::system("menu.Update")
         .phase(EcsOnUpdate)
         .require<MenuTag>()
-        .each([](ecs::entity) {
+        .each([](ecs::entity, ecs::res<scene::SceneManager> sm) {
             if (IsKeyPressed(KEY_ENTER))
-                SceneManager::get().switchTo("game");
+                sm->switchTo("game");
         });
-
-    auto &sm = SceneManager::get();
-    sm.add("menu", menuEnter);
-    sm.add("game", gameEnter);
 }

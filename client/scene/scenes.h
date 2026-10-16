@@ -1,5 +1,9 @@
 #pragma once
 
+#include "scene_manager.h"
+
 namespace scenes {
-    void register_all(); // call after SceneManager::install()
+    scene::ScenesConfig config();
+
+    void register_all(); // call after import of scene::Scenes
 }
