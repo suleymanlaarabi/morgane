@@ -38,10 +38,10 @@ scene::ScenesConfig scenes::config()
 {
     return {
         .scenes = {
-            {"menu", menuEnter},
-            {"game", gameEnter},
+           scene::def<Menu>(menuEnter),
+           scene::def<Game>(gameEnter),
         },
-        .initial = "menu",
+        .initial = scene::id<Menu>(),
     };
 }
 
@@ -54,6 +54,6 @@ void scenes::register_all()
         .require<MenuTag>()
         .each([](ecs::entity, ecs::res<scene::SceneManager> sm) {
             if (IsKeyPressed(KEY_ENTER))
-                sm->switchTo("game");
+                sm->switchTo<scenes::Game>();
         });
 }

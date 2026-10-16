@@ -5,31 +5,31 @@
 
 namespace scene {
 
-    void SceneManager::add(const std::string &name, Enter enter)
+    void SceneManager::add(SceneId id, Enter enter)
     {
-        _scenes[name] = std::move(enter);
+        _scenes[id] = std::move(enter);
     }
 
-    void SceneManager::switchTo(const std::string &name)
+    void SceneManager::switchTo(SceneId id)
     {
-        _requested = name;
+        _requested = id;
     }
 
     void SceneManager::apply()
     {
-        if (_requested.empty())
+        if (!_requested)
             return;
 
-        auto it = _scenes.find(_requested);
+        auto it = _scenes.find(*_requested);
         if (it == _scenes.end())
-            throw std::runtime_error("Unknown scene: " + _requested);
+            throw std::runtime_error(std::string("Unknown scene: ") + _requested->name());
 
         if (_root)
             _root->kill();
 
         _root = ecs::entity::create();
-        _current = _requested;
-        _requested.clear();
+        _current = *_requested;
+        _requested.reset();
         it->second(*_root);
     }
 
@@ -37,9 +37,9 @@ namespace scene {
     {
         SceneManager manager;
         for (const auto &def : config.scenes)
-            manager.add(def.name, def.enter);
-        if (!config.initial.empty())
-            manager.switchTo(config.initial);
+            manager.add(def.id, def.enter);
+        if (config.initial)
+            manager.switchTo(*config.initial);
         ecs::set_resource(manager);
 
         ecs::system("scene.Apply").phase(EcsOnLoad).each([](ecs::res<SceneManager> sm) {
@@ -47,8 +47,8 @@ namespace scene {
         });
     }
 
-    void switchTo(const std::string &name)
+    void switchTo(SceneId id)
     {
-        ecs::resource<SceneManager>().switchTo(name);
+        ecs::resource<SceneManager>().switchTo(id);
     }
 }
