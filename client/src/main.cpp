@@ -1,7 +1,6 @@
 #include "client/scene/scene_manager.h"
 #include "client/scene/scenes.h"
 #include "movement.h"
-#include "net/include/sinet/net.h"
 #include "siecs_spatial.h"
 #include <client/raylib/animation.h>
 #include <client/raylib/input.h>

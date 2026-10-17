@@ -42,8 +42,8 @@ module's test file, or add a new `*_test.cpp` to that module's test target.
 
 ## Layout
 
-- `net/`: UDP transport, protocol and replication (`sinet`).
-- `physics/`: fixed-step SIECS/Box2D integration (`sibox2d`).
+- `libs/net/`: UDP transport, protocol and replication (`sinet`).
+- `libs/physics/`: fixed-step SIECS/Box2D integration (`sibox2d`).
 - `server/`: authoritative simulation and server executable.
 - `client/`: rendering, input, animation, scenes and client executable.
 - `shared/`: gameplay schema and shared movement rules.

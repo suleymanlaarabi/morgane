@@ -6,8 +6,8 @@ add_library(sinet STATIC
     src/receive.cpp
     src/send.cpp
     src/replication.cpp
-    ../client/net/client.cpp
-    ../server/net/server.cpp)
+    ${PROJECT_SOURCE_DIR}/client/net/client.cpp
+    ${PROJECT_SOURCE_DIR}/server/net/server.cpp)
 add_library(morgane::net ALIAS sinet)
 target_include_directories(sinet PUBLIC include PRIVATE src)
 target_link_libraries(sinet PUBLIC siecs::siecs sireflect::sireflect Threads::Threads)
