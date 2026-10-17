@@ -45,12 +45,12 @@ module's test file, or add a new `*_test.cpp` to that module's test target.
 - `libs/net/`: UDP transport, protocol and replication (`sinet`).
 - `libs/physics/`: fixed-step SIECS/Box2D integration (`sibox2d`).
 - `server/`: authoritative simulation and server executable.
-- `client/`: rendering, input, animation, scenes and client executable.
+- `client/`: rendering, input, animation, scenes, UI (`client/gui`) and client executable.
 - `shared/`: gameplay schema and shared movement rules.
 - `vcpkg-ports/`: pinned dependency recipes. The `sicore`, `sireflect`, `sijson`
   and `siecs` ports carry a `cmake-support.patch` until their repositories ship
-  CMake support; then pin the new commit and delete the patch. `box2d` (3.2 dev)
-  and `raylib` (6.2) are newer than the vcpkg baseline.
+  CMake support; then pin the new commit and delete the patch. `box2d` (3.2 dev),
+  `raylib` (6.2) and `raygui` (5.1 dev, paired with raylib 6) are newer than the vcpkg baseline.
 
 Configuring a preset links its `compile_commands.json` at the repository root for
 clangd. `.zed/` holds editor settings and tasks.

@@ -190,8 +190,7 @@ void Window::import(const WindowConfig &config) {
     });
 }
 
-/** Relative paths are tried from the working directory, then from the executable upward. */
-static std::string resolve_path(std::string_view path) {
+std::string resolve_asset(std::string_view path) {
     namespace fs = std::filesystem;
     fs::path relative(path);
     if (relative.is_absolute() || fs::exists(relative))
@@ -211,7 +210,7 @@ Texture load_texture(std::string_view path) {
     if (auto it = textures.by_path.find(key); it != textures.by_path.end())
         return Texture{ it->second };
     auto id = static_cast<std::uint32_t>(textures.loaded.size());
-    textures.loaded.push_back(LoadTexture(resolve_path(key).c_str()));
+    textures.loaded.push_back(LoadTexture(resolve_asset(key).c_str()));
     textures.by_path.emplace(std::move(key), id);
     return Texture{ id };
 }

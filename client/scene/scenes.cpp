@@ -1,4 +1,5 @@
 #include "scenes.h"
+#include <client/gui/gui.h>
 #include <client/raylib/animation.h>
 #include <client/raylib/ray.h>
 #include <raylib.h>
@@ -6,15 +7,32 @@
 
 namespace scenes {
 
+namespace {
+struct Play {};
+struct Quit {};
+struct Resume {};
+struct BackToMenu {};
+
+/** Centered titled panel whose buttons all share its width. */
+ecs::entity dialog(ecs::entity panel, const char *title) {
+    return panel.set(
+        gui::column(12).center().width(360).pad(24).align(gui::Align::Stretch),
+        gui::Panel{ title }
+    );
+}
+} // namespace
+
 void install() {
     auto menu = scene::define<Menu>()
+                    .on_enter([](scene::Context<Menu> ctx) {
+                        auto box = dialog(ctx.spawn(), "MORGANE");
+                        ctx.spawn(box).set(gui::Label{ "Entree: jouer" });
+                        ctx.spawn(box).set(gui::Button{ "Jouer" }).add<Play>();
+                        ctx.spawn(box).set(gui::Button{ "Quitter" }).add<Quit>();
+                    })
                     .on_update([](Commands scenes) {
                         if (IsKeyPressed(KEY_ENTER))
                             scenes.replace<Game>({ .level = 1 });
-                    })
-                    .on_render([] {
-                        DrawText("MORGANE", 60, 60, 40, RAYWHITE);
-                        DrawText("Press Enter to play", 60, 120, 24, LIGHTGRAY);
                     });
 
     auto game = scene::define<Game>()
@@ -25,15 +43,20 @@ void install() {
                             ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet42.gif") },
                             ShipIdle
                         );
+                        ctx.spawn().set(gui::node().at(24, 24), gui::Label{ "Echap: pause" });
                     })
                     .on_update([](Commands scenes) {
                         if (IsKeyPressed(KEY_ESCAPE))
                             scenes.push<Pause>();
-                    })
-                    .on_render([] { DrawText("Esc: pause", 30, 30, 24, LIGHTGRAY); });
+                    });
 
     auto pause =
         scene::define<Pause>()
+            .on_enter([](scene::Context<Pause> ctx) {
+                auto box = dialog(ctx.spawn(), "PAUSE");
+                ctx.spawn(box).set(gui::Button{ "Reprendre" }).add<Resume>();
+                ctx.spawn(box).set(gui::Button{ "Menu principal" }).add<BackToMenu>();
+            })
             .on_update([](Commands scenes) {
                 if (IsKeyPressed(KEY_ESCAPE))
                     scenes.pop();
@@ -42,9 +65,12 @@ void install() {
             })
             .on_render([] {
                 DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.65f));
-                DrawText("PAUSED", 60, 60, 40, RAYWHITE);
-                DrawText("Esc: resume   M: menu", 60, 120, 24, LIGHTGRAY);
             });
+
+    gui::on_click<Play>([](Commands scenes) { scenes.replace<Game>({ .level = 1 }); });
+    gui::on_click<Quit>([] { ecs::quit(); });
+    gui::on_click<Resume>([](Commands scenes) { scenes.pop(); });
+    gui::on_click<BackToMenu>([](Commands scenes) { scenes.reset<Menu>(); });
 
     ecs::import<App>(std::move(menu), std::move(game), std::move(pause));
     App::start<Menu>();

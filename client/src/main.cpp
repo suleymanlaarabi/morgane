@@ -2,6 +2,7 @@
 #include "client/scene/scenes.h"
 #include "movement.h"
 #include "siecs_spatial.h"
+#include <client/gui/gui.h>
 #include <client/raylib/animation.h>
 #include <client/raylib/input.h>
 #include <client/raylib/ray.h>
@@ -22,6 +23,7 @@ int main() {
         .height = 1080,
         .title = "Morgane",
     });
+    ecs::import<gui::Gui>(gui::Theme{ .font_size = 20, .style = "dark" });
     ecs::import<ray::Animations>();
     ecs::import<ray::Inputs<Action>>(ray::Bindings<Action>{}
                                          .bind(Action::up, { KEY_UP, KEY_W })
@@ -35,12 +37,16 @@ int main() {
     ecs::system("game.PublishInput")
         .phase(EcsPreUpdate)
         .require<net::Controlled>()
-        .each([](ecs::entity player, ecs::res<const ray::Input<Action>> input) {
+        .each([](ecs::entity player,
+                 ecs::res<const ray::Input<Action>> input,
+                 ecs::res<const gui::Capture> ui) {
+            // Keys typed into the UI never steer the ship.
+            const auto playing = ui->keyboard ? ray::Input<Action>{} : *input;
             player.set(
                 game::PlayerInput{
-                    .move_x = input->axis(Action::left, Action::right),
-                    .move_y = input->axis(Action::up, Action::down),
-                    .fire = input->down(Action::fire),
+                    .move_x = playing.axis(Action::left, Action::right),
+                    .move_y = playing.axis(Action::up, Action::down),
+                    .fire = playing.down(Action::fire),
                 }
             );
         });

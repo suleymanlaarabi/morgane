@@ -33,5 +33,7 @@ add_subdirectory(libs/physics)
 add_subdirectory(server)
 if(MORGANE_BUILD_CLIENT)
     find_package(raylib CONFIG REQUIRED)
+    # raygui is header-only and ships no CMake config; skip /usr/include so a system copy never wins.
+    find_path(RAYGUI_INCLUDE_DIR raygui.h REQUIRED NO_CMAKE_SYSTEM_PATH NO_SYSTEM_ENVIRONMENT_PATH)
     add_subdirectory(client)
 endif()

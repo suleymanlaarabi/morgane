@@ -105,6 +105,8 @@ struct Runtime {
     void resume();
 };
 void install(Runtime runtime);
+/** Register Owner as ByTarget; modules scoping by scene call it before touching Owner. */
+void register_owner();
 void adopt(ecs::entity root, ecs::entity entity);
 
 // Force an entity callback for each(), including resource-only and empty signatures.

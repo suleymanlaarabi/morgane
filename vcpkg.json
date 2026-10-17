@@ -15,8 +15,9 @@
   ],
   "features": {
     "client": {
-      "description": "Graphical client with raylib",
+      "description": "Graphical client with raylib and raygui",
       "dependencies": [
+        "raygui",
         "raylib"
       ]
     }

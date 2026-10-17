@@ -91,12 +91,16 @@ void Runtime::render() {
         pass(instance.root);
 }
 
-void install(Runtime runtime) {
-    if (ecs::has_resource<Runtime>())
-        throw std::logic_error("Only one scene catalogue may be imported per world");
+void register_owner() {
     ecs::relation<Owner>(
         { .storage = EcsRelationByTarget, .on_delete_target = EcsRemoveRelation, .acyclic = false }
     );
+}
+
+void install(Runtime runtime) {
+    if (ecs::has_resource<Runtime>())
+        throw std::logic_error("Only one scene catalogue may be imported per world");
+    register_owner();
     ecs::set_resource(std::move(runtime));
     auto &state = ecs::resource<Runtime>();
     for (auto &definition : state.definitions) {

@@ -34,6 +34,9 @@ struct Texture {
     std::uint32_t id;
 };
 
+/** Relative paths are tried from the working directory, then from the executable upward. */
+std::string resolve_asset(std::string_view path);
+
 /** Load (or reuse) a texture. Call after importing ray::Window. */
 Texture load_texture(std::string_view path);
 
