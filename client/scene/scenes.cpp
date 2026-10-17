@@ -6,6 +6,7 @@
 #include <client/scene/scenes.h>
 #include <raylib.h>
 #include <client/ui/ui.h>
+#include <typeindex>
 
 struct MenuTag {};
 
