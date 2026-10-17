@@ -102,7 +102,7 @@ void Runtime::hello(const Packet &packet, const Header &header, std::span<const 
     peer->id = next_peer_++;
     peer->received = Clock::now();
     peer->channel.receive.accept(header.sequence);
-    peer->outbox.init(limits_.max_entities, registry_->types.size());
+    peer->outbox.init(limits_.max_entities, registry_->types.size(), value_size_);
     peer->visible.resize(std::size_t(limits_.max_entities) + 1);
     peer->entity = ecs::entity::create().add<Connection, Connected>()
         .set(PeerId{ peer->id }).set(Latency{}).set(Stats{}).id();
@@ -122,7 +122,7 @@ void Runtime::hello(const Packet &packet, const Header &header, std::span<const 
     ecs::trigger<OnConnect>(ecs::entity(connection->entity));
 }
 
-static std::size_t frame_size(const Message &message) {
+static std::size_t frame_size(const QueuedMessage &message) {
     if (message.op == Op::despawn)
         return 3 + 4;
     if (message.op == Op::spawn || message.op == Op::relations)
@@ -130,7 +130,7 @@ static std::size_t frame_size(const Message &message) {
     return 3 + 10 + message.size;
 }
 
-static void write_frame(Writer &writer, const Message &message) {
+static void write_frame(Writer &writer, const QueuedMessage &message) {
     writer.put(std::uint8_t(message.op));
     writer.put(std::uint16_t(frame_size(message) - 3));
     writer.put(message.entity);
@@ -138,7 +138,7 @@ static void write_frame(Writer &writer, const Message &message) {
         writer.put(message.type->slot);
     if (message.op != Op::despawn)
         writer.put(message.revision);
-    writer.bytes({ message.value.data(), message.size });
+    writer.bytes(message.bytes());
 }
 
 bool Runtime::send_outbox(Peer &peer, Time now, std::uint32_t &budget) {

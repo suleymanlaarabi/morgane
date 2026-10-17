@@ -38,7 +38,6 @@ void Layout::import() {
     const auto phase = ecs::phase("gui.Layout").after(EcsPostUpdate).before(EcsPreRender).id();
     auto begin = ecs::system("gui.BeginLayout")
                      .phase(phase)
-                     .immediate()
                      .each([](ecs::res<detail::Tree> tree, ecs::res<Capture> capture) {
                          tree->items.clear();
                          ++tree->frame;
@@ -48,7 +47,6 @@ void Layout::import() {
     auto collect = ecs::system("gui.Collect")
                        .phase(phase)
                        .after(begin)
-                       .immediate()
                        .order_by_depth<ecs::ChildOf>()
                        .exclude_up<ecs::ChildOf, Hidden>()
                        .each([](ecs::entity entity,

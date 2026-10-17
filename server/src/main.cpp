@@ -4,7 +4,10 @@
 #include <sinet/server.h>
 
 int main() {
-    ecs::init({ .target_fps = 60, .worker_threads = ECS_WORKERS_AUTO });
+    // No workers: the whole simulation is a handful of tiny systems in one fixed step, where
+    // dispatching to a pool costs more than it saves. Access declarations stay accurate, so
+    // worker_threads can be raised once systems carry enough work to pay for it.
+    ecs::init({ .target_fps = 60 });
     ecs::import<net::Server>(net::ServerConfig{
         .port = 4242,
         .tick_rate = 30,

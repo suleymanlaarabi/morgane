@@ -1,6 +1,7 @@
 #include "runtime.h"
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <random>
 #include <stdexcept>
 
@@ -12,14 +13,36 @@ static std::uint64_t session_token() {
     return token ? token : 1;
 }
 
-void Outbox::init(std::size_t entities, std::size_t types, std::size_t capacity) {
+Message QueuedMessage::message() const {
+    Message message{ .op = op, .entity = entity, .revision = revision, .type = type,
+                     .reliable = reliable, .size = size };
+    std::memcpy(message.value.data(), value, size);
+    return message;
+}
+
+void Outbox::init(std::size_t entities, std::size_t types, std::size_t value_size, std::size_t capacity) {
     type_count_ = types;
-    messages_.resize(capacity ? capacity : std::max<std::size_t>(1024, entities * (types + 3)));
+    value_size_ = value_size;
+    messages_.assign(capacity ? capacity : std::max<std::size_t>(1024, entities * (types + 3)), {});
+    payload_.assign(messages_.size() * value_size, std::byte{});
+    for (std::size_t i = 0; i < messages_.size(); ++i)
+        messages_[i].value = payload_.data() + i * value_size;
     queued_.assign((entities + 1) * types, UINT64_MAX);
     head_ = tail_ = 0;
 }
 
+static void store(QueuedMessage &slot, const Message &message) {
+    slot.op = message.op;
+    slot.entity = message.entity;
+    slot.revision = message.revision;
+    slot.type = message.type;
+    slot.reliable = message.reliable;
+    slot.size = message.size;
+    std::memcpy(slot.value, message.value.data(), message.size);
+}
+
 bool Outbox::push(const Message &message) {
+    assert(message.size <= value_size_);
     bool component = message.op == Op::component || message.op == Op::remove;
     std::size_t key = 0;
     if (component) {
@@ -29,7 +52,7 @@ bool Outbox::push(const Message &message) {
             auto &previous = messages_[serial % messages_.size()];
             if (previous.entity == message.entity) {
                 bool reliable = previous.reliable || message.reliable;
-                previous = message;
+                store(previous, message);
                 previous.reliable = reliable;
                 return true;
             }
@@ -39,17 +62,17 @@ bool Outbox::push(const Message &message) {
         return false;
     if (component)
         queued_[key] = tail_;
-    messages_[tail_++ % messages_.size()] = message;
+    store(messages_[tail_++ % messages_.size()], message);
     return true;
 }
 
-Message *Outbox::front() {
+const QueuedMessage *Outbox::front() const {
     return empty() ? nullptr : &messages_[head_ % messages_.size()];
 }
 
 void Outbox::pop() { ++head_; }
 
-const Message *Outbox::peek(std::size_t offset) const {
+const QueuedMessage *Outbox::peek(std::size_t offset) const {
     return head_ + offset < tail_ ? &messages_[(head_ + offset) % messages_.size()] : nullptr;
 }
 
@@ -104,13 +127,15 @@ void Runtime::initialize() {
         return;
     registry_->freeze();
     auto count = registry_->types.size();
-    commands_.init(limits_.max_entities, count);
+    for (const auto &d : registry_->types)
+        value_size_ = std::max<std::size_t>(value_size_, d->wire_size);
+    commands_.init(limits_.max_entities, count, value_size_);
     values_.resize((std::size_t(limits_.max_entities) + 1) * count);
     cache_.resize((std::size_t(limits_.max_entities) + 1) * registry_->stride);
     for (auto &peer : peers_) {
         if (!peer)
             continue;
-        peer->outbox.init(limits_.max_entities, count);
+        peer->outbox.init(limits_.max_entities, count, value_size_);
         peer->visible.resize(std::size_t(limits_.max_entities) + 1);
     }
     initialized_ = true;
@@ -124,7 +149,7 @@ std::span<std::byte> Runtime::value_bytes(std::uint32_t id, const Descriptor &d)
     return std::span(cache_).subspan(std::size_t(entity_index(id)) * registry_->stride + d.offset, d.wire_size);
 }
 
-void Runtime::enqueue(Message message) {
+void Runtime::enqueue(const Message &message) {
     initialize();
     std::lock_guard lock(commands_mutex_);
     if (!commands_.push(message))

@@ -26,23 +26,25 @@ void ServerMovement::import() {
             );
         }
     );
-    auto expire = ecs::system("game.ExpireMovement")
-                      .phase(ecs::resource<physics::Phases>().input)
-                      .manual()
-                      .immediate()
-                      .require<ServerPlayer>()
-                      .each([](ecs::entity player,
-                               const ReceivedAt &received,
-                               ecs::res<const physics::Clock> clock) {
-                          if (clock->tick - received.tick >= input_timeout / physics::fixed_step)
-                              player.set(MoveCommand{}, FireCommand{});
-                      });
-    ecs::set_resource(InputPipeline{ expire });
-    ecs::import<Kinematics>(expire);
+    // Registered before Kinematics, so ApplyMovement reads the expired command this tick.
+    ecs::system("game.ExpireMovement")
+        .phase(ecs::resource<physics::Phases>().input)
+        .manual()
+        .require<ServerPlayer>()
+        .each([](const ReceivedAt &received,
+                 MoveCommand &move,
+                 FireCommand &fire,
+                 ecs::res<const physics::Clock> clock) {
+            if (clock->tick - received.tick >= input_timeout / physics::fixed_step) {
+                move = {};
+                fire = {};
+            }
+        });
+    ecs::import<Kinematics>();
+    // set(), not an in-place write: AuthoritativeMotion is replicated and must notify the network.
     ecs::system("game.PublishAuthoritativeMotion")
         .phase(ecs::resource<physics::Phases>().output)
         .manual()
-        .immediate()
         .require<ServerPlayer>()
         .each([](ecs::entity player,
                  const Position2d &position,

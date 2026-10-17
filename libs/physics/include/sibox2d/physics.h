@@ -22,8 +22,6 @@ struct WorldConfig {
     float units_per_meter = 100;
     unsigned max_catch_up_steps = 8;
 };
-/** Bodies and fixed-step systems belong to the module world through this relation. */
-struct InWorld {};
 /** Register manual systems in input/output to run once per fixed step. */
 struct Phases {
     ecs_phase_t input;

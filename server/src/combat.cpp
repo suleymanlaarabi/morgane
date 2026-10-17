@@ -9,11 +9,10 @@ void ServerCombat::import() {
     const auto &phases = ecs::resource<physics::Phases>();
     // Input runs before the step's tick increments, so the spawn state belongs to the last
     // completed tick and trajectory_at(trajectory, Clock.tick) holds after every later step.
+    // Reads FireCommand after ExpireMovement rewrote it, an ordering the scheduler derives.
     ecs::system("game.FireWeapons")
         .phase(phases.input)
         .manual()
-        .immediate()
-        .after(ecs::resource<InputPipeline>().expired)
         .require<ServerPlayer>()
         .exclude<Eliminated>()
         .each([](const FireCommand &command,
@@ -34,7 +33,6 @@ void ServerCombat::import() {
     ecs::system("game.DespawnOutside")
         .phase(phases.output)
         .manual()
-        .immediate()
         .require<Trajectory>()
         .each([](ecs::entity body,
                  const Position2d &position,

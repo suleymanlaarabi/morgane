@@ -12,6 +12,7 @@ inline std::uint16_t entity_index(std::uint32_t id) { return id & 0xffff; }
 
 struct ScopeIdentity { std::uint32_t value; };
 
+/** A message being built; `value` has room for any registered value. */
 struct Message {
     Op op = Op::component;
     std::uint32_t entity = 0;
@@ -22,19 +23,39 @@ struct Message {
     std::array<std::byte, max_value_size> value{};
 };
 
+/** A message stored in an Outbox; `value` points at its slot in the outbox payload. */
+struct QueuedMessage {
+    Op op = Op::component;
+    std::uint32_t entity = 0;
+    std::uint32_t revision = 0;
+    Descriptor *type = nullptr;
+    bool reliable = false;
+    std::uint16_t size = 0;
+    std::byte *value = nullptr;
+    std::span<const std::byte> bytes() const { return { value, size }; }
+    Message message() const;
+};
+
 // One queued component value per entity/type. Events retain their ordering.
+// Payload slots are sized for the largest registered value, not max_value_size.
 class Outbox {
-    std::vector<Message> messages_;
+    std::vector<QueuedMessage> messages_;
+    std::vector<std::byte> payload_;
     std::vector<std::uint64_t> queued_;
     std::size_t type_count_ = 0;
+    std::size_t value_size_ = 0;
     std::uint64_t head_ = 0;
     std::uint64_t tail_ = 0;
 
   public:
-    void init(std::size_t entities, std::size_t types, std::size_t capacity = 0);
+    Outbox() = default;
+    // Slots point into payload_, so an Outbox is never copied.
+    Outbox(const Outbox &) = delete;
+    Outbox &operator=(const Outbox &) = delete;
+    void init(std::size_t entities, std::size_t types, std::size_t value_size, std::size_t capacity = 0);
     bool push(const Message &message);
-    Message *front();
-    const Message *peek(std::size_t offset) const;
+    const QueuedMessage *front() const;
+    const QueuedMessage *peek(std::size_t offset) const;
     void consume(std::size_t count);
     void pop();
     bool empty() const { return head_ == tail_; }
@@ -92,6 +113,8 @@ class Runtime {
     std::unordered_map<std::uint32_t, ecs_entity_t> owner_entities_;
     std::uint32_t next_peer_ = 1;
     std::uint32_t revision_ = 0;
+    // Largest value a message carries: spawn/relations payloads or a registered type.
+    std::size_t value_size_ = 16;
     std::mutex commands_mutex_;
     Outbox commands_;
     bool initialized_ = false;
@@ -123,7 +146,7 @@ class Runtime {
     void disconnect(Peer &peer, DisconnectReason reason);
     ValueState &value_state(std::uint32_t id, const Descriptor &d);
     std::span<std::byte> value_bytes(std::uint32_t id, const Descriptor &d);
-    void enqueue(Message message);
+    void enqueue(const Message &message);
 
   public:
     Runtime(bool server, Limits limits, std::uint16_t max_clients, Endpoint bind,

@@ -37,10 +37,8 @@ void World::import(const WorldConfig &config) {
         !config.max_catch_up_steps || config.max_catch_up_steps > 60)
         throw std::invalid_argument("invalid physics WorldConfig");
     ecs::import<sispatial>();
-    ecs::relation<InWorld>({ .storage = EcsRelationByTarget,
-                             .on_delete_target = EcsDeleteSources });
-    auto world = ecs::entity::create<World>().add<detail::Root>();
-    world.relate<InWorld>(world);
+    // The module entity carries BeforeStep and AfterStep.
+    (void)ecs::entity::create<World>();
     ecs::set_resource(config);
     ecs::set_resource(Clock{});
     ecs::set_resource(Stats{});
@@ -63,6 +61,7 @@ void World::import(const WorldConfig &config) {
     ecs::import<detail::Motion>();
     ecs::import<detail::Contacts>();
     const auto driver = ecs::phase("physics.Frame").after(EcsPreUpdate).before(EcsOnUpdate).id();
+    // Manual phases must be driven from the main thread, outside any defer scope.
     ecs::system("physics.FixedStep")
         .phase(driver)
         .immediate()

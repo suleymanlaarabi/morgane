@@ -4,7 +4,6 @@
 
 namespace game {
 namespace {
-struct SnapshotChanged {};
 struct LocalPrediction {
     std::uint64_t tick = 0;
     std::uint32_t epoch = 0;
@@ -53,9 +52,6 @@ void ClientMovement::import(const ClientMovementConfig &config) {
     ecs::component<RemotePresentation>()
         .with<Position2d, ray::PresentationPosition2d, RemoteHistory>();
     ecs::component<Trajectory>().with<ray::PresentationPosition2d>();
-    ecs::observe<ecs::OnSet>().each_for<AuthoritativeMotion>([](ecs::entity body) {
-        body.add<SnapshotChanged>();
-    });
     ecs::observe<ecs::OnSet>().each_for<AuthoritativeMotion>(
         [](ecs::entity,
            ecs::observer_event event,
@@ -81,17 +77,16 @@ void ClientMovement::import(const ClientMovementConfig &config) {
                 timeline->cursor =
                     advance_cursor(timeline->cursor, double(timeline->latest), dt->value, *config);
         });
+    // Snapshots are recognised by their tick, so no per-snapshot tag moves entities between tables.
     ecs::system("game.ReceiveLocalMotion")
         .phase(EcsPreUpdate)
-        .immediate()
-        .require<SnapshotChanged, net::Controlled>()
+        .require<net::Controlled>()
         .each([](ecs::entity body,
                  LocalPrediction &prediction,
                  const AuthoritativeMotion &snapshot,
                  const ray::PresentationPosition2d &presentation,
                  const Position2d &position,
                  ecs::res<const ClientMovementConfig> config) {
-            body.remove<SnapshotChanged>();
             if (snapshot.tick <= prediction.tick)
                 return;
             const auto error = std::hypot(position.x - snapshot.x, position.y - snapshot.y);
@@ -107,7 +102,6 @@ void ClientMovement::import(const ClientMovementConfig &config) {
         });
     ecs::system("game.ReleasePrediction")
         .phase(EcsPreUpdate)
-        .immediate()
         .require<LocalPrediction>()
         .exclude<net::Controlled>()
         .each([](ecs::entity body) {
@@ -115,21 +109,18 @@ void ClientMovement::import(const ClientMovementConfig &config) {
         });
     auto track = ecs::system("game.TrackRemoteMotion")
                      .phase(EcsPreUpdate)
-                     .immediate()
-                     .require<SnapshotChanged, AuthoritativeMotion>()
+                     .require<AuthoritativeMotion>()
                      .exclude<net::Controlled, RemotePresentation>()
                      .each([](ecs::entity body) { body.add<RemotePresentation>(); });
+    // Reads the RemoteHistory that TrackRemoteMotion's RemotePresentation brings.
     ecs::system("game.ReceiveRemoteMotion")
         .phase(EcsPreUpdate)
-        .immediate()
         .after(track)
-        .require<SnapshotChanged>()
         .exclude<net::Controlled>()
         .each([](ecs::entity body,
                  RemoteHistory &history,
                  const AuthoritativeMotion &snapshot,
                  ecs::res<const ClientMovementConfig> config) {
-            body.remove<SnapshotChanged>();
             if (history.count && snapshot.tick <= history.states[history.count - 1].tick)
                 return;
             if (!history.count || history.states[history.count - 1].epoch != snapshot.epoch) {
@@ -146,7 +137,6 @@ void ClientMovement::import(const ClientMovementConfig &config) {
         });
     ecs::system("game.PresentLocalMotion")
         .phase(EcsOnUpdate)
-        .immediate()
         .require<net::Controlled>()
         .each([](ecs::entity body,
                  LocalPrediction &prediction,
@@ -163,7 +153,6 @@ void ClientMovement::import(const ClientMovementConfig &config) {
         });
     ecs::system("game.InterpolateRemoteMotion")
         .phase(EcsOnUpdate)
-        .immediate()
         .require<RemotePresentation>()
         .exclude<net::Controlled>()
         .each([](ecs::entity body,

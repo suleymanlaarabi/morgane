@@ -12,10 +12,6 @@ struct ReceivedAt {
 struct FireCommand {
     bool held = false;
 };
-/** Systems that consume held commands run after `expired`. */
-struct InputPipeline {
-    ecs_system_id_t expired = 0;
-};
 struct ServerMovement {
     static void import();
 };

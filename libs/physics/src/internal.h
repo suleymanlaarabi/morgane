@@ -1,14 +1,12 @@
 #pragma once
 
 #include <box2d/box2d.h>
+#include <chrono>
 #include <sibox2d/physics.h>
 #include <vector>
 
 namespace physics::detail {
 
-struct Root {};
-struct PositionChanged {};
-struct VelocityChanged {};
 struct ColliderChanged {};
 struct NativeBody {
     b2BodyId body;
@@ -52,9 +50,10 @@ struct SensorChange {
 struct ContactBuffer {
     std::vector<Contact> events;
     std::vector<SensorChange> sensors;
+    std::chrono::steady_clock::time_point sweep_started;
 };
 struct Pipeline {
-    ecs_system_id_t synchronized = 0, simulated = 0, published = 0;
+    ecs_system_id_t published = 0;
 };
 struct Timing {
     double accumulator = 0;

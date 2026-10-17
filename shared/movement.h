@@ -20,9 +20,10 @@ inline constexpr physics::Filter player_shot_filter{ layer::player_shot, layer::
 inline constexpr physics::Filter enemy_filter{ layer::enemy, layer::player | layer::player_shot };
 inline constexpr physics::Filter enemy_shot_filter{ layer::enemy_shot, layer::player };
 
-/** Shared movement rule: every PlayerInput becomes a validated held command. */
+/** Shared movement rule: every PlayerInput becomes a validated held command. Systems
+ * that rewrite MoveCommand must be registered before this import to run first. */
 struct Kinematics {
-    static void import(ecs_system_id_t after = 0) {
+    static void import() {
         ecs::import<physics::World>();
         ecs::component<Driven>().with<MoveCommand, Velocity2d>();
         ecs::observe<ecs::OnSet>().each_for<PlayerInput>([](ecs::entity player,
@@ -40,11 +41,9 @@ struct Kinematics {
         ecs::system("game.ApplyMovement")
             .phase(ecs::resource<physics::Phases>().input)
             .manual()
-            .immediate()
-            .after(after)
             .require<Driven>()
             .exclude<Eliminated>()
-            .each([](ecs::entity body, const MoveCommand &command, const Position2d &position) {
+            .each([](const MoveCommand &command, const Position2d &position, Velocity2d &velocity) {
                 const float magnitude = std::max(1.0f, std::hypot(command.x, command.y));
                 const float step = physics::fixed_step;
                 const float reach_x = play_half_width - player_half_size.x;
@@ -60,7 +59,7 @@ struct Kinematics {
                     -reach_y,
                     reach_y
                 );
-                body.set(Velocity2d{ (x - position.x) / step, (y - position.y) / step });
+                velocity = { (x - position.x) / step, (y - position.y) / step };
             });
     }
 };

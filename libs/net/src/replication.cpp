@@ -234,7 +234,8 @@ void Runtime::collect() {
         return;
     std::unique_lock lock(commands_mutex_);
     while (auto *queued = commands_.front()) {
-        auto message = *queued;
+        // Copied before unlocking: another thread may reuse the slot once it is popped.
+        const auto message = queued->message();
         commands_.pop();
         lock.unlock();
         if (!server_) {

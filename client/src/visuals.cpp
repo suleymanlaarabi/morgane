@@ -61,7 +61,6 @@ void Visuals::import() {
 
     auto list = ecs::system("game.AttachHud")
                     .phase(EcsPostUpdate)
-                    .immediate()
                     .exclude<Listed>()
                     .each([](ecs::entity player, const PlayerSlot &slot) {
                         if (slot.index >= max_players)
