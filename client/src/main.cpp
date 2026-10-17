@@ -1,4 +1,7 @@
+#include "client/scene/scene_manager.h"
+#include "client/scene/scenes.h"
 #include "net/include/sinet/net.h"
+#include "siecs_spatial.h"
 #include <client.h>
 #include <client/raylib/animation.h>
 #include <client/raylib/input.h>
@@ -39,19 +42,8 @@ int main() {
             });
         });
 
-    constexpr ray::Animation ShipIdle = {
-        .frame = { 0, 0, 33, 17 },
-        .frames = 5,
-        .fps = 8,
-        .playback = ray::Playback::ping_pong,
-    };
-
-    ecs::entity::create().set(Position2d{ 0, 0 }, ray::Camera{ .zoom = 3 });
-    ecs::entity::create().set(
-        Position2d{ -100, 0 },
-        Velocity2d{ 40, 0 },
-        ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet42.gif") },
-        ShipIdle
-    );
+    ecs::entity::create().set(Position2d{0, 0}, ray::Camera{.zoom = 3});
+    ecs::import<scene::Scenes>(scenes::config());
+    scenes::register_all();
     ecs::run();
 }
