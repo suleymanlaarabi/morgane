@@ -35,15 +35,16 @@ int main() {
         .phase(EcsPreUpdate)
         .require<net::Controlled>()
         .each([](ecs::entity player, ecs::res<const ray::Input<Action>> input) {
-            player.set(game::PlayerInput{
-                .move_x = input->axis(Action::left, Action::right),
-                .move_y = input->axis(Action::up, Action::down),
-                .fire = input->down(Action::fire),
-            });
+            player.set(
+                game::PlayerInput{
+                    .move_x = input->axis(Action::left, Action::right),
+                    .move_y = input->axis(Action::up, Action::down),
+                    .fire = input->down(Action::fire),
+                }
+            );
         });
 
-    ecs::entity::create().set(Position2d{0, 0}, ray::Camera{.zoom = 3});
-    ecs::import<scene::Scenes>(scenes::config());
-    scenes::register_all();
+    ecs::entity::create().set(Position2d{ 0, 0 }, ray::Camera{ .zoom = 3 });
+    scenes::install();
     ecs::run();
 }

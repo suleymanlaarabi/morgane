@@ -1,4 +1,5 @@
 #include "ray.h"
+#include <client/scene/scene_manager.h>
 #include <cmath>
 #include <filesystem>
 #include <unordered_map>
@@ -14,13 +15,14 @@ struct Textures {
 
 /** Sprites and cameras get a full sispatial transform so their globals are propagated. */
 template <typename T> static void require_transform() {
-    ecs::component<T>().template with<
-        Position2d,
-        Rotation2d,
-        Scale2d,
-        GlobalPosition2d,
-        GlobalRotation2d,
-        GlobalScale2d>();
+    ecs::component<T>()
+        .template with<
+            Position2d,
+            Rotation2d,
+            Scale2d,
+            GlobalPosition2d,
+            GlobalRotation2d,
+            GlobalScale2d>();
 }
 
 void Window::import(const WindowConfig &config) {
@@ -59,57 +61,78 @@ void Window::import(const WindowConfig &config) {
         });
 
     auto camera = ecs::system("ray.BeginCamera")
-        .phase(EcsOnRender)
-        .immediate()
-        .each([](const Camera &camera,
-                 const GlobalPosition2d &position,
-                 const GlobalRotation2d &rotation,
-                 ecs::res<const Screen> screen,
-                 ecs::res<View> view) {
-            if (view->active)
-                return;
-            Vector2 offset = camera.offset;
-            if (camera.centered) {
-                offset.x += screen->width * 0.5f;
-                offset.y += screen->height * 0.5f;
-            }
-            view->camera = Camera2D{
-                .offset = offset,
-                .target = { position.x, position.y },
-                .rotation = rotation.value * RAD2DEG,
-                .zoom = camera.zoom,
-            };
-            view->active = true;
-            BeginMode2D(view->camera);
-        });
+                      .phase(EcsOnRender)
+                      .immediate()
+                      .each([](const Camera &camera,
+                               const GlobalPosition2d &position,
+                               const GlobalRotation2d &rotation,
+                               ecs::res<const Screen> screen,
+                               ecs::res<View> view) {
+                          if (view->active)
+                              return;
+                          Vector2 offset = camera.offset;
+                          if (camera.centered) {
+                              offset.x += screen->width * 0.5f;
+                              offset.y += screen->height * 0.5f;
+                          }
+                          view->camera = Camera2D{
+                              .offset = offset,
+                              .target = { position.x, position.y },
+                              .rotation = rotation.value * RAD2DEG,
+                              .zoom = camera.zoom,
+                          };
+                          view->active = true;
+                          BeginMode2D(view->camera);
+                      });
 
-    ecs::system("ray.DrawSprites")
-        .phase(EcsOnRender)
-        .after(camera)
+    ecs::set_resource(scene::RenderPipeline{ camera });
+
+    auto sprites = ecs::system("ray.DrawSprites")
+                       .phase(EcsPreRender)
+                       .manual()
+                       .immediate()
+                       .each([](const Sprite &sprite,
+                                const GlobalPosition2d &position,
+                                const GlobalRotation2d &rotation,
+                                const GlobalScale2d &scale,
+                                ecs::res<const Textures> textures,
+                                ecs::res<View> view) {
+                           if (!view->active) {
+                               BeginMode2D(view->camera);
+                               view->active = true;
+                           }
+                           const Texture2D &texture = textures->loaded[sprite.texture.id];
+                           Rectangle source = sprite.source;
+                           if (source.width == 0 || source.height == 0)
+                               source = { 0, 0, float(texture.width), float(texture.height) };
+                           float width = std::fabs(source.width) * scale.x;
+                           float height = std::fabs(source.height) * scale.y;
+                           if (sprite.flip_x)
+                               source.width = -source.width;
+                           if (sprite.flip_y)
+                               source.height = -source.height;
+                           DrawTexturePro(
+                               texture,
+                               source,
+                               { position.x, position.y, width, height },
+                               { sprite.pivot.x * width, sprite.pivot.y * height },
+                               rotation.value * RAD2DEG,
+                               sprite.tint
+                           );
+                       });
+
+    // Scene hooks draw screen-space UI after the sprites of their own layer.
+    ecs::system("ray.EndCamera")
+        .phase(EcsPreRender)
+        .after(sprites)
+        .manual()
+        .require<scene::Root>()
         .immediate()
-        .each([](const Sprite &sprite,
-                 const GlobalPosition2d &position,
-                 const GlobalRotation2d &rotation,
-                 const GlobalScale2d &scale,
-                 ecs::res<const Textures> textures) {
-            const Texture2D &texture = textures->loaded[sprite.texture.id];
-            Rectangle source = sprite.source;
-            if (source.width == 0 || source.height == 0)
-                source = { 0, 0, float(texture.width), float(texture.height) };
-            float width = std::fabs(source.width) * scale.x;
-            float height = std::fabs(source.height) * scale.y;
-            if (sprite.flip_x)
-                source.width = -source.width;
-            if (sprite.flip_y)
-                source.height = -source.height;
-            DrawTexturePro(
-                texture,
-                source,
-                { position.x, position.y, width, height },
-                { sprite.pivot.x * width, sprite.pivot.y * height },
-                rotation.value * RAD2DEG,
-                sprite.tint
-            );
+        .each([](ecs::res<View> view) {
+            if (view->active) {
+                EndMode2D();
+                view->active = false;
+            }
         });
 
     ecs::system("ray.EndFrame")
