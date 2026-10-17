@@ -16,17 +16,71 @@ struct RemoteHistory {
     double cursor = 0;
 };
 struct RemotePresentation {};
+/** Resource: newest server tick received, and the delayed tick presented this frame. */
+struct ServerTimeline {
+    std::uint64_t latest = 0;
+    double cursor = 0;
+};
+
+/** Advance monotonically, bound latency backlog, and stop after a bounded outage. */
+double advance_cursor(double cursor, double latest, float dt, const ClientMovementConfig &config) {
+    return std::clamp(
+        cursor + dt / physics::fixed_step,
+        latest - config.interpolation_ticks - config.max_backlog_ticks,
+        latest + config.max_extrapolation_ticks
+    );
+}
+
+void record_tick(std::uint64_t tick, ServerTimeline &timeline, const ClientMovementConfig &config) {
+    if (!timeline.latest)
+        timeline.cursor = double(tick) - config.interpolation_ticks;
+    timeline.latest = std::max(timeline.latest, tick);
+}
+
+/** Trajectory ticks and the cursor share AuthoritativeMotion's clock (completed server ticks).
+ * A trajectory is held at its origin until the cursor reaches the tick it was fired. */
+Position2d trajectory_position(const Trajectory &trajectory, double cursor) {
+    return trajectory_at(trajectory, std::max(cursor, double(trajectory.tick)));
+}
 } // namespace
 
 void ClientMovement::import(const ClientMovementConfig &config) {
     ecs::import<Kinematics>();
     ecs::set_resource(config);
+    ecs::set_resource(ServerTimeline{});
     ecs::component<LocalPrediction>().with<physics::Body, Driven, ray::PresentationPosition2d>();
     ecs::component<net::Controlled>().with<LocalPrediction>();
-    ecs::component<RemotePresentation>().with<Position2d, ray::PresentationPosition2d, RemoteHistory>();
+    ecs::component<RemotePresentation>()
+        .with<Position2d, ray::PresentationPosition2d, RemoteHistory>();
+    ecs::component<Trajectory>().with<ray::PresentationPosition2d>();
     ecs::observe<ecs::OnSet>().each_for<AuthoritativeMotion>([](ecs::entity body) {
         body.add<SnapshotChanged>();
     });
+    ecs::observe<ecs::OnSet>().each_for<AuthoritativeMotion>(
+        [](ecs::entity,
+           ecs::observer_event event,
+           ecs::res<ServerTimeline> timeline,
+           ecs::res<const ClientMovementConfig> config) {
+            record_tick(event.trigger_data<AuthoritativeMotion>()->tick, *timeline, *config);
+        }
+    );
+    ecs::observe<ecs::OnSet>().each_for<Trajectory>(
+        [](ecs::entity,
+           ecs::observer_event event,
+           ecs::res<ServerTimeline> timeline,
+           ecs::res<const ClientMovementConfig> config) {
+            record_tick(event.trigger_data<Trajectory>()->tick, *timeline, *config);
+        }
+    );
+    ecs::system("game.AdvanceServerTimeline")
+        .phase(EcsPreUpdate)
+        .each([](ecs::res<ServerTimeline> timeline,
+                 ecs::res<const DeltaTime> dt,
+                 ecs::res<const ClientMovementConfig> config) {
+            if (timeline->latest)
+                timeline->cursor =
+                    advance_cursor(timeline->cursor, double(timeline->latest), dt->value, *config);
+        });
     ecs::system("game.ReceiveLocalMotion")
         .phase(EcsPreUpdate)
         .immediate()
@@ -64,9 +118,7 @@ void ClientMovement::import(const ClientMovementConfig &config) {
                      .immediate()
                      .require<SnapshotChanged, AuthoritativeMotion>()
                      .exclude<net::Controlled, RemotePresentation>()
-                     .each([](ecs::entity body) {
-                         body.add<RemotePresentation>();
-                     });
+                     .each([](ecs::entity body) { body.add<RemotePresentation>(); });
     ecs::system("game.ReceiveRemoteMotion")
         .phase(EcsPreUpdate)
         .immediate()
@@ -106,7 +158,7 @@ void ClientMovement::import(const ClientMovementConfig &config) {
             prediction.offset_y *= decay;
             body.set(
                 ray::PresentationPosition2d{ position.x + prediction.offset_x,
-                                        position.y + prediction.offset_y }
+                                             position.y + prediction.offset_y }
             );
         });
     ecs::system("game.InterpolateRemoteMotion")
@@ -119,12 +171,8 @@ void ClientMovement::import(const ClientMovementConfig &config) {
                  ecs::res<const DeltaTime> dt,
                  ecs::res<const ClientMovementConfig> config) {
             const auto &latest = history.states[history.count - 1];
-            // Advance monotonically, bound latency backlog, and stop after a bounded outage.
-            history.cursor = std::clamp(
-                history.cursor + dt->value / physics::fixed_step,
-                double(latest.tick) - config->interpolation_ticks - config->max_backlog_ticks,
-                double(latest.tick) + config->max_extrapolation_ticks
-            );
+            history.cursor =
+                advance_cursor(history.cursor, double(latest.tick), dt->value, *config);
             const AuthoritativeMotion *a = &history.states[0], *b = a;
             for (unsigned i = 1; i < history.count; ++i) {
                 b = &history.states[i];
@@ -151,6 +199,14 @@ void ClientMovement::import(const ClientMovementConfig &config) {
                 y = std::lerp(a->y, b->y, t);
             }
             body.set(ray::PresentationPosition2d{ x, y });
+        });
+    ecs::system("game.PresentTrajectories")
+        .phase(EcsOnUpdate)
+        .each([](const Trajectory &trajectory,
+                 ray::PresentationPosition2d &presentation,
+                 ecs::res<const ServerTimeline> timeline) {
+            const auto position = trajectory_position(trajectory, timeline->cursor);
+            presentation = { position.x, position.y };
         });
 }
 } // namespace game

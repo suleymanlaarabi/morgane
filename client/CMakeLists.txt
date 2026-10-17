@@ -18,7 +18,9 @@ target_link_libraries(morgane_graphics PUBLIC siecs::spatial raylib morgane::ray
 
 add_executable(r-type_client
     src/main.cpp
-    src/movement.cpp)
+    src/movement.cpp
+    src/starfield.cpp
+    src/visuals.cpp)
 target_link_libraries(r-type_client PRIVATE morgane_graphics morgane::net morgane::physics)
 
 # Keep assets beside the executable, including when only assets have changed.

@@ -1,9 +1,6 @@
 #include "scenes.h"
 #include <client/gui/gui.h>
-#include <client/raylib/animation.h>
-#include <client/raylib/ray.h>
 #include <raylib.h>
-#include <siecs_spatial.h>
 
 namespace scenes {
 
@@ -37,13 +34,11 @@ void install() {
 
     auto game = scene::define<Game>()
                     .on_enter([](scene::Context<Game> ctx) {
+                        // The top-left corner holds the player HUD.
                         ctx.spawn().set(
-                            Position2d{ -100, 0 },
-                            Velocity2d{ 40, 0 },
-                            ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet42.gif") },
-                            ShipIdle
+                            gui::node().at(gui::BottomLeft, 24, -24),
+                            gui::Label{ "Echap: pause" }
                         );
-                        ctx.spawn().set(gui::node().at(24, 24), gui::Label{ "Echap: pause" });
                     })
                     .on_update([](Commands scenes) {
                         if (IsKeyPressed(KEY_ESCAPE))

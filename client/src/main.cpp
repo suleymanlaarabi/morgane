@@ -2,6 +2,8 @@
 #include "client/scene/scenes.h"
 #include "movement.h"
 #include "siecs_spatial.h"
+#include "starfield.h"
+#include "visuals.h"
 #include <client/gui/gui.h>
 #include <client/raylib/animation.h>
 #include <client/raylib/input.h>
@@ -33,10 +35,13 @@ int main() {
                                          .bind(Action::fire, { KEY_SPACE }));
     game::register_network();
     ecs::import<game::ClientMovement>();
+    ecs::import<game::Visuals>();
+    ecs::import<game::Starfield>();
 
     ecs::system("game.PublishInput")
         .phase(EcsPreUpdate)
         .require<net::Controlled>()
+        .exclude<game::Eliminated>()
         .each([](ecs::entity player,
                  ecs::res<const ray::Input<Action>> input,
                  ecs::res<const gui::Capture> ui) {
@@ -48,18 +53,6 @@ int main() {
                     .move_y = playing.axis(Action::up, Action::down),
                     .fire = playing.down(Action::fire),
                 }
-            );
-        });
-
-    ecs::system("game.PlayerSprites")
-        .phase(EcsPreRender)
-        .immediate()
-        .require<game::AuthoritativeMotion>()
-        .exclude<ray::Sprite>()
-        .each([](ecs::entity player) {
-            player.set(
-                ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet42.gif") },
-                scenes::ShipIdle
             );
         });
 

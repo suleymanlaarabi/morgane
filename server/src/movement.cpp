@@ -2,9 +2,6 @@
 
 namespace game {
 namespace {
-struct ReceivedAt {
-    std::uint64_t tick = 0;
-};
 struct SpawnedFor {};
 } // namespace
 
@@ -12,32 +9,35 @@ void ServerMovement::import() {
     ecs::import<physics::World>();
     ecs::relation<SpawnedFor>({ .storage = EcsRelationByTarget,
                                 .on_delete_target = EcsDeleteSources });
-    ecs::component<ServerPlayer>().with<physics::Body, Driven, ReceivedAt, AuthoritativeMotion>();
+    ecs::component<ServerPlayer>()
+        .with<physics::Body, Driven, ReceivedAt, FireCommand, AuthoritativeMotion>();
+    // Relations come first, so a player refused in ServerPlayer's OnAdd dies last.
     ecs::observe<net::OnConnect>().each([](ecs::entity connection) {
         ecs::entity::create()
-            .add<ServerPlayer, net::Replicated>()
             .relate<net::OwnedBy>(connection)
             .relate<SpawnedFor>(connection)
-            .set(
-                Position2d{ 0, float(connection.get<net::PeerId>().value % 8) * 30 },
-                player_filter
+            .add<ServerPlayer, net::Replicated>();
+    });
+    ecs::observe<ecs::OnSet>().each_for<PlayerInput>(
+        [](ecs::entity player, ecs::observer_event event, const ServerPlayer &) {
+            player.set(
+                ReceivedAt{ ecs::resource<physics::Clock>().tick },
+                FireCommand{ event.trigger_data<PlayerInput>()->fire }
             );
-    });
-    ecs::observe<ecs::OnSet>().each_for<PlayerInput>([](ecs::entity player, const ServerPlayer &) {
-        player.set(ReceivedAt{ ecs::resource<physics::Clock>().tick });
-    });
-    auto expire =
-        ecs::system("game.ExpireMovement")
-            .phase(ecs::resource<physics::Phases>().input)
-            .manual()
-            .immediate()
-            .require<ServerPlayer>()
-            .each([](ecs::entity player,
-                     const ReceivedAt &received,
-                     ecs::res<const physics::Clock> clock) {
-                if (clock->tick - received.tick >= input_timeout / physics::fixed_step)
-                    player.set(MoveCommand{});
-            });
+        }
+    );
+    auto expire = ecs::system("game.ExpireMovement")
+                      .phase(ecs::resource<physics::Phases>().input)
+                      .manual()
+                      .immediate()
+                      .require<ServerPlayer>()
+                      .each([](ecs::entity player,
+                               const ReceivedAt &received,
+                               ecs::res<const physics::Clock> clock) {
+                          if (clock->tick - received.tick >= input_timeout / physics::fixed_step)
+                              player.set(MoveCommand{}, FireCommand{});
+                      });
+    ecs::set_resource(InputPipeline{ expire });
     ecs::import<Kinematics>(expire);
     ecs::system("game.PublishAuthoritativeMotion")
         .phase(ecs::resource<physics::Phases>().output)
