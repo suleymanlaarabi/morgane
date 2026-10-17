@@ -6,13 +6,6 @@
 
 namespace scenes {
 
-constexpr ray::Animation ShipIdle = {
-    .frame = { 0, 0, 33, 17 },
-    .frames = 5,
-    .fps = 8,
-    .playback = ray::Playback::ping_pong,
-};
-
 void install() {
     auto menu = scene::define<Menu>()
                     .on_update([](Commands scenes) {

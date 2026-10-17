@@ -47,6 +47,11 @@ struct Sprite {
     bool flip_y = false;
 };
 
+/** Draw sprites and cameras here instead of at the global transform (e.g. smoothed motion). */
+struct PresentationPosition2d {
+    float x = 0, y = 0;
+};
+
 /** 2D camera looking at the entity global transform (sispatial, added automatically). */
 struct Camera {
     Vector2 offset{};

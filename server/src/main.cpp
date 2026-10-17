@@ -1,3 +1,4 @@
+#include "movement.h"
 #include <server.h>
 #include <shared/game.h>
 #include <sinet/server.h>
@@ -11,9 +12,7 @@ int main() {
     });
     game::register_network();
 
-    ecs::observe<net::OnConnect>().each([](ecs::entity connection) {
-        ecs::entity::create().add<net::Replicated>().relate<net::OwnedBy>(connection);
-    });
+    ecs::import<game::ServerMovement>();
 
     ecs::run();
 }

@@ -1,5 +1,6 @@
 #include "client/scene/scene_manager.h"
 #include "client/scene/scenes.h"
+#include "movement.h"
 #include "net/include/sinet/net.h"
 #include "siecs_spatial.h"
 #include <client.h>
@@ -30,6 +31,7 @@ int main() {
                                          .bind(Action::right, { KEY_RIGHT, KEY_D })
                                          .bind(Action::fire, { KEY_SPACE }));
     game::register_network();
+    ecs::import<game::ClientMovement>();
 
     ecs::system("game.PublishInput")
         .phase(EcsPreUpdate)
@@ -41,6 +43,18 @@ int main() {
                     .move_y = input->axis(Action::up, Action::down),
                     .fire = input->down(Action::fire),
                 }
+            );
+        });
+
+    ecs::system("game.PlayerSprites")
+        .phase(EcsPreRender)
+        .immediate()
+        .require<game::AuthoritativeMotion>()
+        .exclude<ray::Sprite>()
+        .each([](ecs::entity player) {
+            player.set(
+                ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet42.gif") },
+                scenes::ShipIdle
             );
         });
 

@@ -6,17 +6,22 @@
     "description": "Putting birds on wookies",
     "clangd": true,
     "language": "cpp",
-      "use": ["siecs", "siecs_spatial", "sinet"],
-      "sources": ["src", "raylib", "scene"]
+    "use": [
+      "siecs",
+      "siecs_spatial",
+      "sinet",
+      "sibox2d"
+    ],
+    "sources": [
+      "src",
+      "raylib",
+      "scene"
+    ]
   },
   "lang.cpp": {
     "cpp-standard": "c++23",
     "include": [
-      "/path/raylib/include",
       ".."
-    ],
-    "libpath": [
-      "/path/raylib/lib"
     ],
     "lib": [
       "raylib",

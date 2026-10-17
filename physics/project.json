@@ -1,0 +1,17 @@
+{
+  "id": "sibox2d",
+  "type": "package",
+  "value": {
+    "author": "Suleyman Laarabi",
+    "description": "Fixed step Box2D sensors and movement for SIECS",
+    "public": true,
+    "language": "cpp",
+    "use": ["siecs", "siecs_spatial", "box2d"]
+  },
+  "lang.cpp": {
+    "cpp-standard": "c++23",
+    "static": true,
+    "export-symbols": true,
+    "include": ["include"]
+  }
+}
