@@ -7,7 +7,7 @@
     "clangd": true,
     "language": "cpp",
       "use": ["siecs", "siecs_spatial", "sinet"],
-      "sources": ["src", "raylib", "scene"]
+      "sources": ["src", "raylib", "scene", "ui"]
   },
   "lang.cpp": {
     "cpp-standard": "c++23",

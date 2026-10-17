@@ -5,6 +5,7 @@
 #include <client/scene/scene_manager.h>
 #include <client/scene/scenes.h>
 #include <raylib.h>
+#include <client/ui/ui.h>
 
 struct MenuTag {};
 
@@ -17,9 +18,19 @@ constexpr ray::Animation ShipIdle = {
 
 void menuEnter(ecs::entity root)
 {
-    auto e = ecs::entity::create();
-    e.add<MenuTag>();
-    e.child_of(root);
+    root.add<MenuTag>(); // garde le raccourci ENTER de menu.Update
+
+    const auto &screen = ecs::resource<ray::Screen>();
+    const float w = 420, h = 460;
+    Rectangle box{(screen.width - w) / 2, (screen.height - h) / 2, w, h};
+
+    ui::panel(root, box);
+    ui::Stack stack(root, {box.x + 40, box.y + 40, w - 80, h - 80});
+
+    stack.label("MORGANE", 48);
+    stack.button("Play", [] { scene::switchTo<scenes::Game>(); });
+    stack.button("Options", [] { /* à venir */ });
+    stack.button("Quit", [] { ecs::quit(); });
 }
 
 void gameEnter(ecs::entity root)

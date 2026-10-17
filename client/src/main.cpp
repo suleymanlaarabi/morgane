@@ -6,6 +6,7 @@
 #include <client/raylib/animation.h>
 #include <client/raylib/input.h>
 #include <client/raylib/ray.h>
+#include <client/ui/ui.h>              // <-- ajouté
 #include <shared/game.h>
 #include <sinet/client.h>
 
@@ -23,6 +24,7 @@ int main() {
         .title = "Morgane",
     });
     ecs::import<ray::Animations>();
+    ecs::import<ui::Ui>();             // <-- ajouté, APRÈS ray::Window
     ecs::import<ray::Inputs<Action>>(ray::Bindings<Action>{}
                                          .bind(Action::up, { KEY_UP, KEY_W })
                                          .bind(Action::down, { KEY_DOWN, KEY_S })
