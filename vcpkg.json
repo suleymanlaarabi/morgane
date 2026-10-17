@@ -1,0 +1,24 @@
+{
+  "name": "morgane",
+  "version-string": "0.1.0",
+  "builtin-baseline": "a5f736224e85b32e25a8ffc52562333180396642",
+  "dependencies": [
+    "box2d",
+    "catch2",
+    {
+      "name": "siecs",
+      "features": [
+        "spatial"
+      ]
+    },
+    "sireflect"
+  ],
+  "features": {
+    "client": {
+      "description": "Graphical client with raylib",
+      "dependencies": [
+        "raylib"
+      ]
+    }
+  }
+}

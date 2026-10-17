@@ -1,0 +1,27 @@
+{
+  "languages": {
+    "C": {
+      "language_servers": [
+        "clangd"
+      ],
+      "formatter": "language_server"
+    },
+    "C++": {
+      "language_servers": [
+        "clangd"
+      ],
+      "formatter": "language_server"
+    }
+  },
+  "lsp": {
+    "clangd": {
+      "binary": {
+        "arguments": [
+          "--background-index",
+          "--clang-tidy",
+          "--header-insertion=never"
+        ]
+      }
+    }
+  }
+}

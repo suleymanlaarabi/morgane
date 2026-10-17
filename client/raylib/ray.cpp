@@ -26,7 +26,8 @@ template <typename T> static void require_transform() {
 }
 
 static Vector2 draw_position(
-    const GlobalPosition2d &position, ecs::optional<const PresentationPosition2d> presentation
+    const GlobalPosition2d &position,
+    ecs::optional<const PresentationPosition2d> presentation
 ) {
     return presentation ? Vector2{ presentation->x, presentation->y }
                         : Vector2{ position.x, position.y };
@@ -94,9 +95,8 @@ void Window::import(const WindowConfig &config) {
                       });
 
     const auto draw_sprite = [](const Sprite &sprite,
-                                const GlobalPosition2d &position,
+                                Vector2 at,
                                 const GlobalRotation2d &rotation,
-                                ecs::optional<const PresentationPosition2d> presentation,
                                 const GlobalScale2d &scale,
                                 ecs::res<const Textures> textures,
                                 ecs::res<View> view) {
@@ -105,7 +105,6 @@ void Window::import(const WindowConfig &config) {
             view->active = true;
         }
         const Texture2D &texture = textures->loaded[sprite.texture.id];
-        const Vector2 at = draw_position(position, presentation);
         Rectangle source = sprite.source;
         if (source.width == 0 || source.height == 0)
             source = { 0, 0, float(texture.width), float(texture.height) };
@@ -125,19 +124,38 @@ void Window::import(const WindowConfig &config) {
         );
     };
 
-    auto presented = ecs::system("ray.DrawPresentedSprites")
-                         .phase(EcsOnRender)
-                         .after(camera)
-                         .require<PresentationPosition2d>()
-                         .immediate()
-                         .each(draw_sprite);
+    auto presented =
+        ecs::system("ray.DrawPresentedSprites")
+            .phase(EcsOnRender)
+            .after(camera)
+            .immediate()
+            .each([draw_sprite](
+                      const Sprite &sprite,
+                      const PresentationPosition2d &position,
+                      const GlobalRotation2d &rotation,
+                      const GlobalScale2d &scale,
+                      ecs::res<const Textures> textures,
+                      ecs::res<View> view
+                  ) {
+                draw_sprite(sprite, { position.x, position.y }, rotation, scale, textures, view);
+            });
     ecs::set_resource(scene::RenderPipeline{ presented });
-    auto sprites = ecs::system("ray.DrawSprites")
-                       .phase(EcsPreRender)
-                       .manual()
-                       .immediate()
-                       .exclude<PresentationPosition2d>()
-                       .each(draw_sprite);
+    auto sprites =
+        ecs::system("ray.DrawSprites")
+            .phase(EcsPreRender)
+            .manual()
+            .immediate()
+            .exclude<PresentationPosition2d>()
+            .each([draw_sprite](
+                      const Sprite &sprite,
+                      const GlobalPosition2d &position,
+                      const GlobalRotation2d &rotation,
+                      const GlobalScale2d &scale,
+                      ecs::res<const Textures> textures,
+                      ecs::res<View> view
+                  ) {
+                draw_sprite(sprite, { position.x, position.y }, rotation, scale, textures, view);
+            });
 
     // Scene hooks draw screen-space UI after the sprites of their own layer.
     ecs::system("ray.EndCamera")

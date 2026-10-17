@@ -1,6 +1,6 @@
 #include "movement.h"
-#include <server.h>
 #include <shared/game.h>
+#include <siecs.h>
 #include <sinet/server.h>
 
 int main() {

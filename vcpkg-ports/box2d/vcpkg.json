@@ -1,0 +1,18 @@
+{
+  "name": "box2d",
+  "version": "3.2.0",
+  "description": "Box2D 3.2.0 pinned development revision",
+  "homepage": "https://github.com/erincatto/box2d",
+  "supports": "linux & x64",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "license": "MIT"
+}

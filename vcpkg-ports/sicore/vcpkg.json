@@ -1,0 +1,17 @@
+{
+  "name": "sicore",
+  "version-string": "9d3aa31ac982",
+  "description": "Native CMake package for sicore",
+  "homepage": "https://github.com/suleymanlaarabi/sicore",
+  "supports": "linux & x64",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}

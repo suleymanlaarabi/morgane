@@ -3,11 +3,11 @@
 #include "movement.h"
 #include "net/include/sinet/net.h"
 #include "siecs_spatial.h"
-#include <client.h>
 #include <client/raylib/animation.h>
 #include <client/raylib/input.h>
 #include <client/raylib/ray.h>
 #include <shared/game.h>
+#include <siecs.h>
 #include <sinet/client.h>
 
 using game::Action;
