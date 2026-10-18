@@ -41,7 +41,7 @@ struct Rebinding {
     int action = -1;
 };
 
-constexpr const char *action_labels[] = { "Monter", "Descendre", "Reculer", "Avancer", "Tirer" };
+constexpr const char *action_labels[] = { "Up", "Down", "Left", "Right", "Fire" };
 static_assert(std::size(action_labels) == std::size_t(Action::count));
 
 /** Centered titled panel whose buttons all share its width. */
@@ -74,7 +74,7 @@ void vote(game::MatchView &view, const net::LocalPeer &peer) {
 
 std::string controls(const ray::Bindings<Action> &bindings) {
     return std::format(
-        "Monter : {}   Descendre : {}   Reculer : {}   Avancer : {}   Tirer : {}   Pause : Echap",
+        "Up: {}   Down: {}   Left: {}   Right: {}   Fire: {}   Pause: Esc",
         game::action_keys(bindings, Action::up),
         game::action_keys(bindings, Action::down),
         game::action_keys(bindings, Action::left),
@@ -112,17 +112,17 @@ void install(bool join) {
     auto menu = scene::define<Menu>().on_enter([](scene::Context<Menu> ctx) {
         const auto &session = ecs::resource<game::Session>();
         auto box = dialog(ctx.spawn(), "MORGANE");
-        ctx.spawn(box).set(gui::Label{ "Adresse du serveur (adresse:port)" });
+        ctx.spawn(box).set(gui::Label{ "Server address (host:port)" });
         auto field = ctx.spawn(box).set(gui::TextBox{ session.address, 64 }).add<AddressField>();
-        ctx.spawn(box).set(gui::Button{ "Rejoindre" }).add<Join>();
+        ctx.spawn(box).set(gui::Button{ "Join" }).add<Join>();
         ctx.spawn(box).set(gui::Button{ "Options" }).add<OpenOptions>();
-        ctx.spawn(box).set(gui::Button{ "Quitter" }).add<Quit>();
+        ctx.spawn(box).set(gui::Button{ "Quit" }).add<Quit>();
         if (!session.error.empty())
             ctx.spawn(box).set(
-                gui::Label{ "Erreur : " + session.error },
+                gui::Label{ "Error: " + session.error },
                 gui::Style{ .text = Color{ 255, 140, 140, 255 } }
             );
-        ctx.spawn(box).set(gui::Label{ "Entree : rejoindre" });
+        ctx.spawn(box).set(gui::Label{ "Enter: join" });
         // Typing goes straight to the address, and Enter joins.
         ecs::resource<gui::Focus>().entity = field;
     });
@@ -130,13 +130,13 @@ void install(bool join) {
     auto connecting =
         scene::define<Connecting>()
             .on_enter([](scene::Context<Connecting> ctx) {
-                auto box = dialog(ctx.spawn(), "CONNEXION");
+                auto box = dialog(ctx.spawn(), "CONNECTING");
                 ctx.spawn(box).set(
                     gui::Label{
-                        std::format("Connexion a {}...", ecs::resource<game::Session>().address) }
+                        std::format("Connecting to {}...", ecs::resource<game::Session>().address) }
                 );
-                ctx.spawn(box).set(gui::Button{ "Annuler" }).add<Cancel>();
-                ctx.spawn(box).set(gui::Label{ "Echap : annuler" });
+                ctx.spawn(box).set(gui::Button{ "Cancel" }).add<Cancel>();
+                ctx.spawn(box).set(gui::Label{ "Esc: cancel" });
             })
             .on_update([](Commands scenes, ecs::res<const game::Session> session) {
                 if (session->connected)
@@ -160,15 +160,15 @@ void install(bool join) {
                 ctx.spawn()
                     .set(
                         gui::node().at(gui::Bottom, 0, -72),
-                        gui::Label{ "Vous etes elimine : vous regardez vos partenaires." }
+                        gui::Label{ "You are eliminated: watching your teammates." }
                     )
                     .add<SpectatorBanner, gui::Hidden>();
-                auto box = dialog(ctx.spawn(), "PARTIE TERMINEE").add<GameOverPanel, gui::Hidden>();
-                ctx.spawn(box).set(gui::Label{ "Tous les vaisseaux ont ete detruits." });
+                auto box = dialog(ctx.spawn(), "GAME OVER").add<GameOverPanel, gui::Hidden>();
+                ctx.spawn(box).set(gui::Label{ "All ships have been destroyed." });
                 ctx.spawn(box).set(gui::Label{}).add<ReadyLabel>();
-                ctx.spawn(box).set(gui::Button{ "Rejouer" }).add<Vote>();
-                ctx.spawn(box).set(gui::Button{ "Quitter la partie" }).add<Leave>();
-                ctx.spawn(box).set(gui::Label{ "Entree : rejouer   M : menu" });
+                ctx.spawn(box).set(gui::Button{ "Play again" }).add<Vote>();
+                ctx.spawn(box).set(gui::Button{ "Leave match" }).add<Leave>();
+                ctx.spawn(box).set(gui::Label{ "Enter: play again   M: menu" });
             })
             .on_pause([](scene::Context<Game>) { ecs::resource<game::Session>().steering = false; })
             .on_resume([](scene::Context<Game>) { ecs::resource<game::Session>().steering = true; })
@@ -193,9 +193,9 @@ void install(bool join) {
         .each([](gui::Label &label, ecs::res<const game::MatchView> view) {
             const auto &match = view->match;
             auto text = match.phase == std::uint8_t(game::Phase::waiting)
-                            ? std::string("En attente de joueurs")
+                            ? std::string("Waiting for players")
                             : std::format(
-                                  "Vague {}   Joueurs {}/{}",
+                                  "Wave {}   Players {}/{}",
                                   std::max(match.wave, 1u),
                                   match.players,
                                   game::max_players
@@ -224,14 +224,14 @@ void install(bool join) {
         .require<ReadyLabel>()
         .each([](gui::Label &label, ecs::res<const game::MatchView> view) {
             auto text =
-                std::format("Prets a rejouer : {}/{}", view->match.ready, view->match.players);
+                std::format("Ready to replay: {}/{}", view->match.ready, view->match.players);
             if (label.text != text)
                 label.text = std::move(text);
         });
     game.system("game.ShowVote")
         .require<Vote>()
         .each([](gui::Button &button, ecs::res<const game::MatchView> view) {
-            const char *text = view->voted ? "Ne plus attendre" : "Rejouer";
+            const char *text = view->voted ? "Cancel vote" : "Play again";
             if (button.text != text)
                 button.text = text;
         });
@@ -240,11 +240,11 @@ void install(bool join) {
         scene::define<Pause>()
             .on_enter([](scene::Context<Pause> ctx) {
                 auto box = dialog(ctx.spawn(), "PAUSE");
-                ctx.spawn(box).set(gui::Label{ "La partie continue pour les autres joueurs." });
-                ctx.spawn(box).set(gui::Button{ "Reprendre" }).add<Resume>();
+                ctx.spawn(box).set(gui::Label{ "The match goes on for the other players." });
+                ctx.spawn(box).set(gui::Button{ "Resume" }).add<Resume>();
                 ctx.spawn(box).set(gui::Button{ "Options" }).add<OpenOptions>();
-                ctx.spawn(box).set(gui::Button{ "Quitter la partie" }).add<Leave>();
-                ctx.spawn(box).set(gui::Label{ "Echap : reprendre   M : menu" });
+                ctx.spawn(box).set(gui::Button{ "Leave match" }).add<Leave>();
+                ctx.spawn(box).set(gui::Label{ "Esc: resume   M: menu" });
             })
             .on_update([](Commands scenes) {
                 if (IsKeyPressed(KEY_ESCAPE))
@@ -271,14 +271,14 @@ void install(bool join) {
                     .add<VolumeSlider>();
                 ctx.spawn(box)
                     .set(
-                        gui::CheckBox{ "Faire clignoter les vaisseaux touches",
+                        gui::CheckBox{ "Blink hit ships",
                                        preferences.flashes }
                     )
                     .add<FlashesBox>();
                 ctx.spawn(box)
-                    .set(gui::CheckBox{ "Texte agrandi", preferences.large_text })
+                    .set(gui::CheckBox{ "Large text", preferences.large_text })
                     .add<LargeTextBox>();
-                ctx.spawn(box).set(gui::Line{ "Commandes" });
+                ctx.spawn(box).set(gui::Line{ "Controls" });
                 for (std::size_t action = 0; action < std::size(action_labels); ++action) {
                     auto row =
                         ctx.spawn(box).set(gui::row(12).align(gui::Align::Center), gui::Bounds{});
@@ -286,11 +286,11 @@ void install(bool join) {
                     ctx.spawn(row).set(gui::node().grow(), gui::Button{}, Rebind{ Action(action) });
                 }
                 ctx.spawn(box).set(
-                    gui::Label{ "Cliquez sur une commande puis appuyez sur sa touche." }
+                    gui::Label{ "Click a control, then press its key." }
                 );
-                ctx.spawn(box).set(gui::Button{ "Touches par defaut" }).add<ResetBindings>();
-                ctx.spawn(box).set(gui::Button{ "Retour" }).add<Back>();
-                ctx.spawn(box).set(gui::Label{ "Echap : retour" });
+                ctx.spawn(box).set(gui::Button{ "Reset to defaults" }).add<ResetBindings>();
+                ctx.spawn(box).set(gui::Button{ "Back" }).add<Back>();
+                ctx.spawn(box).set(gui::Label{ "Esc: back" });
             })
             .on_exit([](scene::Context<Options>) {
                 ecs::resource<Rebinding>() = {};
@@ -319,7 +319,7 @@ void install(bool join) {
                  ecs::res<const game::Preferences> preferences,
                  ecs::res<const Rebinding> rebinding) {
             auto text = rebinding->action == int(rebind.action)
-                            ? std::string("Appuyez sur une touche (Echap : annuler)")
+                            ? std::string("Press a key (Esc: cancel)")
                             : game::action_keys(preferences->bindings, rebind.action);
             if (button.text != text)
                 button.text = std::move(text);

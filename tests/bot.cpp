@@ -19,6 +19,7 @@ struct Bot {
     std::uint8_t phase = UINT8_MAX;
     std::uint8_t health = UINT8_MAX;
     unsigned destroyed = 0;
+    unsigned blind = 0; // destroyed before its values arrived
     unsigned kinds[3] = {};
     std::minstd_rand random{ std::random_device{}() };
     float move_x = 0, move_y = 0;
@@ -91,15 +92,21 @@ int main(int argc, char **argv) {
                 ++bot->kinds[value];
         }
     );
-    ecs::observe<game::Destroyed>().each([](ecs::entity, ecs::res<Bot> bot) { ++bot->destroyed; });
+    // Clients draw the explosion from these values, so they must arrive before Destroyed.
+    ecs::observe<game::Destroyed>().each([](ecs::entity body, ecs::res<Bot> bot) {
+        ++bot->destroyed;
+        if (!body.has<game::Trajectory>() || !body.has<game::EntityKind>())
+            ++bot->blind;
+    });
 
     ecs::system("bot.Clock")
         .phase(EcsOnUpdate)
         .each([](ecs::res<Bot> bot, ecs::res<const DeltaTime> dt) {
             bot->elapsed += dt->value;
             if (bot->elapsed >= bot->seconds) {
-                say("done destroyed=%u player_shots=%u enemies=%u enemy_shots=%u",
+                say("done destroyed=%u blind=%u player_shots=%u enemies=%u enemy_shots=%u",
                     bot->destroyed,
+                    bot->blind,
                     bot->kinds[0],
                     bot->kinds[1],
                     bot->kinds[2]);

@@ -6,7 +6,7 @@ built in, how to use it, and what we know is still missing.
 ## Physical and motor disabilities
 
 - **Remappable controls.** Every action (move up, down, back, forward, fire) can be bound to any
-  key in **Options → Commandes**, for example to play with one hand on the numeric keypad.
+  key in **Options → Controls**, for example to play with one hand on the numeric keypad.
   Bindings are saved between runs.
 - **Hold, don't tap.** Firing is automatic while the fire key is held; no action needs fast
   repeated presses or simultaneous keys.
@@ -18,9 +18,9 @@ built in, how to use it, and what we know is still missing.
 ## Visual disabilities
 
 - **Information never relies on colour alone.** Players are identified by number (P1–P4) under
-  their ship and in the HUD as well as by ship colour. Health is written as text (`PV 2/3`,
-  `ELIMINE`), not only shown as a bar or a tint.
-- **Larger text.** **Options → Texte agrandi** raises the interface text size from 20 to 28 px.
+  their ship and in the HUD as well as by ship colour. Health is written as text (`HP 2/3`,
+  `ELIMINATED`), not only shown as a bar or a tint.
+- **Larger text.** **Options → Large text** raises the interface text size from 20 to 28 px.
 - **High contrast.** The interface uses raygui's dark theme: light text on dark panels, over a
   black background with dim stars.
 - **Resizable window.** The playfield scales to the window, so the game can fill a large screen.
@@ -37,7 +37,7 @@ built in, how to use it, and what we know is still missing.
 ## Photosensitivity
 
 - Hit flashes blink at most three times per second, the limit recommended by WCAG 2.3.1.
-- **Options → Faire clignoter les vaisseaux touches** turns blinking off entirely: hit ships
+- **Options → Blink hit ships** turns blinking off entirely: hit ships
   stay steadily tinted red instead.
 
 ## Mental and cognitive disabilities
@@ -53,7 +53,7 @@ built in, how to use it, and what we know is still missing.
 
 ## Known gaps
 
-- The interface text is in French only.
+- The interface text is in English only.
 - There is no gamepad support yet, and no difficulty setting.
 - The interface is not exposed to screen readers.
 

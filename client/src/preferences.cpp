@@ -95,52 +95,52 @@ std::string key_name(KeyboardKey key) {
     if (key >= KEY_F1 && key <= KEY_F12)
         return "F" + std::to_string(key - KEY_F1 + 1);
     if (key >= KEY_KP_0 && key <= KEY_KP_9)
-        return "Pave " + std::to_string(key - KEY_KP_0);
+        return "Numpad " + std::to_string(key - KEY_KP_0);
     switch (key) {
     case KEY_UP:
-        return "Haut";
+        return "Up";
     case KEY_DOWN:
-        return "Bas";
+        return "Down";
     case KEY_LEFT:
-        return "Gauche";
+        return "Left";
     case KEY_RIGHT:
-        return "Droite";
+        return "Right";
     case KEY_SPACE:
-        return "Espace";
+        return "Space";
     case KEY_ENTER:
-        return "Entree";
+        return "Enter";
     case KEY_TAB:
         return "Tab";
     case KEY_BACKSPACE:
-        return "Retour arriere";
+        return "Backspace";
     case KEY_LEFT_SHIFT:
-        return "Maj gauche";
+        return "Left Shift";
     case KEY_RIGHT_SHIFT:
-        return "Maj droite";
+        return "Right Shift";
     case KEY_LEFT_CONTROL:
-        return "Ctrl gauche";
+        return "Left Ctrl";
     case KEY_RIGHT_CONTROL:
-        return "Ctrl droit";
+        return "Right Ctrl";
     case KEY_LEFT_ALT:
-        return "Alt";
+        return "Left Alt";
     case KEY_RIGHT_ALT:
-        return "Alt Gr";
+        return "Right Alt";
     case KEY_INSERT:
-        return "Inser";
+        return "Insert";
     case KEY_DELETE:
-        return "Suppr";
+        return "Delete";
     case KEY_HOME:
-        return "Debut";
+        return "Home";
     case KEY_END:
-        return "Fin";
+        return "End";
     case KEY_PAGE_UP:
-        return "Page haut";
+        return "Page Up";
     case KEY_PAGE_DOWN:
-        return "Page bas";
+        return "Page Down";
     case KEY_KP_ENTER:
-        return "Pave Entree";
+        return "Numpad Enter";
     default:
-        return "Touche " + std::to_string(int(key));
+        return "Key " + std::to_string(int(key));
     }
 }
 
@@ -153,7 +153,7 @@ std::string action_keys(const ray::Bindings<Action> &bindings, Action action) {
             text += " / ";
         text += key_name(key);
     }
-    return text.empty() ? "aucune" : text;
+    return text.empty() ? "none" : text;
 }
 
 void apply_preferences() {

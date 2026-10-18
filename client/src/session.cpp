@@ -21,16 +21,16 @@ struct Toasts {
 std::string describe(net::DisconnectReason reason, const Session &session) {
     switch (reason) {
     case net::DisconnectReason::capacity:
-        return std::format("Partie pleine : {} joueurs maximum.", max_players);
+        return std::format("Match full: {} players maximum.", max_players);
     case net::DisconnectReason::schema_mismatch:
-        return "Le serveur utilise une autre version du jeu.";
+        return "The server runs a different game version.";
     case net::DisconnectReason::timeout:
-        return session.connected ? "Connexion perdue : le serveur ne repond plus."
-                                 : std::format("Aucun serveur ne repond a {}.", session.address);
+        return session.connected ? "Connection lost: the server stopped answering."
+                                 : std::format("No server answers at {}.", session.address);
     case net::DisconnectReason::remote:
-        return "Le serveur a ferme la connexion.";
+        return "The server closed the connection.";
     case net::DisconnectReason::congestion:
-        return "Connexion trop lente : la partie a ete quittee.";
+        return "Connection too slow: the match was left.";
     case net::DisconnectReason::local:
         break;
     }
@@ -43,7 +43,7 @@ std::string departure(const PlayerLeft &left) {
     return std::format(
         "P{} {}",
         left.slot + 1,
-        crashed ? "a perdu la connexion" : "a quitte la partie"
+        crashed ? "lost connection" : "left the match"
     );
 }
 } // namespace
@@ -56,7 +56,7 @@ bool join(Session &session) {
         const auto [end, error] =
             std::from_chars(digits.data(), digits.data() + digits.size(), port);
         if (error != std::errc{} || end != digits.data() + digits.size() || !port) {
-            session.error = "Port invalide : utilisez adresse:port, par exemple 127.0.0.1:4242.";
+            session.error = "Invalid port: use host:port, for example 127.0.0.1:4242.";
             return false;
         }
         address = address.substr(0, colon);
@@ -64,7 +64,7 @@ bool join(Session &session) {
     try {
         net::connect(address, port);
     } catch (const std::invalid_argument &) {
-        session.error = std::format("Adresse inconnue : {}.", address);
+        session.error = std::format("Unknown address: {}.", address);
         return false;
     }
     TraceLog(LOG_INFO, "NET: Connecting to %s", session.address.c_str());

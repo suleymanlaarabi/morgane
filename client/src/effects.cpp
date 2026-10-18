@@ -90,8 +90,6 @@ void blast(Position2d at, const ray::Animation &clip, float scale) {
     ecs::entity::create()
         .set(
             at,
-            // Drawn here at once: the global transform is only propagated next frame.
-            ray::PresentationPosition2d{ at.x, at.y },
             Scale2d{ scale, scale },
             ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet44.gif") },
             clip
@@ -135,8 +133,11 @@ void Effects::import() {
         if (const auto *sprite = body.try_get<ray::Sprite>())
             ghost.set(*sprite);
     });
+    // After OnUpdate presents positions and before PostUpdate propagates transforms, so
+    // blasts are drawn at their place and scale from their first frame.
+    const auto blasts = ecs::phase("game.Blasts").after(EcsOnUpdate).before(EcsPostUpdate).id();
     ecs::system("game.Detonate")
-        .phase(EcsPostUpdate)
+        .phase(blasts)
         .each([](ecs::entity ghost,
                  Doomed &doomed,
                  const ray::PresentationPosition2d &at,
@@ -159,7 +160,7 @@ void Effects::import() {
     });
 
     ecs::system("game.NoticeDamage")
-        .phase(EcsPostUpdate)
+        .phase(blasts)
         .each([](ecs::entity body,
                  const Health &health,
                  SeenHealth &seen,

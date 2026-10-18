@@ -41,7 +41,7 @@ self-contained directory with both executables and the assets.
 ```
 
 The client opens on its menu with the address field filled in (`127.0.0.1:4242` by default).
-Press Enter or click **Rejoindre** to join. `--join` skips the menu and connects at once.
+Press Enter or click **Join** to join. `--join` skips the menu and connects at once.
 
 Up to four clients can join one server. Start more clients on other machines with the server's
 address, for example `r-type_client 192.168.1.20:4242`. The server must be reachable on its UDP

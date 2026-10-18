@@ -95,6 +95,8 @@ def main():
             # like a player shot on the clients.
             if not totals.get("enemies") or not totals.get("enemy_shots"):
                 fail(f"clients never saw an enemy or an enemy shot: {totals}", *bots)
+            if totals.get("blind"):
+                fail(f"bodies were destroyed before their values reached clients: {totals}", *bots)
         elif scenario == "crash":
             bots = [bot(20, "--fire") for _ in range(3)]
             for b in bots:

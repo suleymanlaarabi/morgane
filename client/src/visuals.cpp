@@ -124,10 +124,10 @@ void Visuals::import() {
         .each([](gui::Label &label, ecs::target<HudFor> player) {
             const auto &health = player.get<Health>();
             auto text = callsign(player.get<PlayerSlot>());
-            text += health.current ? std::format("  PV {}/{}", health.current, health.max)
-                                   : std::string("  ELIMINE");
+            text += health.current ? std::format("  HP {}/{}", health.current, health.max)
+                                   : std::string("  ELIMINATED");
             if (player.has<net::Controlled>())
-                text += "  (vous)";
+                text += "  (you)";
             if (label.text != text)
                 label.text = std::move(text);
         });

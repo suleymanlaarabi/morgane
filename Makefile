@@ -44,10 +44,11 @@ client: build
 
 # Every process stops once the last client window is closed.
 coop: build
-	@$(BIN_DIR)/r-type_server $(PORT) & pids=$$!; \
-	trap 'kill $$pids 2>/dev/null || true' EXIT INT TERM; \
-	for i in $$(seq $(PLAYERS)); do $(BIN_DIR)/r-type_client $(ADDRESS) --join & pids="$$pids $$!"; done; \
-	wait $${pids#* }
+	@[ $(PLAYERS) -ge 1 ] || { echo "coop needs PLAYERS=1 or more" >&2; exit 2; }; \
+	$(BIN_DIR)/r-type_server $(PORT) & server_pid=$$!; clients=; \
+	trap 'kill $$server_pid $$clients 2>/dev/null || true' EXIT INT TERM; \
+	for i in $$(seq $(PLAYERS)); do $(BIN_DIR)/r-type_client $(ADDRESS) --join & clients="$$clients $$!"; done; \
+	wait $$clients
 
 run-server: server
 run-client: client

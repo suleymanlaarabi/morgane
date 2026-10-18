@@ -11,7 +11,7 @@ ecs::import<gui::Gui>(gui::Theme{ .font_size = 20, .style = "dark" }); // before
 struct Play {};
 auto menu = scene::define<Menu>().on_enter([](scene::Context<Menu> ctx) {
     auto box = ctx.spawn().set(gui::column(12).center().width(360).pad(24), gui::Panel{ "MORGANE" });
-    ctx.spawn(box).set(gui::Button{ "Jouer" }).add<Play>();
+    ctx.spawn(box).set(gui::Button{ "Play" }).add<Play>();
 });
 gui::on_click<Play>([](Commands scenes) { scenes.replace<Game>(); });
 ```
