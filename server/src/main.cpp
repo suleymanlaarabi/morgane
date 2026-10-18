@@ -1,5 +1,6 @@
 #include <game/components.h>
 #include <game/detect.h>
+#include <game/fire.h>
 #include <game/resolve.h>
 #include <server.h>
 #include <shared/game.h>
@@ -14,11 +15,12 @@ int main() {
     });
     game::register_network();
     game::register_components();
+    game::install_weapons();
     auto detection = game::install_detection();
     game::install_resolution(detection);
 
     ecs::observe<net::OnConnect>().each([](ecs::entity connection) {
-        ecs::entity::create().add<net::Replicated>().relate<net::OwnedBy>(connection);
+        game::spawn_player(connection);
     });
 
     ecs::run();
