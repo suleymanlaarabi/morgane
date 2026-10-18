@@ -259,9 +259,11 @@ struct Slider {
     bool bar = false;
     bool show_value = false;
 };
+/** `fill` colors the progress; alpha 0 keeps the style color. */
 struct ProgressBar {
     float value = 0, min = 0, max = 1;
     std::string label;
+    Color fill{};
 };
 /** Integer input; `buttons = false` draws a plain value box. */
 struct Spinner {

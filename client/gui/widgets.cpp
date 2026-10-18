@@ -191,7 +191,11 @@ void register_widgets() {
             return Vector2{ label_width(w.label) + slider_width, text_size() + 6 };
         },
         [](Draw &d, ProgressBar &w) {
+            const int style = GuiGetStyle(PROGRESSBAR, BASE_COLOR_PRESSED);
+            if (w.fill.a)
+                GuiSetStyle(PROGRESSBAR, BASE_COLOR_PRESSED, ColorToInt(w.fill));
             GuiProgressBar(after_label(d, w.label), nullptr, nullptr, &w.value, w.min, w.max);
+            GuiSetStyle(PROGRESSBAR, BASE_COLOR_PRESSED, style);
         },
     });
     widget<Spinner>({

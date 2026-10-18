@@ -11,7 +11,12 @@
 
 namespace game {
 namespace {
-/** Relation: a HUD line describing its target player; it dies with the player. */
+/** Resource: the top-left column holding one HUD line per player. */
+struct Hud {
+    ecs::entity column;
+};
+/** Relation: a HUD line, or one of its widgets, describing its target player; it dies with the
+ * player. */
 struct HudFor {};
 /** Tag: the player has its HUD line, even when it arrives already eliminated. */
 struct Listed {};
@@ -37,6 +42,15 @@ constexpr Rectangle enemy_shot_frame{ 135, 5, 9, 8 };
 constexpr Rectangle player_shot_frame{ 248, 105, 18, 8 };
 
 std::string callsign(const PlayerSlot &slot) { return std::format("P{}", slot.index + 1); }
+
+/** Green while healthy, then yellow, then red on the last point. */
+Color health_color(const Health &health) {
+    if (health.current * 3 > health.max * 2)
+        return { 90, 200, 90, 255 };
+    if (health.current > 1)
+        return { 230, 190, 60, 255 };
+    return { 220, 70, 60, 255 };
+}
 
 void set_callsigns_hidden(ecs::entity player, bool hidden) {
     // Copy first: tagging moves the labels, which may invalidate the borrowed view.
@@ -103,31 +117,51 @@ void Visuals::import() {
             set_callsigns_hidden(player, false);
         });
 
+    // A column rather than one offset per slot, so the lines follow the text size.
+    ecs::set_resource(
+        Hud{ ecs::entity::create().set(gui::column(8).at(gui::TopLeft, 16, 16), gui::Bounds{}) }
+    );
+    // Each line is a health bar followed by the callsign, so the bars line up.
     auto list = ecs::system("game.AttachHud")
                     .phase(EcsPostUpdate)
                     .exclude<Listed>()
-                    .each([](ecs::entity player, const PlayerSlot &slot) {
+                    .each([](ecs::entity player, const PlayerSlot &slot, ecs::res<const Hud> hud) {
                         if (slot.index >= max_players)
                             return;
                         player.add<Listed>();
+                        auto line = ecs::entity::create()
+                                        .set(gui::row(12).align(gui::Align::Center), gui::Bounds{})
+                                        .relate<HudFor>(player)
+                                        .child_of(hud->column);
                         ecs::entity::create()
-                            .set(
-                                gui::node().at(gui::TopLeft, 16, 16 + 26.0f * slot.index),
-                                gui::Label{ callsign(slot) }
-                            )
-                            .relate<HudFor>(player);
+                            .set(gui::node().width(240), gui::ProgressBar{})
+                            .relate<HudFor>(player)
+                            .child_of(line);
+                        ecs::entity::create()
+                            .set(gui::Label{ callsign(slot) })
+                            .relate<HudFor>(player)
+                            .child_of(line);
                     });
-    ecs::system("game.UpdateHud")
+    ecs::system("game.UpdateHudBars")
+        .phase(EcsPostUpdate)
+        .after(list)
+        .require_target<HudFor, Health>()
+        .each([](gui::ProgressBar &bar, ecs::target<HudFor> player) {
+            const auto &health = player.get<Health>();
+            bar.value = health.current;
+            bar.max = std::max<float>(health.max, 1);
+            bar.fill = health_color(health);
+        });
+    ecs::system("game.UpdateHudLabels")
         .phase(EcsPostUpdate)
         .after(list)
         .require_target<HudFor, PlayerSlot, Health>()
         .each([](gui::Label &label, ecs::target<HudFor> player) {
-            const auto &health = player.get<Health>();
             auto text = callsign(player.get<PlayerSlot>());
-            text += health.current ? std::format("  HP {}/{}", health.current, health.max)
-                                   : std::string("  ELIMINATED");
             if (player.has<net::Controlled>())
-                text += "  (you)";
+                text += " (you)";
+            if (!player.get<Health>().current)
+                text += "  ELIMINATED";
             if (label.text != text)
                 label.text = std::move(text);
         });

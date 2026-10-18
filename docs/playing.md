@@ -29,8 +29,8 @@ while it runs. If the connection fails, the menu explains why:
 | Play again, after a game over | Enter |
 | Leave to the menu, from pause or game over | M |
 
-The bottom-left corner of the game always shows the current keys. Every key can be changed in
-**Options** (see below). Every menu can be used with the keyboard alone.
+Every key can be changed in **Options** (see below), which also lists the current keys. Every
+menu can be used with the keyboard alone.
 
 ## Rules
 
@@ -47,7 +47,8 @@ The bottom-left corner of the game always shows the current keys. Every key can 
 
 ## Screen
 
-- Top left: one line per player, `P1  HP 3/3`, `ELIMINATED` when out, `(you)` for you.
+- Top left: one line per player, a health bar (green, yellow, then red on the last point) followed
+  by `P1`, `(you)` for you and `ELIMINATED` when out.
 - Top right: the wave number and the number of players.
 - Under each ship: its player number. Ships also differ by colour.
 - Top centre: short notices, such as departures.

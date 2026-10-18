@@ -18,8 +18,8 @@ built in, how to use it, and what we know is still missing.
 ## Visual disabilities
 
 - **Information never relies on colour alone.** Players are identified by number (P1–P4) under
-  their ship and in the HUD as well as by ship colour. Health is written as text (`HP 2/3`,
-  `ELIMINATED`), not only shown as a bar or a tint.
+  their ship and in the HUD as well as by ship colour. Health bars show the points left by
+  their length as well as their colour, and an eliminated player is marked `ELIMINATED`.
 - **Larger text.** **Options → Large text** raises the interface text size from 30 to 40 px.
 - **High contrast.** The interface uses raygui's dark theme: light text on dark panels, over a
   black background with dim stars.
@@ -44,8 +44,8 @@ built in, how to use it, and what we know is still missing.
 
 - **One goal, few rules.** One weapon, one enemy type, three health points; the [rules](playing.md)
   fit in a few lines.
-- **Controls always on screen.** The bottom of the game screen lists the current keys, updated
-  when they are remapped. Each menu shows its keyboard shortcuts.
+- **Controls one menu away.** **Options** lists the current keys, updated when they are
+  remapped. Each menu shows its keyboard shortcuts.
 - **Plain messages.** Connection problems are explained in words (*the match is full*, *nothing
   answered at this address*), never as error codes.
 - **Cooperative, no punishment for losing.** Players cannot hurt each other; an eliminated player

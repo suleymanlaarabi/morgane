@@ -1,6 +1,6 @@
 {
   "name": "siecs",
-  "version-string": "6904ac9e4f74",
+  "version-string": "0049ee1ec94c",
   "description": "Native CMake package for siecs",
   "homepage": "https://github.com/suleymanlaarabi/siecs",
   "supports": "linux & x64",

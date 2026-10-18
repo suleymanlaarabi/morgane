@@ -22,7 +22,6 @@ struct Cancel {};
 struct Resume {};
 struct Leave {};
 struct WaveLabel {};
-struct ControlsLabel {};
 struct SpectatorBanner {};
 struct GameOverPanel {};
 struct ReadyLabel {};
@@ -70,17 +69,6 @@ void vote(game::MatchView &view, const net::LocalPeer &peer) {
     view.voted = !view.voted;
     const game::RestartVote ready{ view.voted };
     ecs::trigger<game::RestartVote>(peer.connection, &ready);
-}
-
-std::string controls(const ray::Bindings<Action> &bindings) {
-    return std::format(
-        "Up: {}   Down: {}   Left: {}   Right: {}   Fire: {}   Pause: Esc",
-        game::action_keys(bindings, Action::up),
-        game::action_keys(bindings, Action::down),
-        game::action_keys(bindings, Action::left),
-        game::action_keys(bindings, Action::right),
-        game::action_keys(bindings, Action::fire)
-    );
 }
 
 /** Two systems keep a tagged widget shown exactly while `visible` holds. */
@@ -155,9 +143,6 @@ void install(bool join) {
                     .set(gui::node().at(gui::TopRight, -24, 16), gui::Label{})
                     .add<WaveLabel>();
                 ctx.spawn()
-                    .set(gui::node().at(gui::BottomLeft, 24, -24), gui::Label{})
-                    .add<ControlsLabel>();
-                ctx.spawn()
                     .set(
                         gui::node().at(gui::Bottom, 0, -72),
                         gui::Label{ "You are eliminated: watching your teammates." }
@@ -201,12 +186,6 @@ void install(bool join) {
                                   game::max_players
                               );
             if (label.text != text)
-                label.text = std::move(text);
-        });
-    game.system("game.ShowControls")
-        .require<ControlsLabel>()
-        .each([](gui::Label &label, ecs::res<const ray::Bindings<Action>> bindings) {
-            if (auto text = controls(*bindings); label.text != text)
                 label.text = std::move(text);
         });
     show_when<GameOverPanel>(game, "game.ShowGameOver", "game.HideGameOver", [](const auto &view) {
