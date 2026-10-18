@@ -80,6 +80,26 @@ struct PlayerKilled {
     reflected(uint8_t slot;)
 };
 
+// A monster, missile, tile, or other non-player was removed by a hit.
+struct Destroyed {
+    reflected(uint8_t layer;)
+};
+
+// A bonus appeared where a monster died. The power-up entity is spawned as well.
+struct BonusSpawned {
+    reflected(float x; float y;)
+};
+
+// The player took a power-up. `level` is the Power value after the pickup.
+struct PickedUp {
+    reflected(uint8_t slot; int level;)
+};
+
+// The owning client left. Other clients drop that player; the simulation continues.
+struct PlayerLeft {
+    reflected(uint8_t slot;)
+};
+
 // Stable player index, 0 .. max_players-1. Chosen at spawn and never written
 // by a hit. The client maps it to a color or a sprite.
 struct PlayerSlot {
@@ -141,6 +161,10 @@ inline void register_components() {
     net::replicate<Power>().reliable();
     net::replicate<PlayerSlot>().reliable();
     net::event<PlayerKilled>().server_to_clients().reliable();
+    net::event<Destroyed>().server_to_clients().reliable();
+    net::event<BonusSpawned>().server_to_clients().reliable();
+    net::event<PickedUp>().server_to_clients().reliable();
+    net::event<PlayerLeft>().server_to_clients().reliable();
     net::replicate<Player>().reliable();
     net::replicate<Monster>().reliable();
     net::replicate<DropsPowerup>().reliable();

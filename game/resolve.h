@@ -80,6 +80,7 @@ inline void separate(ecs::entity player, ecs::entity solid) {
 struct Drop {
     float x;
     float y;
+    ecs::entity source;
     ecs::entity instance;
 };
 
@@ -192,10 +193,12 @@ inline void resolve(std::span<const Contact> contacts) {
             auto *position = entity.try_get<Position>();
             if (!position)
                 continue;
-            detail::Drop drop{ position->x, position->y, {} };
+            detail::Drop drop{ position->x, position->y, entity, {} };
             if (entity.has_relation<net::InInstance>())
                 drop.instance = entity.target<net::InInstance>();
             drops.push_back(drop);
+            BonusSpawned spawned{ drop.x, drop.y };
+            ecs::trigger<BonusSpawned>(entity, &spawned);
         }
     }
 
@@ -206,6 +209,11 @@ inline void resolve(std::span<const Contact> contacts) {
         if (auto *power = player.try_get<Power>())
             level = power->level + 1;
         player.set(Power{ level });
+        uint8_t slot = 0;
+        if (auto *player_slot = player.try_get<PlayerSlot>())
+            slot = player_slot->index;
+        PickedUp picked{ slot, level };
+        ecs::trigger<PickedUp>(player, &picked);
     }
 
     for (const auto &[player, solid] : pushes) {
@@ -234,6 +242,38 @@ inline void resolve(std::span<const Contact> contacts) {
                 slot = player_slot->index;
             PlayerKilled killed{ slot };
             ecs::trigger<PlayerKilled>(entity, &killed);
+        } else {
+            uint8_t belongs = 0;
+            if (auto *mask = entity.try_get<CollisionMask>())
+                belongs = mask->belongs;
+            Destroyed destroyed{ belongs };
+            ecs::trigger<Destroyed>(entity, &destroyed);
+        }
+        entity.add<PendingDestroy>();
+        entity.kill();
+    }
+}
+
+// Removes everything that client owned. The connection itself stays; the net
+// layer drops it. Other players keep simulating.
+inline void release_connection(ecs::entity connection) {
+    std::vector<ecs::entity> owned;
+    auto claim = [&](ecs::entity entity) {
+        if (entity.target<net::OwnedBy>().id() == connection.id())
+            owned.push_back(entity);
+    };
+    // OwnedBy is a dense relation, so it cannot be queried by target.
+    ecs::query().require<Player>().each(claim);
+    ecs::query().require<PlayerMissile>().each(claim);
+    for (ecs::entity entity : owned) {
+        if (!entity.is_alive() || entity.id() == connection.id())
+            continue;
+        if (entity.has<Player>()) {
+            uint8_t slot = 0;
+            if (auto *player_slot = entity.try_get<PlayerSlot>())
+                slot = player_slot->index;
+            PlayerLeft left{ slot };
+            ecs::trigger<PlayerLeft>(entity, &left);
         }
         entity.add<PendingDestroy>();
         entity.kill();
@@ -243,6 +283,9 @@ inline void resolve(std::span<const Contact> contacts) {
 inline ecs_system_id_t install_resolution() {
     if (!ecs::has_resource<Contacts>())
         ecs::set_resource(Contacts{});
+    ecs::observe<net::OnDisconnect>().each([](ecs::entity connection) {
+        release_connection(connection);
+    });
     return ecs::system("game.ResolveContacts")
         .phase(EcsPostUpdate)
         .immediate()

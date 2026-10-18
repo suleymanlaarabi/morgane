@@ -16,6 +16,19 @@ struct KillLog {
     uint8_t slot = 0;
 };
 
+struct EffectLog {
+    int destroyed = 0;
+    uint8_t layer = 0;
+    int bonuses = 0;
+    float bonus_x = 0;
+    float bonus_y = 0;
+    int pickups = 0;
+    int level = 0;
+    uint8_t slot = 0;
+    int left = 0;
+    uint8_t left_slot = 0;
+};
+
 static ecs::entity missile(float x, int damage) {
     return ecs::entity::create()
         .set(game::Position{ x, 0.f })
@@ -66,6 +79,31 @@ int main() {
         log->count += 1;
         log->slot = event.trigger_data<game::PlayerKilled>()->slot;
     });
+    EffectLog effects;
+    ecs::observe<game::Destroyed>().user_data(&effects).each([](ecs::observer_event event) {
+        auto *log = event.user_data<EffectLog>();
+        log->destroyed += 1;
+        log->layer = event.trigger_data<game::Destroyed>()->layer;
+    });
+    ecs::observe<game::BonusSpawned>().user_data(&effects).each([](ecs::observer_event event) {
+        auto *log = event.user_data<EffectLog>();
+        auto *spawned = event.trigger_data<game::BonusSpawned>();
+        log->bonuses += 1;
+        log->bonus_x = spawned->x;
+        log->bonus_y = spawned->y;
+    });
+    ecs::observe<game::PickedUp>().user_data(&effects).each([](ecs::observer_event event) {
+        auto *log = event.user_data<EffectLog>();
+        auto *picked = event.trigger_data<game::PickedUp>();
+        log->pickups += 1;
+        log->level = picked->level;
+        log->slot = picked->slot;
+    });
+    ecs::observe<game::PlayerLeft>().user_data(&effects).each([](ecs::observer_event event) {
+        auto *log = event.user_data<EffectLog>();
+        log->left += 1;
+        log->left_slot = event.trigger_data<game::PlayerLeft>()->slot;
+    });
 
     {
         auto shot = missile(0.f, 3);
@@ -74,6 +112,9 @@ int main() {
         CHECK(foe.is_alive());
         CHECK(foe.get<game::Health>().value == 2);
         CHECK(!shot.is_alive());
+        CHECK(effects.destroyed == 1);
+        CHECK(effects.layer == game::layer::player_missile);
+        CHECK(effects.bonuses == 0);
         CHECK(ecs::query().require<game::Powerup>().first().id() == 0);
     }
 
@@ -85,6 +126,9 @@ int main() {
         game::resolve({ { shot, foe, 0.f, 0.f } });
         CHECK(!foe.is_alive());
         CHECK(!shot.is_alive());
+        CHECK(effects.bonuses == 1);
+        CHECK(effects.bonus_x == 30.f);
+        CHECK(effects.bonus_y == 4.f);
         auto bonus = ecs::query().require<game::Powerup>().first();
         CHECK(bonus.is_alive());
         CHECK(bonus.get<game::Position>().x == 30.f);
@@ -188,8 +232,22 @@ int main() {
             { ship, another, 0.f, 0.f },
         });
         CHECK(ship.get<game::Power>().level == 2);
+        CHECK(effects.pickups == 2);
+        CHECK(effects.level == 2);
+        CHECK(effects.slot == 2);
         CHECK(!bonus.is_alive());
         CHECK(!another.is_alive());
+    }
+
+    {
+        auto ship = player(10);
+        auto connection = ecs::entity::create();
+        ship.relate<net::OwnedBy>(connection);
+        game::release_connection(connection);
+        CHECK(!ship.is_alive());
+        CHECK(connection.is_alive());
+        CHECK(effects.left == 1);
+        CHECK(effects.left_slot == 2);
     }
 
     {
