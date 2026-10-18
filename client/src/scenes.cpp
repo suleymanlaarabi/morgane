@@ -44,10 +44,10 @@ struct Rebinding {
 constexpr const char *action_labels[] = { "Up", "Down", "Left", "Right", "Fire" };
 static_assert(std::size(action_labels) == std::size_t(Action::count));
 
-/** Centered titled panel whose buttons all share its width. */
-ecs::entity dialog(ecs::entity panel, const char *title, float width = 420) {
+/** Centered titled panel, as wide as its widest child, whose buttons all share its width. */
+ecs::entity dialog(ecs::entity panel, const char *title) {
     return panel.set(
-        gui::column(12).center().width(width).pad(24).align(gui::Align::Stretch),
+        gui::column(12).center().pad(24).align(gui::Align::Stretch),
         gui::Panel{ title }
     );
 }
@@ -260,7 +260,7 @@ void install(bool join) {
         scene::define<Options>()
             .on_enter([](scene::Context<Options> ctx) {
                 const auto &preferences = ecs::resource<game::Preferences>();
-                auto box = dialog(ctx.spawn(), "OPTIONS", 640);
+                auto box = dialog(ctx.spawn(), "OPTIONS");
                 ctx.spawn(box)
                     .set(
                         gui::Slider{ .label = "Volume",

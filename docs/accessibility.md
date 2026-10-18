@@ -20,7 +20,7 @@ built in, how to use it, and what we know is still missing.
 - **Information never relies on colour alone.** Players are identified by number (P1–P4) under
   their ship and in the HUD as well as by ship colour. Health is written as text (`HP 2/3`,
   `ELIMINATED`), not only shown as a bar or a tint.
-- **Larger text.** **Options → Large text** raises the interface text size from 20 to 28 px.
+- **Larger text.** **Options → Large text** raises the interface text size from 30 to 40 px.
 - **High contrast.** The interface uses raygui's dark theme: light text on dark panels, over a
   black background with dim stars.
 - **Resizable window.** The playfield scales to the window, so the game can fill a large screen.

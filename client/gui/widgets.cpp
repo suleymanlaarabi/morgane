@@ -53,9 +53,18 @@ Vector2 text_control(const std::string &text, float padding) {
 void register_widgets() {
     widget<Panel>({
         { .control = DEFAULT },
-        [](const Panel &w) { return Vector2{ w.title.empty() ? 0 : text_width(w.title) + 16, 0 }; },
-        [](Draw &d, Panel &w) { GuiPanel(d.rect, text_or_null(w.title)); },
-        [](const Panel &w) { return Insets{ w.title.empty() ? 0 : title_height, 0, 0, 0 }; },
+        [](const Panel &w) {
+            return Vector2{ w.title.empty() ? 0 : text_width(w.title) + text_size(), 0 };
+        },
+        // Drawn as raygui's GuiPanel, but with a header that grows with the text size.
+        [](Draw &d, Panel &w) {
+            const float header = w.title.empty() ? 0 : control_height();
+            if (header > 0)
+                GuiStatusBar({ d.rect.x, d.rect.y, d.rect.width, header }, w.title.c_str());
+            const float top = std::max(0.f, header - 1);
+            GuiPanel({ d.rect.x, d.rect.y + top, d.rect.width, d.rect.height - top }, nullptr);
+        },
+        [](const Panel &w) { return Insets{ w.title.empty() ? 0 : control_height(), 0, 0, 0 }; },
     });
     widget<GroupBox>({
         { .control = DEFAULT },

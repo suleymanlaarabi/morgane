@@ -160,7 +160,7 @@ void apply_preferences() {
     const auto &preferences = ecs::resource<Preferences>();
     ecs::set_resource(ray::Volume{ preferences.volume });
     ecs::set_resource(preferences.bindings);
-    ecs::set_resource(gui::Theme{ .font_size = preferences.large_text ? 28 : 20, .style = "dark" });
+    ecs::set_resource(gui::Theme{ .font_size = preferences.large_text ? 40 : 30, .style = "dark" });
 }
 
 void PreferencesModule::import() {
