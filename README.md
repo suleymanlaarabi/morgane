@@ -24,8 +24,9 @@ ctest --preset linux-debug
 ```
 
 Then run `./build/linux-debug/bin/r-type_server [port]` and, once per player,
-`./build/linux-debug/bin/r-type_client [address[:port]] [--join]`. `make` builds, then starts a
-server and a client that joins it.
+`./build/linux-debug/bin/r-type_client [address[:port]] [--join]`. With `make`: `make` starts a
+server and a client on its menu, `make server` and `make client` start one of them, and
+`make coop PLAYERS=4` starts a server and four clients that join it.
 
 ## Controls
 

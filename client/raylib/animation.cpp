@@ -34,8 +34,11 @@ void Animations::import() {
     ecs::component<Animation>().with<Sprite, Animator>();
     (void)ecs::event<AnimationFinished>();
 
+    // Runs just before drawing, so sprites created anywhere earlier in the frame never show
+    // their whole texture for a frame.
+    const auto phase = ecs::phase("ray.Animate").after(EcsPreRender).before(EcsOnRender).id();
     ecs::system("ray.Animate")
-        .phase(EcsOnUpdate)
+        .phase(phase)
         .exclude_up<ecs::ChildOf, SimulationPaused>()
         .immediate()
         .each([](ecs::entity entity,

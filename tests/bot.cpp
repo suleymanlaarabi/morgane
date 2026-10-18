@@ -19,6 +19,7 @@ struct Bot {
     std::uint8_t phase = UINT8_MAX;
     std::uint8_t health = UINT8_MAX;
     unsigned destroyed = 0;
+    unsigned kinds[3] = {};
     std::minstd_rand random{ std::random_device{}() };
     float move_x = 0, move_y = 0;
 };
@@ -83,6 +84,13 @@ int main(int argc, char **argv) {
         const auto &left = *event.trigger_data<game::PlayerLeft>();
         say("left %u %u", unsigned(left.slot), unsigned(left.reason));
     });
+    ecs::observe<ecs::OnSet>().each_for<game::EntityKind>(
+        [](ecs::entity, ecs::observer_event event, ecs::res<Bot> bot) {
+            if (const auto value = event.trigger_data<game::EntityKind>()->value;
+                value < std::size(bot->kinds))
+                ++bot->kinds[value];
+        }
+    );
     ecs::observe<game::Destroyed>().each([](ecs::entity, ecs::res<Bot> bot) { ++bot->destroyed; });
 
     ecs::system("bot.Clock")
@@ -90,7 +98,11 @@ int main(int argc, char **argv) {
         .each([](ecs::res<Bot> bot, ecs::res<const DeltaTime> dt) {
             bot->elapsed += dt->value;
             if (bot->elapsed >= bot->seconds) {
-                say("done destroyed=%u", bot->destroyed);
+                say("done destroyed=%u player_shots=%u enemies=%u enemy_shots=%u",
+                    bot->destroyed,
+                    bot->kinds[0],
+                    bot->kinds[1],
+                    bot->kinds[2]);
                 net::disconnect();
                 ecs::quit();
             }

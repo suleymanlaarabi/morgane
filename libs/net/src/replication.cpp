@@ -65,17 +65,9 @@ void Runtime::lifecycle(ecs_observer_event_t &event) {
         auto message = relations(entity.id(), id);
         message.op = Op::spawn;
         enqueue(message);
-        for (auto &d : registry_->types) {
-            if (d->flow != Flow::replication)
-                continue;
-            auto *value = ecs_try_get_cid(entity.id(), d->component);
-            if (!value)
-                continue;
-            Message component{ .op = Op::component, .entity = id, .revision = ++revision_,
-                               .type = d.get(), .reliable = true, .size = d->wire_size };
-            d->encode(*d, value, { component.value.data(), component.size });
-            enqueue(component);
-        }
+        // OnAdd runs before the command that added Replicated writes its values, so the
+        // initial snapshot is taken at the next flush, once every value has landed.
+        pending_snapshots_.push_back(id);
     } else if (event.event == EcsOnRemove) {
         auto id = entity.get<NetworkId>().value;
         auto &state = entities_[entity_index(id)];
@@ -83,6 +75,26 @@ void Runtime::lifecycle(ecs_observer_event_t &event) {
         enqueue({ .op = Op::despawn, .entity = id, .reliable = true });
         free_ids_.push_back(entity_index(id));
     }
+}
+
+void Runtime::snapshot() {
+    for (auto id : pending_snapshots_) {
+        const auto &state = entities_[entity_index(id)];
+        if (state.id != id || !state.active)
+            continue;
+        for (auto &d : registry_->types) {
+            if (d->flow != Flow::replication)
+                continue;
+            auto *value = ecs_try_get_cid(state.entity, d->component);
+            if (!value)
+                continue;
+            Message component{ .op = Op::component, .entity = id, .revision = ++revision_,
+                               .type = d.get(), .reliable = true, .size = d->wire_size };
+            d->encode(*d, value, { component.value.data(), component.size });
+            enqueue(component);
+        }
+    }
+    pending_snapshots_.clear();
 }
 
 void Runtime::component_change(ecs_observer_event_t &event, Descriptor &d) {
@@ -94,8 +106,8 @@ void Runtime::component_change(ecs_observer_event_t &event, Descriptor &d) {
     if (event.event == EcsOnAdd && !d.empty)
         return;
     auto *network = ecs::entity(event.entity).try_get<NetworkId>();
-    // A deferred batch can add a tag before Replicated's observer runs.
-    // Replicated's initial snapshot includes those additions.
+    // Changes made before Replicated's observer gives the entity its NetworkId, including
+    // those of the same command, are covered by the initial snapshot.
     if (!network)
         return;
     auto id = network->value;

@@ -23,8 +23,11 @@ cmake --build --preset linux-debug
 ctest --preset linux-debug      # unit tests and end-to-end match scenarios
 ```
 
-`make` wraps these steps: `make build`, `make test`, and `make` alone builds, starts a server and
-a client that joins it.
+`make` wraps these steps: `make build` and `make test`. To play, `make` alone builds, then starts
+a server and a client on its menu; `make server` and `make client` start just one of them, and
+`make coop PLAYERS=4` starts a server and four clients that join it at once. `PORT` and `ADDRESS`
+change where the server listens and where clients connect, e.g.
+`make client ADDRESS=192.168.1.20:4242`.
 
 Other presets: `linux-release` for optimized binaries. Add `-DMORGANE_BUILD_CLIENT=OFF` to build a
 headless server without raylib. `cmake --install build/linux-release --prefix package` produces a

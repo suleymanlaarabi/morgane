@@ -118,6 +118,8 @@ class Runtime {
     std::size_t value_size_ = 16;
     std::mutex commands_mutex_;
     Outbox commands_;
+    // Entities spawned since the last flush, whose component values are sent at that flush.
+    std::vector<std::uint32_t> pending_snapshots_;
     bool initialized_ = false;
     bool stopping_ = false;
     bool remote_despawn_ = false;
@@ -131,6 +133,7 @@ class Runtime {
 
     void initialize();
     void collect();
+    void snapshot();
     std::uint32_t scope(ecs_entity_t entity);
     Message relations(ecs_entity_t entity, std::uint32_t id,
                       const ecs_relation_event_t *transition = nullptr);
@@ -164,7 +167,7 @@ class Runtime {
     Runtime &operator=(const Runtime &) = delete;
     void receive();
     void send();
-    void flush() { initialize(); collect(); }
+    void flush() { initialize(); snapshot(); collect(); }
     void shutdown();
     void request_open(Endpoint remote) { close_requested_ = true; open_requested_ = remote; }
     void request_close() { close_requested_ = true; open_requested_.reset(); }

@@ -90,6 +90,8 @@ void blast(Position2d at, const ray::Animation &clip, float scale) {
     ecs::entity::create()
         .set(
             at,
+            // Drawn here at once: the global transform is only propagated next frame.
+            ray::PresentationPosition2d{ at.x, at.y },
             Scale2d{ scale, scale },
             ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet44.gif") },
             clip

@@ -83,9 +83,18 @@ def main():
                 fail(f"players did not get the four slots: {slots}", *bots)
             if not all(b.has(f"phase {PLAYING}") for b in bots):
                 fail("a bot never saw the match playing", *bots)
-            destroyed = sum(int(l.split("=")[1]) for b in bots for l in b.lines if l.startswith("done"))
-            if destroyed == 0:
+            totals = {}
+            for b in bots:
+                for line in b.lines:
+                    if line.startswith("done"):
+                        for key, value in (field.split("=") for field in line.split()[1:]):
+                            totals[key] = totals.get(key, 0) + int(value)
+            if not totals.get("destroyed"):
                 fail("four firing players never destroyed anything", *bots)
+            # Spawn snapshots must carry the values set with Replicated, or every body looks
+            # like a player shot on the clients.
+            if not totals.get("enemies") or not totals.get("enemy_shots"):
+                fail(f"clients never saw an enemy or an enemy shot: {totals}", *bots)
         elif scenario == "crash":
             bots = [bot(20, "--fire") for _ in range(3)]
             for b in bots:
