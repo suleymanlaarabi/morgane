@@ -15,6 +15,8 @@ struct Endpoint {
     std::uint64_t key() const { return (std::uint64_t(address) << 16) | port; }
     sockaddr_in socket_address() const;
     static Endpoint parse(const char *address, std::uint16_t port);
+    /** parse(), falling back to an IPv4 host name lookup. */
+    static Endpoint resolve(const char *host, std::uint16_t port);
 };
 
 struct Packet {

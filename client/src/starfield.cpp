@@ -1,6 +1,6 @@
 #include "starfield.h"
+#include "scenes.h"
 #include <client/raylib/ray.h>
-#include <client/scene/scenes.h>
 #include <cmath>
 #include <random>
 

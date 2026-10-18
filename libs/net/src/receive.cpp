@@ -7,6 +7,11 @@ void Runtime::receive() {
     if (stopping_)
         return;
     initialize();
+    apply_requests();
+    if (despawn_pending_) {
+        despawn_pending_ = false;
+        despawn_remote();
+    }
     collect();
     if (!transport_->receive.reader())
         return;
@@ -19,20 +24,29 @@ void Runtime::receive() {
             continue;
         }
         auto found = endpoints_.find(packet->endpoint.key());
-        if (found == endpoints_.end()) {
+        if (found == endpoints_.end() || header.session != peers_[found->second]->session) {
             if (server_ && !header.flags) {
                 Reader reader(packet->bytes().subspan(header_size));
                 auto op = reader.get<std::uint8_t>();
                 auto size = reader.get<std::uint16_t>();
                 auto bytes = reader.bytes(size);
-                if (op == std::uint8_t(Op::hello) && reader.done())
+                if (op == std::uint8_t(Op::hello) && reader.done()) {
+                    // A new session from a known endpoint: the client reconnected before its
+                    // previous session was closed, so that session ends now.
+                    if (found != endpoints_.end()) {
+                        auto &previous = peers_[found->second];
+                        disconnect(*previous, DisconnectReason::remote);
+                        previous.reset();
+                        endpoints_.erase(found);
+                    }
                     hello(*packet, header, bytes);
+                }
             }
             transport_->receive.consume();
             continue;
         }
         auto &peer = *peers_[found->second];
-        if (header.session != peer.session || peer.closed) {
+        if (peer.closed) {
             transport_->receive.consume();
             continue;
         }

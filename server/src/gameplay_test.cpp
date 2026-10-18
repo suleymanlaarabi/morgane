@@ -370,3 +370,146 @@ TEST_CASE_METHOD(Gameplay, "enemies hold fire without targets or while off-scree
     step(1);
     CHECK(of_kind(Kind::enemy_shot).size() == 1);
 }
+
+namespace {
+const game::Match &match() { return ecs::resource<game::Arena>().match.get<game::Match>(); }
+game::Phase phase() { return game::Phase(match().phase); }
+
+/** A player owned by its own connection, as net::OnConnect makes them. */
+std::pair<ecs::entity, ecs::entity> connect_player() {
+    auto connection = ecs::entity::create();
+    ecs::entity player;
+    ecs::defer([&] {
+        player = ecs::entity::create().relate<net::OwnedBy>(connection).add<game::ServerPlayer>();
+    });
+    return { connection, player };
+}
+
+void eliminate(ecs::entity player) { player.set(game::Health{ 0, game::max_health }); }
+
+void vote(ecs::entity connection, bool ready = true) {
+    const game::RestartVote vote{ ready };
+    ecs::trigger<game::RestartVote>(connection, &vote);
+}
+} // namespace
+
+TEST_CASE_METHOD(Gameplay, "the match waits for players and ends once all are eliminated") {
+    step();
+    CHECK(phase() == game::Phase::waiting);
+    auto first = join();
+    auto second = join();
+    step();
+    CHECK(phase() == game::Phase::playing);
+    CHECK(match().players == 2);
+
+    eliminate(first);
+    step();
+    CHECK(phase() == game::Phase::playing);
+    eliminate(second);
+    step();
+    CHECK(phase() == game::Phase::over);
+    CHECK(match().ready == 0);
+}
+
+TEST_CASE_METHOD(Gameplay, "the match restarts together once every player votes") {
+    auto [first_connection, first] = connect_player();
+    auto [second_connection, second] = connect_player();
+    step();
+    vote(first_connection);
+    CHECK_FALSE(first.has<game::WantsRestart>()); // votes only count once the match is over
+
+    first.set(Position2d{ 100, 100 });
+    eliminate(first);
+    eliminate(second);
+    auto enemy = game::spawn_expendable(Kind::enemy, { 200, 0 }, { -80, 0 }, tick());
+    step();
+    REQUIRE(phase() == game::Phase::over);
+
+    vote(first_connection);
+    step();
+    CHECK(match().ready == 1);
+    vote(first_connection, false);
+    step();
+    CHECK(match().ready == 0);
+    vote(first_connection);
+    vote(second_connection);
+    step();
+
+    CHECK(phase() == game::Phase::playing);
+    CHECK_FALSE(enemy.is_alive());
+    for (auto player : { first, second }) {
+        CHECK(health_of(player) == game::max_health);
+        CHECK_FALSE(player.has<game::Eliminated>());
+        CHECK_FALSE(player.has<game::WantsRestart>());
+        CHECK(player.get<physics::Filter>().mask == game::player_filter.mask);
+    }
+    const auto spawn = game::spawn_point(first.get<game::PlayerSlot>().index);
+    CHECK(first.get<Position2d>().x == Approx(spawn.x));
+    CHECK(first.get<Position2d>().y == Approx(spawn.y));
+    hold(first, { 1, 0, false }, 10);
+    CHECK(first.get<Position2d>().x > spawn.x);
+}
+
+TEST_CASE_METHOD(Gameplay, "players joining a finished match wait for the next one") {
+    auto [connection, player] = connect_player();
+    step();
+    eliminate(player);
+    step();
+    REQUIRE(phase() == game::Phase::over);
+
+    auto [late_connection, late] = connect_player();
+    step();
+    CHECK(late.has<game::Eliminated>());
+    CHECK(phase() == game::Phase::over);
+    CHECK(match().players == 2);
+
+    vote(connection);
+    step();
+    CHECK(phase() == game::Phase::over);
+    vote(late_connection);
+    step();
+    CHECK(phase() == game::Phase::playing);
+    CHECK_FALSE(late.has<game::Eliminated>());
+}
+
+TEST_CASE_METHOD(Gameplay, "departures are announced with the player's slot and reason") {
+    static std::vector<game::PlayerLeft> announced;
+    announced.clear();
+    ecs::observe<game::PlayerLeft>().each([](ecs::entity, ecs::observer_event event) {
+        announced.push_back(*event.trigger_data<game::PlayerLeft>());
+    });
+    auto [first_connection, first] = connect_player();
+    auto [second_connection, second] = connect_player();
+    const auto reason = net::DisconnectReason::timeout;
+    ecs::trigger<net::OnDisconnect>(second_connection, &reason);
+    REQUIRE(announced.size() == 1);
+    CHECK(announced[0].slot == second.get<game::PlayerSlot>().index);
+    CHECK(announced[0].reason == std::uint8_t(reason));
+}
+
+TEST_CASE_METHOD(Gameplay, "an empty server clears the arena and waits again") {
+    auto player = join();
+    step();
+    auto enemy = game::spawn_expendable(Kind::enemy, { 200, 0 }, { -80, 0 }, tick());
+    player.kill();
+    step();
+    CHECK(phase() == game::Phase::waiting);
+    CHECK_FALSE(enemy.is_alive());
+    CHECK(match().players == 0);
+}
+
+TEST_CASE_METHOD(Gameplay, "hits report the destroyed body before it despawns") {
+    static std::vector<ecs_entity_t> destroyed;
+    destroyed.clear();
+    ecs::observe<game::Destroyed>().each([](ecs::entity body, ecs::observer_event) {
+        destroyed.push_back(body.id());
+    });
+    auto enemy = game::spawn_expendable(Kind::enemy, { 0, 0 }, {}, tick());
+    auto shot = game::spawn_expendable(Kind::player_shot, { 0, 0 }, {}, tick());
+    step(2);
+    CHECK_FALSE(enemy.is_alive());
+    CHECK(
+        std::set<ecs_entity_t>(destroyed.begin(), destroyed.end()) ==
+        std::set<ecs_entity_t>{ enemy.id(), shot.id() }
+    );
+}

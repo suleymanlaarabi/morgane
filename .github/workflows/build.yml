@@ -38,3 +38,10 @@ jobs:
       - run: cmake --preset linux-debug
       - run: cmake --build --preset linux-debug
       - run: ctest --preset linux-debug
+  docs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install mkdocs
+      - run: mkdocs build --strict

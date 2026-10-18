@@ -239,11 +239,11 @@ void Runtime::collect() {
         commands_.pop();
         lock.unlock();
         if (!server_) {
-            auto &peer = *peers_[0];
-            if (peer.connected && (!message.entity ||
-                entities_[entity_index(message.entity)].owner == peer.id)) {
-                if (!peer.outbox.push(message))
-                    disconnect(peer, DisconnectReason::congestion);
+            auto *peer = peers_[0].get();
+            if (peer && peer->connected && (!message.entity ||
+                entities_[entity_index(message.entity)].owner == peer->id)) {
+                if (!peer->outbox.push(message))
+                    disconnect(*peer, DisconnectReason::congestion);
             }
         } else if (message.op == Op::event) {
             fanout(message);

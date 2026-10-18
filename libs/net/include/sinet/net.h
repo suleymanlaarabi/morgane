@@ -33,7 +33,8 @@ struct MemberOf {};
 struct InInstance {};
 struct OnConnect {};
 struct OnDisconnect {};
-enum class DisconnectReason : std::uint8_t { remote, timeout, schema_mismatch, capacity, congestion };
+/** `local` is never sent: it reports a disconnect requested on this side (net::disconnect). */
+enum class DisconnectReason : std::uint8_t { remote, timeout, schema_mismatch, capacity, congestion, local };
 
 struct Limits {
     std::uint16_t max_entities = 4096;

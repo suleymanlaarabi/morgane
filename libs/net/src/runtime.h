@@ -3,6 +3,7 @@
 #include <sinet/net.h>
 #include "protocol.h"
 #include <mutex>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -121,6 +122,12 @@ class Runtime {
     bool stopping_ = false;
     bool remote_despawn_ = false;
     std::array<std::byte, mtu> handshake_{};
+    // Client connection requests wait for NetReceive, outside every peer loop and observer.
+    bool close_requested_ = false;
+    std::optional<Endpoint> open_requested_;
+    // A client disconnect despawns the replicated world at the next NetReceive, where every
+    // remote despawn happens, never between other systems of the frame.
+    bool despawn_pending_ = false;
 
     void initialize();
     void collect();
@@ -144,13 +151,14 @@ class Runtime {
     ecs_entity_t scope_entity(std::uint32_t id);
     ecs_entity_t owner_entity(Peer &peer, std::uint32_t id);
     void disconnect(Peer &peer, DisconnectReason reason);
+    void despawn_remote();
+    void apply_requests();
     ValueState &value_state(std::uint32_t id, const Descriptor &d);
     std::span<std::byte> value_bytes(std::uint32_t id, const Descriptor &d);
     void enqueue(const Message &message);
 
   public:
-    Runtime(bool server, Limits limits, std::uint16_t max_clients, Endpoint bind,
-            Endpoint remote = {});
+    Runtime(bool server, Limits limits, std::uint16_t max_clients, Endpoint bind);
     ~Runtime();
     Runtime(const Runtime &) = delete;
     Runtime &operator=(const Runtime &) = delete;
@@ -158,6 +166,8 @@ class Runtime {
     void send();
     void flush() { initialize(); collect(); }
     void shutdown();
+    void request_open(Endpoint remote) { close_requested_ = true; open_requested_ = remote; }
+    void request_close() { close_requested_ = true; open_requested_.reset(); }
     void lifecycle(ecs_observer_event_t &event);
     void relation_change(ecs_observer_event_t &event);
     void scope_removed(ecs_observer_event_t &event);

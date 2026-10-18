@@ -7,8 +7,8 @@ target_link_libraries(morgane_raygui PUBLIC siecs::spatial raylib)
 add_library(morgane_graphics STATIC
     raylib/ray.cpp
     raylib/animation.cpp
+    raylib/audio.cpp
     scene/scene_manager.cpp
-    scene/scenes.cpp
     gui/gui.cpp
     gui/layout.cpp
     gui/draw.cpp
@@ -18,7 +18,11 @@ target_link_libraries(morgane_graphics PUBLIC siecs::spatial raylib morgane::ray
 
 add_executable(r-type_client
     src/main.cpp
+    src/effects.cpp
     src/movement.cpp
+    src/preferences.cpp
+    src/scenes.cpp
+    src/session.cpp
     src/starfield.cpp
     src/visuals.cpp)
 target_link_libraries(r-type_client PRIVATE morgane_graphics morgane::net morgane::physics)

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "combat.h"
-#include "waves.h"
+#include "match.h"
 #include <stdexcept>
 
 namespace game {
@@ -32,6 +31,7 @@ struct ServerGameplay {
         ecs::import<ServerPlayers>();
         ecs::import<ServerCombat>();
         ecs::import<ServerWaves>();
+        ecs::import<ServerMatch>();
     }
 };
 } // namespace game

@@ -11,7 +11,7 @@ struct MoveCommand {
     float x = 0, y = 0;
 };
 struct Driven {};
-/** Added once Health reaches zero; eliminated bodies stop steering. */
+/** Present while Health is zero; eliminated bodies stop steering. */
 struct Eliminated {};
 
 // Box2D filtering is symmetric: a pair collides only if each mask accepts the other.
@@ -37,6 +37,8 @@ struct Kinematics {
                                                        ecs::observer_event event) {
             if (event.trigger_data<Health>()->current == 0)
                 body.add<Eliminated>().set(Velocity2d{});
+            else
+                body.remove<Eliminated>(); // restored for a new match
         });
         ecs::system("game.ApplyMovement")
             .phase(ecs::resource<physics::Phases>().input)

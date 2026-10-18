@@ -1,5 +1,5 @@
 # Development shortcuts over the CMake presets in CMakePresets.json.
-#   make                      build, then run the server and the client
+#   make                      build, then run the server and a client that joins it
 #   make build                configure if needed and build
 #   make PRESET=linux-release run
 
@@ -29,7 +29,7 @@ build: $(BUILD_DIR)/CMakeCache.txt
 run: build
 	@$(BIN_DIR)/r-type_server & server_pid=$$!; \
 	trap 'kill $$server_pid 2>/dev/null || true' EXIT INT TERM; \
-	$(BIN_DIR)/r-type_client
+	$(BIN_DIR)/r-type_client --join
 
 run-server: build
 	$(BIN_DIR)/r-type_server
@@ -51,7 +51,7 @@ bootstrap:
 
 help:
 	@echo "Targets:"
-	@echo "  run          build, then start the server and the client (default)"
+	@echo "  run          build, then start the server and a client that joins it (default)"
 	@echo "  run-server   build, then start the server only"
 	@echo "  run-client   build, then start the client only"
 	@echo "  build        configure if needed and build"

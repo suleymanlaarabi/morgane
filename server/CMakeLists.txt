@@ -1,5 +1,6 @@
 add_library(
     morgane_server_gameplay STATIC src/movement.cpp src/players.cpp src/combat.cpp src/waves.cpp
+    src/match.cpp
 )
 target_include_directories(morgane_server_gameplay PUBLIC "${PROJECT_SOURCE_DIR}")
 target_link_libraries(morgane_server_gameplay PUBLIC morgane::net morgane::physics)

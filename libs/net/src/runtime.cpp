@@ -78,8 +78,7 @@ const QueuedMessage *Outbox::peek(std::size_t offset) const {
 
 void Outbox::consume(std::size_t count) { head_ += count; }
 
-Runtime::Runtime(bool server, Limits limits, std::uint16_t max_clients, Endpoint bind,
-                 Endpoint remote)
+Runtime::Runtime(bool server, Limits limits, std::uint16_t max_clients, Endpoint bind)
     : server_(server), limits_(limits), max_clients_(max_clients), registry_(&registry()),
       transport_(std::make_unique<Transport>(bind)), peers_(max_clients),
       entities_(std::size_t(limits.max_entities) + 1),
@@ -97,16 +96,6 @@ Runtime::Runtime(bool server, Limits limits, std::uint16_t max_clients, Endpoint
     for (std::uint32_t i = limits.max_entities; i; --i)
         free_scopes_.push_back(i);
     endpoints_.reserve(max_clients);
-    if (!server) {
-        auto peer = std::make_unique<Peer>();
-        peer->endpoint = remote;
-        peer->session = session_token();
-        peer->received = Clock::now();
-        peer->entity = ecs::entity::create().add<Connection>()
-            .set(PeerId{0}).set(Latency{}).set(Stats{}).id();
-        endpoints_.emplace(remote.key(), 0);
-        peers_[0] = std::move(peer);
-    }
 }
 
 Runtime::~Runtime() = default;
@@ -120,6 +109,59 @@ void Runtime::shutdown() {
             (void)transmit(*peer, goodbye, false, now);
     transport_->flush();
     transport_.reset();
+}
+
+void Runtime::apply_requests() {
+    if (!close_requested_)
+        return;
+    close_requested_ = false;
+    if (auto &previous = peers_[0]) {
+        if (previous->connected) {
+            const std::array<std::byte, 3> goodbye{ std::byte(Op::disconnect), std::byte(0),
+                                                    std::byte(0) };
+            (void)transmit(*previous, goodbye, false, Clock::now());
+            transport_->flush();
+        }
+        disconnect(*previous, DisconnectReason::local);
+        previous.reset();
+        endpoints_.clear();
+    }
+    if (!open_requested_)
+        return;
+    auto peer = std::make_unique<Peer>();
+    peer->endpoint = *open_requested_;
+    peer->session = session_token();
+    peer->received = Clock::now();
+    peer->outbox.init(limits_.max_entities, registry_->types.size(), value_size_);
+    peer->visible.resize(std::size_t(limits_.max_entities) + 1);
+    peer->entity = ecs::entity::create().add<Connection>()
+        .set(PeerId{0}).set(Latency{}).set(Stats{}).id();
+    endpoints_.emplace(peer->endpoint.key(), 0);
+    peers_[0] = std::move(peer);
+    open_requested_.reset();
+}
+
+void Runtime::despawn_remote() {
+    remote_despawn_ = true;
+    auto kill = [](ecs_entity_t id) {
+        if (auto entity = ecs::entity(id); id && entity.is_alive())
+            entity.kill();
+    };
+    for (auto &entity : entities_) {
+        if (entity.active)
+            kill(entity.entity);
+        entity = {};
+    }
+    for (auto &scope : scopes_) {
+        kill(scope);
+        scope = 0;
+    }
+    std::fill(scope_handles_.begin(), scope_handles_.end(), 0);
+    for (auto &[id, owner] : owner_entities_)
+        kill(owner);
+    owner_entities_.clear();
+    std::fill(values_.begin(), values_.end(), ValueState{});
+    remote_despawn_ = false;
 }
 
 void Runtime::initialize() {
@@ -168,6 +210,9 @@ void Runtime::disconnect(Peer &peer, DisconnectReason reason) {
     ecs::trigger<OnDisconnect>(entity, &reason);
     entity.kill();
     peer.entity = 0;
+    // A client's replicated world belongs to its connection.
+    if (!server_)
+        despawn_pending_ = true;
 }
 
 } // namespace net::detail

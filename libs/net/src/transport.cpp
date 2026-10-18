@@ -1,6 +1,7 @@
 #include "transport.h"
 #include <arpa/inet.h>
 #include <cerrno>
+#include <netdb.h>
 #include <poll.h>
 #include <sys/eventfd.h>
 #include <sys/socket.h>
@@ -21,6 +22,21 @@ Endpoint Endpoint::parse(const char *address, std::uint16_t port) {
     Endpoint result{ .port = htons(port) };
     if (inet_pton(AF_INET, address, &result.address) != 1)
         throw std::invalid_argument("Network address must be an IPv4 literal");
+    return result;
+}
+
+Endpoint Endpoint::resolve(const char *host, std::uint16_t port) {
+    Endpoint result{ .port = htons(port) };
+    if (inet_pton(AF_INET, host, &result.address) == 1)
+        return result;
+    addrinfo hints{};
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+    addrinfo *found = nullptr;
+    if (!*host || getaddrinfo(host, nullptr, &hints, &found) != 0 || !found)
+        throw std::invalid_argument("Unknown network host");
+    result.address = reinterpret_cast<sockaddr_in *>(found->ai_addr)->sin_addr.s_addr;
+    freeaddrinfo(found);
     return result;
 }
 

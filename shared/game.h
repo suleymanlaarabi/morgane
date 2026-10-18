@@ -53,6 +53,26 @@ inline Position2d trajectory_at(const Trajectory &trajectory, double tick) {
     return { trajectory.x + trajectory.vx * elapsed, trajectory.y + trajectory.vy * elapsed };
 }
 
+enum class Phase : std::uint8_t { waiting, playing, over };
+/** Server -> clients, on the single match entity. `ready` players voted to play again. */
+struct Match {
+    reflected(uint8_t phase; uint8_t players; uint8_t ready; uint32_t wave;) bool
+    operator==(const Match &) const = default;
+};
+/** Client -> server event on the controlled player: (un)vote to play again once the match is over.
+ */
+struct RestartVote {
+    reflected(bool ready;)
+};
+/** Server -> clients event on the match entity. `reason` is a net::DisconnectReason. */
+struct PlayerLeft {
+    reflected(uint8_t slot; uint8_t reason;)
+};
+/** Server -> clients event on a body destroyed by a hit at `tick`, just before it despawns. */
+struct Destroyed {
+    reflected(uint64_t tick;)
+};
+
 /** Network schema; must be called identically on client and server. */
 inline void register_network() {
     net::input<PlayerInput>().owner_only();
@@ -61,6 +81,10 @@ inline void register_network() {
     net::replicate<Health>().reliable();
     net::replicate<EntityKind>().reliable();
     net::replicate<Trajectory>().reliable();
+    net::replicate<Match>().reliable();
+    net::event<RestartVote>().reliable();
+    net::event<PlayerLeft>().server_to_clients().reliable();
+    net::event<Destroyed>().server_to_clients().reliable();
 }
 
 } // namespace game

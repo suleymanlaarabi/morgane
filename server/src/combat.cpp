@@ -53,10 +53,15 @@ void ServerCombat::import() {
         ecs::trigger<Hit>(contact.a, &on_a);
         ecs::trigger<Hit>(contact.b, &on_b);
     });
-    ecs::observe<Hit>().each([](ecs::entity body, Expendable &expendable) {
-        expendable.spent = true;
-        body.kill();
-    });
+    // Destroyed reaches clients before the despawn, so they can show where the body died.
+    ecs::observe<Hit>().each(
+        [](ecs::entity body, Expendable &expendable, ecs::res<const physics::Clock> clock) {
+            expendable.spent = true;
+            const Destroyed destroyed{ clock->tick };
+            ecs::trigger<Destroyed>(body, &destroyed);
+            body.kill();
+        }
+    );
     // Eliminated players lose their collision mask, and later hits in the eliminating batch
     // fall inside the new invulnerability window, so health cannot underflow. (Observer
     // builders cannot take exclude<>: it returns a plain query, whose each() runs at once.)

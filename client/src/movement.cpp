@@ -15,11 +15,6 @@ struct RemoteHistory {
     double cursor = 0;
 };
 struct RemotePresentation {};
-/** Resource: newest server tick received, and the delayed tick presented this frame. */
-struct ServerTimeline {
-    std::uint64_t latest = 0;
-    double cursor = 0;
-};
 
 /** Advance monotonically, bound latency backlog, and stop after a bounded outage. */
 double advance_cursor(double cursor, double latest, float dt, const ClientMovementConfig &config) {
@@ -47,6 +42,10 @@ void ClientMovement::import(const ClientMovementConfig &config) {
     ecs::import<Kinematics>();
     ecs::set_resource(config);
     ecs::set_resource(ServerTimeline{});
+    // Another server, or a restarted one, counts ticks from scratch.
+    ecs::observe<net::OnConnect>().each([](ecs::entity, ecs::res<ServerTimeline> timeline) {
+        *timeline = {};
+    });
     ecs::component<LocalPrediction>().with<physics::Body, Driven, ray::PresentationPosition2d>();
     ecs::component<net::Controlled>().with<LocalPrediction>();
     ecs::component<RemotePresentation>()
