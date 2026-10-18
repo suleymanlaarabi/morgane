@@ -70,6 +70,16 @@ struct Damage {
     reflected(int value;)
 };
 
+// Weapon bonus. A power-up raises it by one. Clients must see the same level.
+struct Power {
+    reflected(int level;)
+};
+
+// Reliable notice that a player reached 0 health. `slot` is the PlayerSlot index.
+struct PlayerKilled {
+    reflected(uint8_t slot;)
+};
+
 // Stable player index, 0 .. max_players-1. Chosen at spawn and never written
 // by a hit. The client maps it to a color or a sprite.
 struct PlayerSlot {
@@ -128,7 +138,9 @@ inline constexpr CollisionMask powerup_mask{
 inline void register_components() {
     net::replicate<Position>();
     net::replicate<Health>().reliable();
+    net::replicate<Power>().reliable();
     net::replicate<PlayerSlot>().reliable();
+    net::event<PlayerKilled>().server_to_clients().reliable();
     net::replicate<Player>().reliable();
     net::replicate<Monster>().reliable();
     net::replicate<DropsPowerup>().reliable();

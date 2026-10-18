@@ -1,4 +1,5 @@
 #include <game/components.h>
+#include <game/resolve.h>
 #include <server.h>
 #include <shared/game.h>
 #include <sinet/server.h>
@@ -12,6 +13,7 @@ int main() {
     });
     game::register_network();
     game::register_components();
+    game::install_resolution();
 
     ecs::observe<net::OnConnect>().each([](ecs::entity connection) {
         ecs::entity::create().add<net::Replicated>().relate<net::OwnedBy>(connection);
