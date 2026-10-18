@@ -99,8 +99,7 @@ void Runtime::component_change(ecs_observer_event_t &event, Descriptor &d) {
     if (event.event == EcsOnAdd && !d.empty)
         return;
     auto *network = ecs::entity(event.entity).try_get<NetworkId>();
-    // A deferred batch can add a tag before Replicated's observer runs.
-    // Replicated's initial snapshot includes those additions.
+    // Values written before Replicated's observer assigns the NetworkId are sent with the spawn.
     if (!network)
         return;
     auto id = network->value;

@@ -94,7 +94,9 @@ void blast(Position2d at, const ray::Animation &clip, float scale) {
             ray::Sprite{ .texture = ray::load_texture("assets/r-typesheet44.gif") },
             clip
         )
-        .add<Blast>();
+        // Static computes the global transform at once, so blasts spawned after propagation
+        // are still drawn at their place and scale from their first frame.
+        .add<Blast, Static>();
 }
 } // namespace
 
@@ -133,11 +135,8 @@ void Effects::import() {
         if (const auto *sprite = body.try_get<ray::Sprite>())
             ghost.set(*sprite);
     });
-    // After OnUpdate presents positions and before PostUpdate propagates transforms, so
-    // blasts are drawn at their place and scale from their first frame.
-    const auto blasts = ecs::phase("game.Blasts").after(EcsOnUpdate).before(EcsPostUpdate).id();
     ecs::system("game.Detonate")
-        .phase(blasts)
+        .phase(EcsPostUpdate)
         .each([](ecs::entity ghost,
                  Doomed &doomed,
                  const ray::PresentationPosition2d &at,
@@ -160,7 +159,7 @@ void Effects::import() {
     });
 
     ecs::system("game.NoticeDamage")
-        .phase(blasts)
+        .phase(EcsPostUpdate)
         .each([](ecs::entity body,
                  const Health &health,
                  SeenHealth &seen,
