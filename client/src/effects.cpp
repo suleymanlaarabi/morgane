@@ -183,12 +183,15 @@ void Effects::import() {
         .phase(EcsPostUpdate)
         .each([](ecs::entity body,
                  Flash &flash,
-                 ray::Sprite &sprite,
+                 ecs::optional<ray::Sprite> sprite,
                  ecs::res<const DeltaTime> dt,
                  ecs::res<const Preferences> preferences) {
+            // Elimination removes the sprite, but the flash still runs out: a respawned ship
+            // must not blink.
             flash.remaining -= dt->value;
             const bool lit = !preferences->flashes || std::fmod(flash.remaining, 0.34f) > 0.17f;
-            sprite.tint = flash.remaining > 0 && lit ? Color{ 255, 80, 80, 255 } : WHITE;
+            if (sprite)
+                sprite->tint = flash.remaining > 0 && lit ? Color{ 255, 80, 80, 255 } : WHITE;
             if (flash.remaining <= 0)
                 body.remove<Flash>();
         });

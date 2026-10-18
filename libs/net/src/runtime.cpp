@@ -4,6 +4,7 @@
 #include <cstring>
 #include <random>
 #include <stdexcept>
+#include <thread>
 
 namespace net::detail {
 
@@ -105,7 +106,7 @@ void Runtime::shutdown() {
     const std::array<std::byte, 3> goodbye{std::byte(Op::disconnect), std::byte(0), std::byte(0)};
     auto now = Clock::now();
     for (auto &peer : peers_)
-        if (peer && peer->connected)
+        if (peer && !peer->closed && !peer->resolving)
             (void)transmit(*peer, goodbye, false, now);
     transport_->flush();
     transport_.reset();
@@ -116,7 +117,8 @@ void Runtime::apply_requests() {
         return;
     close_requested_ = false;
     if (auto &previous = peers_[0]) {
-        if (previous->connected) {
+        // A handshaking peer says goodbye too: the server may have accepted its hello already.
+        if (!previous->closed && !previous->resolving) {
             const std::array<std::byte, 3> goodbye{ std::byte(Op::disconnect), std::byte(0),
                                                     std::byte(0) };
             (void)transmit(*previous, goodbye, false, Clock::now());
@@ -129,16 +131,46 @@ void Runtime::apply_requests() {
     if (!open_requested_)
         return;
     auto peer = std::make_unique<Peer>();
-    peer->endpoint = *open_requested_;
     peer->session = session_token();
     peer->received = Clock::now();
     peer->outbox.init(limits_.max_entities, registry_->types.size(), value_size_);
     peer->visible.resize(std::size_t(limits_.max_entities) + 1);
     peer->entity = ecs::entity::create().add<Connection>()
         .set(PeerId{0}).set(Latency{}).set(Stats{}).id();
-    endpoints_.emplace(peer->endpoint.key(), 0);
-    peers_[0] = std::move(peer);
+    auto address = std::move(*open_requested_);
     open_requested_.reset();
+    try {
+        peer->endpoint = Endpoint::parse(address.host.c_str(), address.port);
+        endpoints_.emplace(peer->endpoint.key(), 0);
+    } catch (const std::invalid_argument &) {
+        // The thread only shares the Resolution: a closed peer or a shut down runtime drops it.
+        peer->resolving = std::make_shared<Resolution>();
+        std::thread([resolution = peer->resolving, address = std::move(address)] {
+            try {
+                resolution->endpoint = Endpoint::resolve(address.host.c_str(), address.port);
+            } catch (const std::invalid_argument &) {
+                // No endpoint tells apply_resolution() that the host did not resolve.
+            }
+            resolution->done.store(true, std::memory_order_release);
+        }).detach();
+    }
+    peers_[0] = std::move(peer);
+}
+
+void Runtime::apply_resolution() {
+    auto &peer = peers_[0];
+    if (!peer || !peer->resolving || !peer->resolving->done.load(std::memory_order_acquire))
+        return;
+    auto endpoint = peer->resolving->endpoint;
+    peer->resolving.reset();
+    if (peer->closed)
+        return;
+    if (!endpoint) {
+        disconnect(*peer, DisconnectReason::unresolved);
+        return;
+    }
+    peer->endpoint = *endpoint;
+    endpoints_.emplace(peer->endpoint.key(), 0);
 }
 
 void Runtime::despawn_remote() {

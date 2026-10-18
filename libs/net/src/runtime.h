@@ -2,8 +2,10 @@
 
 #include <sinet/net.h>
 #include "protocol.h"
+#include <atomic>
 #include <mutex>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -76,8 +78,14 @@ struct ValueState {
     std::uint32_t revision = 0;
     bool present = false;
 };
+/** A host name lookup running on its own thread, so a slow DNS answer never stalls a frame. */
+struct Resolution {
+    std::atomic<bool> done{ false };
+    std::optional<Endpoint> endpoint; // written before `done`
+};
 struct Peer {
     Endpoint endpoint;
+    std::shared_ptr<Resolution> resolving; // client peer whose endpoint is still being looked up
     std::uint64_t session = 0;
     std::uint32_t id = 0;
     ecs_entity_t entity = 0;
@@ -123,8 +131,12 @@ class Runtime {
     bool remote_despawn_ = false;
     std::array<std::byte, mtu> handshake_{};
     // Client connection requests wait for NetReceive, outside every peer loop and observer.
+    struct Address {
+        std::string host;
+        std::uint16_t port;
+    };
     bool close_requested_ = false;
-    std::optional<Endpoint> open_requested_;
+    std::optional<Address> open_requested_;
     // A client disconnect despawns the replicated world at the next NetReceive, where every
     // remote despawn happens, never between other systems of the frame.
     bool despawn_pending_ = false;
@@ -153,6 +165,7 @@ class Runtime {
     void disconnect(Peer &peer, DisconnectReason reason);
     void despawn_remote();
     void apply_requests();
+    void apply_resolution();
     ValueState &value_state(std::uint32_t id, const Descriptor &d);
     std::span<std::byte> value_bytes(std::uint32_t id, const Descriptor &d);
     void enqueue(const Message &message);
@@ -166,7 +179,10 @@ class Runtime {
     void send();
     void flush() { initialize(); collect(); }
     void shutdown();
-    void request_open(Endpoint remote) { close_requested_ = true; open_requested_ = remote; }
+    void request_open(std::string host, std::uint16_t port) {
+        close_requested_ = true;
+        open_requested_ = Address{ std::move(host), port };
+    }
     void request_close() { close_requested_ = true; open_requested_.reset(); }
     void lifecycle(ecs_observer_event_t &event);
     void relation_change(ecs_observer_event_t &event);

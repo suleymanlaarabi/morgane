@@ -16,8 +16,9 @@ struct Client {
 };
 
 /** Connect to `address` (IPv4 literal or host name) on `port`, closing any open connection
- * first. Applied at the next NetReceive; OnConnect or OnDisconnect reports the outcome.
- * Throws std::invalid_argument when the address does not resolve. */
+ * first. Applied at the next NetReceive; OnConnect or OnDisconnect reports the outcome. A host
+ * name resolves on a worker thread, and OnDisconnect fires with DisconnectReason::unresolved when
+ * it does not resolve. */
 void connect(std::string_view address, std::uint16_t port);
 /** Close the connection at the next NetReceive. OnDisconnect fires with DisconnectReason::local
  * and every replicated entity is despawned, as on any client disconnect. */

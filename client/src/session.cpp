@@ -5,7 +5,6 @@
 #include <raylib.h>
 #include <shared/game.h>
 #include <sinet/client.h>
-#include <stdexcept>
 
 namespace game {
 namespace {
@@ -31,6 +30,8 @@ std::string describe(net::DisconnectReason reason, const Session &session) {
         return "The server closed the connection.";
     case net::DisconnectReason::congestion:
         return "Connection too slow: the match was left.";
+    case net::DisconnectReason::unresolved:
+        return std::format("Unknown address: {}.", session.address);
     case net::DisconnectReason::local:
         break;
     }
@@ -61,17 +62,18 @@ bool join(Session &session) {
         }
         address = address.substr(0, colon);
     }
-    try {
-        net::connect(address, port);
-    } catch (const std::invalid_argument &) {
-        session.error = std::format("Unknown address: {}.", address);
-        return false;
-    }
+    net::connect(address, port);
     TraceLog(LOG_INFO, "NET: Connecting to %s", session.address.c_str());
     session.error.clear();
     session.connecting = true;
     session.connected = false;
     return true;
+}
+
+void leave(Session &session) {
+    net::disconnect();
+    session.connecting = false;
+    session.connected = false;
 }
 
 void notify(std::string text) {
@@ -98,6 +100,11 @@ void Sessions::import(const Session &session) {
         [](ecs::entity, ecs::observer_event event, ecs::res<Session> session) {
             const auto reason = *event.trigger_data<net::DisconnectReason>();
             TraceLog(LOG_INFO, "NET: Disconnected (reason %d)", int(reason));
+            // join() and leave() already updated the session when they closed the connection.
+            // Applied a frame later, this disconnect may close the previous connection of a
+            // join() whose attempt is starting.
+            if (reason == net::DisconnectReason::local)
+                return;
             session->error = describe(reason, *session);
             session->connecting = false;
             session->connected = false;

@@ -14,8 +14,7 @@ void Client::import(const ClientConfig &config) {
 }
 
 void connect(std::string_view address, std::uint16_t port) {
-    const std::string host(address);
-    ecs::resource<detail::State>().runtime->request_open(detail::Endpoint::resolve(host.c_str(), port));
+    ecs::resource<detail::State>().runtime->request_open(std::string(address), port);
 }
 
 void disconnect() { ecs::resource<detail::State>().runtime->request_close(); }

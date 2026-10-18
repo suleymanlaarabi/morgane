@@ -60,4 +60,4 @@ built in, how to use it, and what we know is still missing.
 ## Documentation
 
 These pages are plain Markdown with headings, tables and text alternatives (no information is
-given only by an image), readable by screen readers on GitHub or once built with MkDocs.
+given only by an image), readable by screen readers on GitHub or on the documentation site.

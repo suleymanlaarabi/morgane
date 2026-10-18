@@ -4,7 +4,8 @@ A cooperative R-Type in C++23 for one to four players. The server owns the simul
 it at a fixed 60 Hz; clients send their input over UDP, predict their own ship and draw the
 replicated game.
 
-**Documentation:** [docs/](docs/index.md) (MkDocs site: `pip install mkdocs && mkdocs serve`):
+**Documentation:** <https://suleymanlaarabi.github.io/morgane/> (sources in [docs/](docs/index.md),
+built with [Zensical](https://zensical.org/); locally: `zensical serve`):
 [getting started](docs/getting-started.md), [playing](docs/playing.md),
 [architecture](docs/architecture.md), [development guide](docs/development.md),
 [technical choices](docs/technical-choices.md), [network protocol](docs/protocol.md),
@@ -49,3 +50,15 @@ votes to play again and M returns to the menu. Every key can be remapped in **Op
 
 Configuring a preset links its `compile_commands.json` at the repository root for clangd.
 `.zed/` holds editor settings and tasks.
+
+## Authors
+
+- Suleyman Laarabi: <suleyman.laarabi@epitech.eu>
+- Inès Sanchez: <ines.sanchez@epitech.eu>
+
+Bugs and questions: [GitHub issues](https://github.com/suleymanlaarabi/morgane/issues).
+
+## License
+
+[MIT](LICENSE). The sprites in `assets/` come from the original R-Type and are only used for
+this educational project; the sound effects are synthesized by the game.

@@ -59,8 +59,8 @@ struct Match {
     reflected(uint8_t phase; uint8_t players; uint8_t ready; uint32_t wave;) bool
     operator==(const Match &) const = default;
 };
-/** Client -> server event on the controlled player: (un)vote to play again once the match is over.
- */
+/** Client -> server event on the client's connection (net::LocalPeer::connection): (un)vote to
+ * play again once the match is over. */
 struct RestartVote {
     reflected(bool ready;)
 };

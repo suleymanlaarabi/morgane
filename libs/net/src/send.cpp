@@ -83,14 +83,27 @@ void Runtime::reject(Endpoint endpoint, std::uint64_t session, DisconnectReason 
     transport_->publish();
 }
 
+// A connected peer sends at least a heartbeat every 500 ms, so a session silent for longer has
+// lost its client.
+static constexpr auto session_takeover = std::chrono::seconds(1);
+
 void Runtime::hello(const Packet &packet, const Header &header, std::span<const std::byte> bytes) {
     Reader reader(bytes);
     if (!header.session || !schema_matches(reader) || !reader.done()) {
         reject(packet.endpoint, header.session, DisconnectReason::schema_mismatch);
         return;
     }
-    if (endpoints_.contains(packet.endpoint.key()))
-        return;
+    // A new session from a known endpoint: the client reconnected before its previous session
+    // was closed. That session ends only once silent, so a delayed hello from an older session,
+    // or a forged one, cannot end a live session. The client keeps retrying its hello meanwhile.
+    if (auto found = endpoints_.find(packet.endpoint.key()); found != endpoints_.end()) {
+        auto &previous = peers_[found->second];
+        if (!previous->closed && Clock::now() - previous->received < session_takeover)
+            return;
+        disconnect(*previous, DisconnectReason::remote);
+        previous.reset();
+        endpoints_.erase(found);
+    }
     auto slot = std::find(peers_.begin(), peers_.end(), nullptr);
     if (slot == peers_.end()) {
         reject(packet.endpoint, header.session, DisconnectReason::capacity);
@@ -179,7 +192,8 @@ void Runtime::send() {
             continue;
         }
         if (!peer.connected) {
-            if (!server_ && !peer.closed && peer.id == 0 && now - peer.hello >= std::chrono::milliseconds(250))
+            if (!server_ && !peer.closed && !peer.resolving && peer.id == 0 &&
+                now - peer.hello >= std::chrono::milliseconds(250))
                 send_hello(peer, now);
             continue;
         }

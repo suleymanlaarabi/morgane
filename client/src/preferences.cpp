@@ -35,10 +35,11 @@ Preferences load() {
             float volume;
             if (words >> volume && volume >= 0 && volume <= 1)
                 preferences.volume = volume;
-        } else if (key == "flashes") {
-            words >> preferences.flashes;
-        } else if (key == "large_text") {
-            words >> preferences.large_text;
+        } else if (key == "flashes" || key == "large_text") {
+            // A failed >> would store false, so read into a local first.
+            bool value;
+            if (words >> value)
+                (key == "flashes" ? preferences.flashes : preferences.large_text) = value;
         } else if (key == "bind") {
             std::string name;
             words >> name;

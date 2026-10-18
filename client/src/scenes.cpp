@@ -59,7 +59,7 @@ void start(Commands scenes, game::Session &session) {
 }
 
 void leave(Commands scenes) {
-    net::disconnect();
+    game::leave(ecs::resource<game::Session>());
     scenes.reset<Menu>();
 }
 

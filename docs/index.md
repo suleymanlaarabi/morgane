@@ -27,6 +27,7 @@ so that it answers the keys at once.
 | `libs/net/` | `sinet`: UDP transport, reliability and ECS replication |
 | `libs/physics/` | `sibox2d`: fixed-step Box2D physics driven by ECS systems |
 | `tests/` | End-to-end match scenarios with a headless bot client |
-| `docs/` | This documentation, built with [MkDocs](https://www.mkdocs.org/) |
+| `docs/` | This documentation, built with [Zensical](https://zensical.org/) |
 
-To browse these pages locally: `pip install mkdocs`, then `mkdocs serve` from the repository root.
+These pages are published at <https://suleymanlaarabi.github.io/morgane/> on every push to `main`.
+To browse them locally, run `zensical serve` from the repository root.

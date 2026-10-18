@@ -17,6 +17,8 @@ struct Session {
 /** Start connecting to Session::address (`host[:port]`). On a malformed address, sets
  * Session::error and returns false. */
 bool join(Session &session);
+/** Close the connection, if any, and mark the session idle. */
+void leave(Session &session);
 
 /** Short messages stacked at the top of the screen for a few seconds, above every scene. */
 void notify(std::string text);

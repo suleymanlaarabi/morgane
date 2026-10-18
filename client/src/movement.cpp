@@ -158,6 +158,9 @@ void ClientMovement::import(const ClientMovementConfig &config) {
                  RemoteHistory &history,
                  ecs::res<const DeltaTime> dt,
                  ecs::res<const ClientMovementConfig> config) {
+            // RemotePresentation arrives through a deferred command, maybe before any snapshot.
+            if (!history.count)
+                return;
             const auto &latest = history.states[history.count - 1];
             history.cursor =
                 advance_cursor(history.cursor, double(latest.tick), dt->value, *config);

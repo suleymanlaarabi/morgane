@@ -107,10 +107,14 @@ The **schema** describes the network types both sides use, in slot order:
 3. Otherwise the server answers a **reliable** packet holding `welcome`: the client's `peer_id`
    (non-zero), the server's `max_entities` (4096) and the server's schema. The client MUST check
    the schema again and that `max_entities` fits its own tables.
-4. A `hello` with a new `session` from an address and port that already has a session closes the
-   old session (as if it had sent `disconnect`) and opens the new one.
+4. A `hello` with a new `session` from an address and port that already has a session is ignored
+   while that session is live. Once the old session has been silent for 1 second (a connected
+   peer sends at least a heartbeat every 500 ms), the next `hello` closes it (as if it had sent
+   `disconnect`) and opens the new one. A delayed `hello` from an older session, or a forged one,
+   therefore cannot end a live session. The client keeps retrying its `hello` until then.
 
-Leaving: send an unreliable packet with a `disconnect` frame. The server then announces the
+Leaving: send an unreliable packet with a `disconnect` frame, also while the handshake is still
+running, since the server may already have accepted the `hello`. The server then announces the
 departure to the other players (`PlayerLeft`, section 8).
 
 ## 7. Replication (server → client)

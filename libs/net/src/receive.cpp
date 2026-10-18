@@ -8,6 +8,8 @@ void Runtime::receive() {
         return;
     initialize();
     apply_requests();
+    if (!server_)
+        apply_resolution();
     if (despawn_pending_) {
         despawn_pending_ = false;
         despawn_remote();
@@ -30,17 +32,8 @@ void Runtime::receive() {
                 auto op = reader.get<std::uint8_t>();
                 auto size = reader.get<std::uint16_t>();
                 auto bytes = reader.bytes(size);
-                if (op == std::uint8_t(Op::hello) && reader.done()) {
-                    // A new session from a known endpoint: the client reconnected before its
-                    // previous session was closed, so that session ends now.
-                    if (found != endpoints_.end()) {
-                        auto &previous = peers_[found->second];
-                        disconnect(*previous, DisconnectReason::remote);
-                        previous.reset();
-                        endpoints_.erase(found);
-                    }
+                if (op == std::uint8_t(Op::hello) && reader.done())
                     hello(*packet, header, bytes);
-                }
             }
             transport_->receive.consume();
             continue;

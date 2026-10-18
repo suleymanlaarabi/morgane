@@ -33,8 +33,11 @@ struct MemberOf {};
 struct InInstance {};
 struct OnConnect {};
 struct OnDisconnect {};
-/** `local` is never sent: it reports a disconnect requested on this side (net::disconnect). */
-enum class DisconnectReason : std::uint8_t { remote, timeout, schema_mismatch, capacity, congestion, local };
+/** `local` and `unresolved` are never sent: `local` reports a disconnect requested on this side
+ * (net::disconnect), `unresolved` a net::connect host name that did not resolve. */
+enum class DisconnectReason : std::uint8_t {
+    remote, timeout, schema_mismatch, capacity, congestion, local, unresolved
+};
 
 struct Limits {
     std::uint16_t max_entities = 4096;

@@ -65,6 +65,98 @@ own ship with the shared movement rule and reconciles with the server; other ent
 interpolated or extrapolated from their trajectories. This is the model of most action games
 (Quake, Source, Overwatch).
 
+## Algorithms and data structures
+
+### Existing designs we reuse
+
+| Problem | Choice | Alternatives considered | Why |
+| --- | --- | --- | --- |
+| Game object storage | Archetype tables (SIECS): one contiguous column per component, one table per component set | Sparse sets (EnTT), objects in a `std::vector<GameObject*>` | Systems iterate several components at once (position, body, health); archetypes keep them contiguous and queries are cached. Adding or removing a component moves the entity to another table, which is rare in our game. |
+| Entity identity | Index + generation handles, recycled through a free list (in SIECS and in replication ids) | Raw pointers, ever-growing ids | A stale id from a destroyed entity, or from an old packet, never resolves to the new entity that reuses its slot. |
+| System ordering | Systems declare what they read and write; the scheduler orders them in phases | Manual call order in an `update()` function | Adding a module does not require editing a central loop. |
+| Time | Fixed 60 Hz step with an accumulator, on both sides | Variable `delta_time` | The simulation is deterministic and identical on server and client, which prediction and tests rely on. |
+| Collisions | Box2D's dynamic AABB tree (broad phase) and continuous collision | Brute-force pairs, uniform grid | Scales with hundreds of shots and keeps fast shots from tunnelling through enemies. |
+| Thread hand-off | Two single-producer / single-consumer lock-free ring buffers (4096 packets, power of two) between the transport thread and the game loop | `std::mutex` + `std::queue` | Exactly one producer and one consumer per direction; neither side ever blocks or allocates. |
+| Acknowledgements | Sequence number + latest ack + 64-bit ack bitfield in every header | One ack packet per packet, TCP-like cumulative ack | One header acknowledges the last 65 packets, so a lost ack is covered by the next one. |
+| Latency hiding | Client prediction with reconciliation, snapshot interpolation 100 ms in the past, extrapolation of straight trajectories | Waiting for the server (lag), dead reckoning for everything | Standard techniques of action games; each entity kind gets the cheapest correct one. |
+| Randomness | `std::mt19937` seeded from the gameplay config | `rand()`, `std::random_device` every time | Waves are reproducible, so gameplay tests are deterministic. |
+
+### What we designed ourselves
+
+- **Reliability layer** (`libs/net/src/protocol.h`): a sliding window of 64 reliable packets
+  per peer, stored in fixed arrays, with retransmission timed from a measured round-trip time
+  and a reorder buffer that delivers reliable packets in order. Unreliable packets share the
+  same socket and sequence numbers but are never resent. Off-the-shelf libraries (ENet,
+  yojimbo) do the same, but would not plug into the ECS change stream.
+- **ECS replication** (`libs/net/src/replication.cpp`): the server listens to SIECS add/set/remove
+  events instead of serializing the whole world every tick. Each peer has an outbox, a `visible`
+  table (the entity ids it knows) and a byte budget per tick; a client that cannot keep up is
+  disconnected with `congestion` instead of making the server's memory grow.
+- **Trajectories:** shots and enemies move in straight lines, so their start point, velocity and
+  start tick are sent once and both sides compute positions from them. This removes most
+  per-tick traffic.
+
+Enemy aiming is a linear scan over at most four players; nothing smarter is needed.
+
+## Storage
+
+| | Plain text file (ours) | JSON (sijson) | SQLite | Server-side database |
+| --- | --- | --- | --- | --- |
+| Data volume | A few lines | A few lines | Any | Any |
+| Human-editable | Yes | Yes | No | No |
+| Extra dependency | None | sijson | sqlite3 | A database server |
+| Concurrent writers | No | No | Yes | Yes |
+| Fits | Local settings | Structured local settings | Score boards, saves | Accounts, matchmaking |
+
+**What is stored.** The server keeps no persistent state: a match lives in memory and ends when
+its players leave, and there are no accounts or scores. The only persistent data is the client's
+preferences (volume, accessibility options, key bindings), written to
+`$XDG_CONFIG_HOME/morgane/preferences.txt` (or `~/.config/morgane/preferences.txt`) as
+`key value` lines.
+
+**Why a text file.** The data is a dozen values for one user on one machine: a database would add
+a dependency for nothing, and a text file can be read and fixed by hand.
+
+**Reliability.** Loading never trusts the file: unknown keys are skipped, and a value that does
+not parse or is out of range (volume outside 0–1, key code outside raylib's range) keeps its
+default. A missing, truncated or hand-edited file therefore still starts the game. The file is
+rewritten in place, so a crash during a save can lose the newest settings; writing to a
+temporary file and renaming it would make the save atomic if more data is ever stored.
+
+**Later needs.** Score boards or saved progress would go to SQLite on the server, which handles
+concurrent writes and crash recovery; accounts would need a real database server.
+
+## Security
+
+### Threats and mitigations per technology
+
+| Technology | Main risks | What we do |
+| --- | --- | --- |
+| UDP and our binary protocol | Malformed or truncated packets, oversized lengths, forged packets, flooding, a client acting on another player's entity | Every packet is checked before use: magic number, protocol version, header size, payload size against the datagram size, and each frame's opcode and length (`valid_frames`). Buffers have fixed sizes (1200-byte MTU, 256-byte values), so a length field never drives an allocation. Entity ids are bounds- and generation-checked. Packets from unknown endpoints are ignored unless they are a valid `hello`. A random 64-bit session token ties packets to a connection. Reliable packets too far ahead of the window are dropped. The number of clients is capped. Malformed packets are covered by unit tests (`libs/net/src/protocol_test.cpp`). |
+| Game logic | Cheating clients (speed hacks, fake hits) | The server is authoritative: it accepts inputs only for input types and only on the sender's own entity, clamps movement, and decides every hit, death and spawn. |
+| C++ | Out-of-bounds reads and writes, use-after-free | Wire data is read through a bounds-checked `Reader` that turns any overrun into an invalid message; `std::span` and `std::array` instead of raw pointer arithmetic; generation-checked handles instead of pointers to entities. |
+| raylib, raygui, Box2D | Vulnerabilities in third-party code (image decoders, parsers) | raylib only loads the assets shipped with the game, never data from the network; Box2D only receives data the server created. Every library is pinned to an exact version. |
+| Build and CI | A dependency changing under us | The vcpkg baseline and overlay ports (with SHA512 checksums) pin every source archive; CI builds from those pins only. |
+
+**Known limits.** The protocol is neither encrypted nor authenticated: someone who can read the
+traffic can see the session token and forge packets for that session. There is no per-address
+rate limit yet; a flood is bounded by the transport's fixed queues (excess packets are counted
+and dropped), not prevented. Both are acceptable for LAN play and are the first things to add
+(DTLS or a key exchange, and rate limiting) before exposing a server on the Internet.
+
+### Long-term monitoring
+
+- **Dependencies:** versions only change through a pull request that edits `vcpkg.json` or a
+  port, and that pull request runs the full build and test suite. Before a bump we read the
+  release notes and GitHub security advisories of raylib, raygui and Box2D.
+  [Dependabot](https://docs.github.com/en/code-security/dependabot) (`.github/dependabot.yml`)
+  opens pull requests when the GitHub Actions used by CI are updated.
+- **Regression tests:** the malformed-packet and end-to-end network tests run on every push, so
+  a change that weakens validation fails CI.
+- **Runtime:** `sinet` counts, per peer, bytes and packets sent and received, retransmissions and
+  dropped packets (`net::Stats`), and the transport counts packets dropped because its queue was
+  full. A sudden rise of dropped or rejected packets is the signal to investigate.
+
 ## Dependencies: vcpkg
 
 | | System packages | Conan | CMake CPM | vcpkg |
@@ -83,7 +175,9 @@ The sound effects are synthesized in code (square sweeps, filtered noise, a shor
 instead of loaded from files: no licensing questions, no assets to ship, and each sound is a few
 lines anyone can tune.
 
-## Documentation: MkDocs
+## Documentation: Zensical
 
-Markdown pages in the repository, built into a navigable static site by MkDocs. Pages are
-reviewed with the code they describe, and readable directly on GitHub.
+Markdown pages in the repository, built into a navigable static site by Zensical (from the team
+behind Material for MkDocs), with navigation, an outline, a search bar and a light/dark theme,
+and published to GitHub Pages by CI on every push to `main`. Pages are reviewed with the code
+they describe, and readable directly on GitHub.

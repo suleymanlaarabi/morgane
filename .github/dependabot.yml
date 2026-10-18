@@ -1,0 +1,8 @@
+# Opens pull requests when the GitHub Actions used by CI publish updates.
+# vcpkg dependencies are pinned by hand; see docs/technical-choices.md#security.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
