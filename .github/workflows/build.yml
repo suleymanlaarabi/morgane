@@ -18,7 +18,7 @@ jobs:
       CXX: g++-14
       VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/.cache/vcpkg
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install build tools and graphics SDKs
         run: |
           sudo apt-get update
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: pip install zensical==0.0.71
       - run: zensical build --strict --clean
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
