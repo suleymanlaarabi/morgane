@@ -20,7 +20,15 @@ struct Stats {
     std::uint64_t retransmissions = 0;
     std::uint64_t dropped_packets = 0;
 };
+/** Relation to the connection that controls (sends inputs for) an entity. The server keeps authority. */
 struct OwnedBy {};
+/** Client-side tag: this replicated entity is controlled by the local client (its OwnedBy target is us). */
+struct Controlled {};
+/** Client-side resource: the local connection, set on connect and cleared on disconnect. */
+struct LocalPeer {
+    ecs::entity connection = ecs::entity::null();
+    std::uint32_t id = 0;
+};
 struct MemberOf {};
 struct InInstance {};
 struct OnConnect {};
@@ -79,11 +87,17 @@ template <typename T> class Registration {
 
   public:
     explicit Registration(detail::Descriptor &descriptor) : descriptor_(&descriptor) {}
+    /** Resend until acknowledged, delivered in order. */
     Registration &reliable() { descriptor_->reliable = true; return *this; }
+    /** Send once; late or older values are dropped (default). */
     Registration &unreliable_sequenced() { descriptor_->reliable = false; return *this; }
+    /** Only the connection that controls the entity (OwnedBy) may send it. Default, always enforced. */
     Registration &owner_only() { descriptor_->owner_only = true; return *this; }
+    /** Event sent by clients to the server. */
     Registration &client_to_server() { descriptor_->flow = detail::Flow::client_event; return *this; }
+    /** Event sent by the server to clients. */
     Registration &server_to_clients() { descriptor_->flow = detail::Flow::server_event; return *this; }
+    /** Override the wire name used to match the type on both sides. */
     Registration &name(std::string_view name) { descriptor_->name = name; return *this; }
 
     // Codec: static schema_name, wire_size, encode(const T&, span<byte>),

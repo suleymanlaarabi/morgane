@@ -23,6 +23,7 @@ struct Scenario {
     bool complete = false;
     bool saw_player = false;
     bool schema_rejected = false;
+    bool controlled_mismatch = false;
     int stage = 0;
     ecs::entity connection;
     ecs::entity player;
@@ -127,7 +128,11 @@ static void client_system() {
     ecs::system("ClientScenario").each([](ecs::entity entity, const net::Replicated &, const Position &position, ecs::res<Scenario> scenario) {
         auto &s = *scenario;
         auto owner = entity.target<net::OwnedBy>();
-        if (!owner || owner.id() != s.connection.id())
+        bool mine = owner && owner.id() == s.connection.id();
+        if (mine != entity.has<net::Controlled>() ||
+            ecs::resource<net::LocalPeer>().connection.id() != s.connection.id())
+            s.controlled_mismatch = true;
+        if (!mine)
             return;
         auto *health = entity.try_get<Health>();
         s.player = entity;
@@ -199,7 +204,7 @@ int main(int argc, char **argv) {
             break;
     }
     auto &s = ecs::resource<Scenario>();
-    bool passed = incompatible ? s.schema_rejected : s.complete;
+    bool passed = incompatible ? s.schema_rejected : s.complete && !s.controlled_mismatch;
     std::cout << (server ? "server" : "client") << " stage=" << s.stage
               << " connection=" << s.connection.id() << " player=" << s.player.id() << " input=" << s.input_received << " shot=" << s.shot
               << " result=" << (passed ? "ok" : "failed") << '\n';

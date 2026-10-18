@@ -1,5 +1,9 @@
 Diagnostics:
   UnusedIncludes: None
+CompileFlags:
+  # bake writes repo-relative -I paths but clangd resolves them from each
+  # project directory (client/, server/, net/): add the repo root back.
+  Add: [-I..]
 ---
 If:
   PathMatch: .*\.(h|hpp)

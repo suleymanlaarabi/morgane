@@ -13,12 +13,13 @@
   "lang.cpp": {
     "cpp-standard": "c++23",
     "export-symbols": true,
+    "static": true,
     "include": ["include", "src"],
     "lib": ["pthread"]
   },
   "dependee": {
     "lang.cpp": {
-      "lib": ["pthread"]
+      "lib": ["sireflect", "pthread"]
     }
   },
   "bundle": {

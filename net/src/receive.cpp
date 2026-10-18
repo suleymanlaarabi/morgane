@@ -127,6 +127,7 @@ void Runtime::apply(Peer &peer, Op op, std::span<const std::byte> bytes) {
         peer.id = id;
         peer.connected = true;
         ecs::entity(peer.entity).set(PeerId{ id }).add<Connected>();
+        ecs::set_resource(LocalPeer{ ecs::entity(peer.entity), id });
         ecs::trigger<OnConnect>(ecs::entity(peer.entity));
         return;
     }
@@ -200,6 +201,10 @@ void Runtime::apply(Peer &peer, Op op, std::span<const std::byte> bytes) {
             target.relate<OwnedBy>(ecs::entity(owner_entity(peer, owner)));
         else
             target.unrelate<OwnedBy>();
+        if (owner && owner == peer.id)
+            target.add<Controlled>();
+        else if (target.has<Controlled>())
+            target.remove<Controlled>();
         if (lobby)
             target.relate<MemberOf>(ecs::entity(scope_entity(lobby)));
         else

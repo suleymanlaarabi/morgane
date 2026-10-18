@@ -5,6 +5,8 @@ namespace net {
 
 void Client::import(const ClientConfig &config) {
     ecs::set_resource(config);
+    ecs::set_resource(LocalPeer{});
+    (void)ecs::component<Controlled>();
     detail::install(std::make_shared<detail::Runtime>(
         false, config.limits, 1, detail::Endpoint::parse("0.0.0.0", 0),
         detail::Endpoint::parse(config.address.c_str(), config.port)), config.limits.tick_rate);

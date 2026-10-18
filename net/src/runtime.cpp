@@ -138,6 +138,8 @@ void Runtime::disconnect(Peer &peer, DisconnectReason reason) {
     peer.connected = false;
     auto entity = ecs::entity(peer.entity);
     entity.remove<Connected>();
+    if (!server_)
+        ecs::set_resource(LocalPeer{});
     ecs::trigger<OnDisconnect>(entity, &reason);
     entity.kill();
     peer.entity = 0;
