@@ -1,0 +1,8 @@
+{
+  "name": "raygui",
+  "version-string": "5.1-dev-ca17a68d1a32",
+  "description": "raygui 5.1-dev, the immediate-mode GUI paired with raylib 6.x",
+  "homepage": "https://github.com/raysan5/raygui",
+  "supports": "linux & x64",
+  "license": "Zlib"
+}

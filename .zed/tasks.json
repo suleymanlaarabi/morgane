@@ -1,0 +1,44 @@
+[
+  {
+    "label": "Morgane: prepare dependencies",
+    "command": "./scripts/bootstrap.sh"
+  },
+  {
+    "label": "Morgane: configure Debug",
+    "command": "cmake",
+    "args": [
+      "--preset",
+      "linux-debug"
+    ]
+  },
+  {
+    "label": "Morgane: build Debug",
+    "command": "cmake",
+    "args": [
+      "--build",
+      "--preset",
+      "linux-debug",
+      "--parallel",
+      "4"
+    ]
+  },
+  {
+    "label": "Morgane: test Debug",
+    "command": "ctest",
+    "args": [
+      "--preset",
+      "linux-debug"
+    ]
+  },
+  {
+    "label": "Morgane: run server",
+    "command": "./build/linux-debug/bin/r-type_server",
+    "use_new_terminal": true
+  },
+  {
+    "allow_concurrent_runs": true,
+    "label": "Morgane: run client",
+    "command": "./build/linux-debug/bin/r-type_client",
+    "use_new_terminal": true
+  }
+]

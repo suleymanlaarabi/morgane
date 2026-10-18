@@ -1,0 +1,18 @@
+{
+  "name": "sireflect",
+  "version-string": "f746eec167dc",
+  "description": "Native CMake package for sireflect",
+  "homepage": "https://github.com/suleymanlaarabi/sireflect",
+  "supports": "linux & x64",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "sicore"
+  ]
+}

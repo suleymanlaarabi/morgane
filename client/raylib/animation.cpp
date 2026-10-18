@@ -34,8 +34,12 @@ void Animations::import() {
     ecs::component<Animation>().with<Sprite, Animator>();
     (void)ecs::event<AnimationFinished>();
 
+    // Runs just before drawing, so sprites created anywhere earlier in the frame never show
+    // their whole texture for a frame.
+    const auto phase = ecs::phase("ray.Animate").after(EcsPreRender).before(EcsOnRender).id();
     ecs::system("ray.Animate")
-        .phase(EcsOnUpdate)
+        .phase(phase)
+        .exclude_up<ecs::ChildOf, SimulationPaused>()
         .immediate()
         .each([](ecs::entity entity,
                  const Animation &clip,
@@ -46,7 +50,8 @@ void Animations::import() {
                 state.time += delta->value;
             state.frame = frame_index(clip, state.time);
             sprite.source = frame_source(clip, state.frame);
-            if (!state.paused && clip.playback == Playback::once && state.frame + 1 >= clip.frames) {
+            if (!state.paused && clip.playback == Playback::once &&
+                state.frame + 1 >= clip.frames) {
                 state.paused = true;
                 ecs::trigger<AnimationFinished>(entity);
             }
@@ -60,7 +65,8 @@ static bool same_clip(const Animation &a, const Animation &b) {
 }
 
 void play(ecs::entity entity, const Animation &clip) {
-    if (const Animation *current = entity.try_get<Animation>(); current && same_clip(*current, clip))
+    if (const Animation *current = entity.try_get<Animation>();
+        current && same_clip(*current, clip))
         return;
     entity.set(clip, Animator{});
 }

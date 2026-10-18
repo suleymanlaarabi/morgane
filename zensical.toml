@@ -1,0 +1,57 @@
+# Documentation site, built with Zensical: `zensical serve` to preview, `zensical build` to build.
+[project]
+site_name = "Morgane R-Type"
+site_description = "A cooperative R-Type with an authoritative UDP server, built on an ECS."
+site_url = "https://suleymanlaarabi.github.io/morgane/"
+repo_url = "https://github.com/suleymanlaarabi/morgane"
+edit_uri = "edit/main/docs/"
+docs_dir = "docs"
+nav = [
+  { "Overview" = "index.md" },
+  { "Getting started" = "getting-started.md" },
+  { "Playing" = "playing.md" },
+  { "Architecture" = "architecture.md" },
+  { "Development guide" = "development.md" },
+  { "Technical choices" = "technical-choices.md" },
+  { "Network protocol" = "protocol.md" },
+  { "Accessibility" = "accessibility.md" },
+]
+
+[project.theme]
+language = "en"
+features = [
+  "content.code.copy",
+  "navigation.footer",
+  "navigation.instant",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+]
+
+# Follows the system theme, with a toggle for light and dark.
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+md_in_html = {}
+tables = {}
+toc.permalink = true
+pymdownx.highlight.anchor_linenums = true
+pymdownx.inlinehilite = {}
+pymdownx.superfences = {}
