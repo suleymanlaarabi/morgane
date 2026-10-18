@@ -29,6 +29,7 @@ struct Contact {
 
 struct Contacts {
     std::vector<Contact> hits;
+    std::vector<ecs::entity> exited;
 };
 
 namespace detail {
@@ -86,13 +87,14 @@ struct Drop {
 
 } // namespace detail
 
-inline void resolve(std::span<const Contact> contacts);
+inline void resolve(std::span<const Contact> contacts,
+                    std::span<const ecs::entity> exited = {});
 
 inline void resolve(std::initializer_list<Contact> contacts) {
     resolve(std::span<const Contact>(contacts.begin(), contacts.size()));
 }
 
-inline void resolve(std::span<const Contact> contacts) {
+inline void resolve(std::span<const Contact> contacts, std::span<const ecs::entity> exited) {
     struct PairKey {
         ecs_entity_t first;
         ecs_entity_t second;
@@ -232,6 +234,12 @@ inline void resolve(std::span<const Contact> contacts) {
             bonus.relate<net::InInstance>(drop.instance);
     }
 
+    for (ecs::entity entity : exited) {
+        if (!entity.is_alive() || entity.has<PendingDestroy>() || doomed.contains(entity.id()))
+            continue;
+        doomed.insert(entity.id());
+    }
+
     for (ecs_entity_t id : doomed) {
         ecs::entity entity = ecs::entity::from(id);
         if (!entity.is_alive())
@@ -280,19 +288,20 @@ inline void release_connection(ecs::entity connection) {
     }
 }
 
-inline ecs_system_id_t install_resolution() {
+inline ecs_system_id_t install_resolution(ecs_system_id_t after_detection = 0) {
     if (!ecs::has_resource<Contacts>())
         ecs::set_resource(Contacts{});
     ecs::observe<net::OnDisconnect>().each([](ecs::entity connection) {
         release_connection(connection);
     });
-    return ecs::system("game.ResolveContacts")
-        .phase(EcsPostUpdate)
-        .immediate()
-        .each([](ecs::res<Contacts> contacts) {
-            resolve(contacts->hits);
-            contacts->hits.clear();
-        });
+    auto system = ecs::system("game.ResolveContacts").phase(EcsPostUpdate).immediate();
+    if (after_detection)
+        system.after(after_detection);
+    return system.each([](ecs::res<Contacts> contacts) {
+        resolve(contacts->hits, contacts->exited);
+        contacts->hits.clear();
+        contacts->exited.clear();
+    });
 }
 
 } // namespace game
