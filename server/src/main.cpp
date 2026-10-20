@@ -2,6 +2,7 @@
 #include <charconv>
 #include <cstdio>
 #include <shared/game.h>
+#include <shared/scene.h>
 #include <siecs.h>
 #include <sinet/server.h>
 #include <string_view>
@@ -31,6 +32,10 @@ int main(int argc, char **argv) {
     game::register_network();
 
     ecs::import<game::ServerGameplay>();
+    if (!game::load_level(false)) {
+        std::fprintf(stderr, "failed to load scene: %s\n", ecs_scene_error() ? ecs_scene_error() : "unknown");
+        return 1;
+    }
 
     std::printf("r-type_server listening on UDP port %u\n", unsigned(port));
     std::fflush(stdout);

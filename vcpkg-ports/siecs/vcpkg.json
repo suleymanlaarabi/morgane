@@ -1,6 +1,6 @@
 {
   "name": "siecs",
-  "version-string": "0049ee1ec94c",
+  "version-string": "scene-editor-1",
   "description": "Native CMake package for siecs",
   "homepage": "https://github.com/suleymanlaarabi/siecs",
   "supports": "linux & x64",
@@ -20,6 +20,9 @@
   "features": {
     "spatial": {
       "description": "Build the spatial addon"
+    },
+    "scene": {
+      "description": "Build the JSON scene addon"
     }
   },
   "license": "MIT"

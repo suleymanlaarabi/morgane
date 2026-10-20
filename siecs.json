@@ -1,0 +1,7 @@
+{
+  "contract": "shared/contract.hpp",
+  "use": ["si2d"],
+  "include": ["shared", "../siecs-editor/sdk/include"],
+  "assets": "assets",
+  "scenes": "scenes"
+}

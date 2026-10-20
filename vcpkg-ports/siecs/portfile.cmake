@@ -1,12 +1,15 @@
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
-vcpkg_from_github(
-    OUT_SOURCE_PATH SOURCE_PATH
-    REPO suleymanlaarabi/siecs
-    REF 0049ee1ec94c9b510a3151870e7d57d1bceea60e
-    SHA512 af7144dc20ce029a4d6f4b63e903c09e7536955da8e9fe1be73e39deaa08631134bedc123736698f45d6de4215116cc03cb9e259f7dfb2eb93a3cc6c1ab435e1
-)
+# Local checkout on scene-editor-morgane (0049ee1 plus the scene addon). origin/main
+# dropped the system APIs this game is written against.
+get_filename_component(SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../siecs" ABSOLUTE)
+if(NOT EXISTS "${SOURCE_PATH}/include/siecs.h")
+    message(FATAL_ERROR "siecs checkout not found at ${SOURCE_PATH}")
+endif()
 
-vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS FEATURES spatial SIECS_BUILD_SPATIAL)
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS FEATURES
+    spatial SIECS_BUILD_SPATIAL
+    scene SIECS_BUILD_SCENE
+)
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS ${FEATURE_OPTIONS}

@@ -1,0 +1,125 @@
+Package: vcpkg-cmake-config
+Version: 2026-07-21
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 0ee42e39da7599e8cb10c5b061dd3ace75d6268e2abc1717f7f6f76380507296
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2025-08-07
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 3610dd5d1ab14314f7ac023eae5ed636c66dae10363e1184803b09ee579756f5
+Status: install ok installed
+
+Package: box2d
+Version: 3.2.0
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: a8fac0bac019cd2a3e75a7f1b362dbedb92804c21c5b03b56b9eefb3bdf6bb0d
+Description: Box2D 3.2.0 pinned development revision
+Status: install ok installed
+
+Package: catch2
+Version: 3.16.0
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: b2d02280bd032c4c8254a652564d3f649404c6bd7c5603cfebc9bca3d9b56a33
+Description: A modern, C++-native, test framework for unit-tests, TDD and BDD.
+Status: install ok installed
+
+Package: raylib
+Version: 6.2
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: a85da1cab4ca285d3f44a0bde11c9d1e494348f2620fec2987abcd7665a10bf8
+Description: raylib 6.2 with bundled upstream dependencies
+Status: install ok installed
+
+Package: sicore
+Version: 9d3aa31ac982
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: df679b99bd0ce033a42af8568a6a7e95921c4b5d0997a8dc10f9198ffda85a7b
+Description: Native CMake package for sicore
+Status: install ok installed
+
+Package: sireflect
+Version: f746eec167dc
+Depends: sicore, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 9747c1e29bce4cfd8a159f722205931d152afdc5603897cc1b6c422e1d869ca6
+Description: Native CMake package for sireflect
+Status: install ok installed
+
+Package: sijson
+Version: 0fdee96cb5e0
+Depends: sireflect, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: f4d7850ff6ff1802d5614d334aff183e91de083da7262cd793b1bef6285dc406
+Description: Native CMake package for sijson
+Status: install ok installed
+
+Package: siecs
+Version: scene-editor-1
+Depends: sicore, sijson, sireflect, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 471a224a4c10824c875f7b2a24540ad5126db96f86eeede3e16b8390f19ea7f3
+Description: Native CMake package for siecs
+Status: install ok installed
+
+Package: siecs
+Feature: scene
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build the JSON scene addon
+Status: install ok installed
+
+Package: siecs
+Feature: spatial
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build the spatial addon
+Status: install ok installed
+
+Package: si2d
+Version: 0.1.0
+Depends: siecs, sireflect, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 0cc26e9115a05c9e93286d550db3f57d1d0180d3f0644f4f1f1f30b7209a52f8
+Description: 2D sprite, shape and camera data for SIECS
+Status: install ok installed
+
+Package: si2d
+Feature: raylib
+Depends: raylib
+Architecture: x64-linux
+Multi-Arch: same
+Description: raylib renderer
+Status: install ok installed
+
+Package: siecs-editor
+Version: 0.1.0
+Depends: siecs, sireflect, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: bf60cda5a246e10b2d3e4006d0e65b52bb4ebf0ab3851295686bf3861dbf2e26
+Description: Header-only siecs-editor game contract SDK
+Status: install ok installed
+
+Package: raygui
+Version: 5.1-dev-ca17a68d1a32
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 027d089147cb173daab58aeaf7f25533d6838c8be7923e0ff1604ae9fad778fa
+Description: raygui 5.1-dev, the immediate-mode GUI paired with raylib 6.x
+Status: install ok installed
+

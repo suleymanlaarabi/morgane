@@ -1,0 +1,173 @@
+#pragma once
+#include "siecs.h"
+#include "siecs/cpp/query.hpp"
+
+namespace ecs {
+
+namespace detail {
+
+template <typename Callback, typename Args> static void system_callback(ecs_iter_t *it) {
+    Callback &callback = *reinterpret_cast<Callback *>(it->user_data);
+    constexpr auto indices = std::make_index_sequence<std::tuple_size_v<Args>>{};
+    auto params = init_system_params<Args>(indices);
+    [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+        (prepare_field<Args, Is>(std::get<Is>(params)), ...);
+    }(indices);
+    std::apply([&](auto &...param) { (prepare_world(param, ecs_world_current()), ...); }, params);
+    if (it->cache) {
+        while (ecs_iter_next(it))
+            run_batch<Args>(callback, it, params);
+    } else {
+        run_batch<Args>(callback, it, params);
+    }
+}
+
+template <typename Callback> static void system_callback_dtor(uintptr_t user_data) {
+    delete reinterpret_cast<Callback *>(user_data);
+}
+
+} // namespace detail
+
+/** Fluent typed system builder; the resulting C system owns its callback. */
+class system : protected query {
+    ecs_system_desc_t _system{ .phase = EcsOnUpdate };
+
+  public:
+    /** Construct a system descriptor with an optional diagnostic name. */
+    explicit system(const char *name = "unnamed") { _system.name = name; }
+
+    /** Add required filter terms to the system query. */
+    template <typename... T> system &require() {
+        query::require<T...>();
+        return *this;
+    }
+
+    /** Add optional component terms to the system query. */
+    template <typename... T> system &optional() {
+        query::optional<T...>();
+        return *this;
+    }
+
+    /** Add exclusion terms to the system query. */
+    template <typename... T> system &exclude() {
+        query::exclude<T...>();
+        return *this;
+    }
+
+    /** Match entities with a relation of the requested type. */
+    template <typename Relation> system &with_relation() {
+        query::with_relation<Relation>();
+        return *this;
+    }
+
+    template <typename Relation, typename... T> system &require_target() {
+        query::require_target<Relation, T...>();
+        return *this;
+    }
+    template <typename Relation, typename... T> system &exclude_target() {
+        query::exclude_target<Relation, T...>();
+        return *this;
+    }
+    template <typename Relation, typename... T> system &require_up() {
+        query::require_up<Relation, T...>();
+        return *this;
+    }
+    template <typename Relation, typename... T> system &exclude_up() {
+        query::exclude_up<Relation, T...>();
+        return *this;
+    }
+
+    /** Set the query ordering callback. */
+    system &order_by(ecs_query_order_t value) {
+        query::order_by(value);
+        return *this;
+    }
+
+    /** Order query results by the target of a relation. */
+    template <typename Relation> system &order_by_target() {
+        query::order_by_target<Relation>();
+        return *this;
+    }
+
+    /** Order query results by the depth of a relation. */
+    template <typename Relation> system &order_by_depth() {
+        query::order_by_depth<Relation>();
+        return *this;
+    }
+
+    /** Select the phase in which the system is scheduled. */
+    system &phase(ecs_phase_t _phase) {
+        _system.phase = _phase;
+        return *this;
+    }
+
+    /** Set the automatic execution interval in seconds. Zero runs every frame. */
+    system &interval(double seconds) {
+        _system.interval = seconds;
+        return *this;
+    }
+
+    /** Set whether the system is only run on the main thread. */
+    system &immediate() {
+        _system.main_thread_only = true;
+        return *this;
+    }
+
+    /** Run a resource-only system without an outer deferred mutation scope. */
+    system &no_defer() {
+        _system.no_defer = true;
+        return *this;
+    }
+
+    /** Add a same-phase dependency; capacity is `ECS_SYSTEM_AFTER_CAPACITY`. */
+    system &after(ecs_system_id_t dependency) {
+        for (uint16_t i = 0; i < ECS_SYSTEM_AFTER_CAPACITY; i++) {
+            if (_system.after[i] == 0) {
+                _system.after[i] = dependency;
+                return *this;
+            }
+        }
+        assert(false && "too many system dependencies");
+        return *this;
+    }
+
+    /** Register for explicit execution only, preserving its phase and dependencies. */
+    system &manual() {
+        _system.manual = true;
+        return *this;
+    }
+
+    /** Set whether the system starts disabled when registered. */
+    system &disabled(bool value = true) {
+        _system.disabled = value;
+        return *this;
+    }
+
+    /** Register the callback and return the owned system id. */
+    template <typename F> ecs_system_id_t each(F &&func) {
+        using callback = std::remove_cvref_t<F>;
+        using args = typename function_traits<callback>::args_tuple;
+        detail::append_callback_terms<args>(desc, component_index, resource_index, relation_index);
+        callback *state = new callback(std::forward<F>(func));
+
+        _system.query = this->desc;
+        _system.callback = detail::system_callback<callback, args>;
+        _system.callback_iterates_query = true;
+        _system.user_data = reinterpret_cast<uintptr_t>(state);
+        _system.user_data_dtor = detail::system_callback_dtor<callback>;
+        return ecs_system_init(&_system);
+    }
+};
+
+/** Run one enabled system immediately. */
+inline void run_system(ecs_system_id_t id) { ecs_run_system(id); }
+/** Execute for one ByTarget target without changing the query or enabled state. */
+template <typename Relation> inline void run_system_target(ecs_system_id_t id, entity target) {
+    ecs_run_system_target(id, detail::ecs_cpp_relation_id<Relation>(), target.id());
+}
+/** Enable a registered system. */
+inline void enable_system(ecs_system_id_t id) { ecs_system_enable(id); }
+/** Disable a registered system. */
+inline void disable_system(ecs_system_id_t id) { ecs_system_disable(id); }
+
+} // namespace ecs

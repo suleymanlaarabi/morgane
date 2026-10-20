@@ -1,7 +1,36 @@
 #include "players.h"
 #include <bit>
+#include <shared/contract.hpp>
 
 namespace game {
+namespace {
+
+struct SpawnTable {
+    Position2d slot[max_players];
+};
+
+SpawnTable make_spawn_table() {
+    SpawnTable table{};
+    for (std::uint8_t i = 0; i < max_players; i++)
+        table.slot[i] = Position2d{ -play_half_width + 48, -60 + float(i) * 40 };
+    ecs::query().each([&](const SpawnPoint &spawn, const Position2d &position) {
+        if (spawn.slot < max_players)
+            table.slot[spawn.slot] = position;
+    });
+    return table;
+}
+
+} // namespace
+
+Position2d spawn_point(std::uint8_t slot) {
+    if (slot >= max_players)
+        slot = 0;
+    if (auto *table = ecs::try_resource<SpawnTable>())
+        return table->slot[slot];
+    ecs::set_resource(make_spawn_table());
+    return ecs::resource<SpawnTable>().slot[slot];
+}
+
 
 void ServerPlayers::import() {
     ecs::import<ServerMovement>();

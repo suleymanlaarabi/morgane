@@ -1,0 +1,45 @@
+frames must fit in the payload 1 0.00214665
+headers round-trip and reject malformed packets 1 0.00182779
+reading past the end invalidates the reader 1 0.00148211
+sequence comparison survives wrap-around 1 0.00185096
+the receive window tracks the last 64 sequences 1 0.00176814
+type hashes are stable FNV-1a 1 0.00193484
+wire values round-trip in little endian 1 0.00187503
+a fixed step moves bodies by their velocity 1 0.00229922
+catch-up is bounded and the excess time is dropped 1 0.00194638
+filters prevent contacts between unrelated categories 1 0.00228873
+overlapping bodies report one contact 1 0.0024568
+partial steps accumulate until a full step is available 1 0.00220982
+a shot destroys the enemy in front and itself 1 0.00332597
+an empty server clears the arena and waits again 1 0.0027065
+departures are announced with the player's slot and reason 1 0.00221265
+diagonal input is not faster than straight input 1 0.00257033
+eliminated players stop moving 1 0.0055905
+enemies aim at the nearest living player 1 0.0049077
+enemies hold fire without targets or while off-screen 1 0.00603637
+enemy shots remove one health point per invulnerability window 1 0.00331987
+held fire shoots once per fire_interval 1 0.00956059
+hits report the destroyed body before it despawns 1 0.00267081
+input moves the player at player speed 1 0.00255479
+one shot destroys only one of two overlapping enemies 1 0.00376667
+out-of-range or non-finite input stops the player 1 0.00293439
+player shots do not hit players 1 0.00270155
+players spawn with full health and a player collider 1 0.00279554
+players stay inside the playfield and stop at its edge 1 0.0559706
+players take the lowest free slot up to max_players 1 0.00239663
+released or expired fire stops shooting 1 0.00670946
+scene loads spawn points and skips replicated entities on the client 1 0.0116023
+shots follow their trajectory and despawn outside the playfield 1 0.00433459
+three hits eliminate a player, who then stops acting and colliding 1 0.00580963
+touching an enemy costs health and destroys the enemy 1 0.00288234
+waves start once a player is alive and repeat 1 0.0258197
+a column stacks its children with gap and padding 1 0.00291395
+align and justify distribute the cross and main axes 1 0.00247826
+anchors place a node on the screen and inside free parents 1 0.00257287
+clicks are visible for one frame to on_click systems 1 0.00278871
+fill takes the space left in a row 1 0.00217266
+hidden subtrees take no space and disabled ones propagate 1 0.00249169
+nodes follow a world parent and die with a followed target 1 0.00278077
+siblings keep their creation order across component tables 1 0.00257496
+widgets bring their node, bounds and dispatch table 1 0.0023655
+---

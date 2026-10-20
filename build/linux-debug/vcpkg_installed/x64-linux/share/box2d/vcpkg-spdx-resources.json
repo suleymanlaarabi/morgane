@@ -1,0 +1,19 @@
+{
+  "packages": [
+{
+  "SPDXID" : "SPDXRef-resource-0",
+  "checksums" : 
+  [
+    {
+      "algorithm" : "SHA512",
+      "checksumValue" : "65d544d9a9fadf446b35570a3bdef2b604895403d74e79103155ea8ac23dea31cc73833db4fa61d4174723b2c4e26630fe398eca4e9b71dcde37a0bdc3a679ac"
+    }
+  ],
+  "copyrightText" : "NOASSERTION",
+  "downloadLocation" : "git+https://github.com/erincatto/box2d@56edae79f2949d86142b03450d5d60f63bcf5a6f",
+  "licenseConcluded" : "NOASSERTION",
+  "licenseDeclared" : "NOASSERTION",
+  "name" : "erincatto/box2d"
+}
+  ]
+}

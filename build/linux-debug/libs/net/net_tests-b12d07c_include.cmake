@@ -1,0 +1,5 @@
+if(EXISTS "/home/hugo/perso/morgane/build/linux-debug/libs/net/net_tests-b12d07c_tests.cmake")
+  include("/home/hugo/perso/morgane/build/linux-debug/libs/net/net_tests-b12d07c_tests.cmake")
+else()
+  add_test(net_tests_NOT_BUILT-b12d07c net_tests_NOT_BUILT-b12d07c)
+endif()

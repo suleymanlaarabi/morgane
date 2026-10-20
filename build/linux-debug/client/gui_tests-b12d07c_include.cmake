@@ -1,0 +1,5 @@
+if(EXISTS "/home/hugo/perso/morgane/build/linux-debug/client/gui_tests-b12d07c_tests.cmake")
+  include("/home/hugo/perso/morgane/build/linux-debug/client/gui_tests-b12d07c_tests.cmake")
+else()
+  add_test(gui_tests_NOT_BUILT-b12d07c gui_tests_NOT_BUILT-b12d07c)
+endif()

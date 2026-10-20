@@ -1,0 +1,482 @@
+#ifndef SIREFLECT_H
+#define SIREFLECT_H
+
+/* This generated file contains includes for project dependencies. */
+#include <sireflect/export.h>
+#include <sicore.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Marks generated helper symbols as intentionally unused. */
+#if defined(__GNUC__) || defined(__clang__)
+#define SIREFLECT_UNUSED __attribute__((unused))
+#else
+#define SIREFLECT_UNUSED
+#endif
+
+/* Primitive aliases understood by the parser. */
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
+typedef float f32;
+typedef double f64;
+typedef void *ptr;
+
+/* Type handle. Valid handles start at 1. */
+typedef uint64_t sireflect_handle_t;
+
+/* Invalid type handle. */
+#define SIREFLECT_INVALID_HANDLE ((sireflect_handle_t)0)
+
+/* Reports a failed Sireflect debug assertion. */
+#ifndef NDEBUG
+SIREFLECT_API void sireflect_assert_fail(
+    const char *condition,
+    const char *message,
+    const char *file,
+    int line,
+    const char *function
+);
+
+#define sireflect_assert(condition, message)                                                       \
+    ((condition) ? (void)0                                                                         \
+                 : sireflect_assert_fail(#condition, message, __FILE__, __LINE__, __func__))
+#define sireflect_indebug(...) __VA_ARGS__
+#else
+#define sireflect_assert(condition, message) ((void)0)
+#define sireflect_indebug(...)
+#endif
+
+/* Built-in kind of a reflected type. */
+typedef enum {
+    sireflect_kind_u8,
+    sireflect_kind_u16,
+    sireflect_kind_u32,
+    sireflect_kind_u64,
+    sireflect_kind_i8,
+    sireflect_kind_i16,
+    sireflect_kind_i32,
+    sireflect_kind_i64,
+    sireflect_kind_f32,
+    sireflect_kind_f64,
+    sireflect_kind_bool,
+    sireflect_kind_char,
+    sireflect_kind_short,
+    sireflect_kind_int,
+    sireflect_kind_long,
+    sireflect_kind_ptr,
+    sireflect_kind_struct,
+    sireflect_kind_array,
+    sireflect_kind_pointer,
+    sireflect_kind_signed_char,
+    sireflect_kind_unsigned_char,
+    sireflect_kind_unsigned_short,
+    sireflect_kind_unsigned_int,
+    sireflect_kind_unsigned_long,
+    sireflect_kind_long_long,
+    sireflect_kind_unsigned_long_long,
+    sireflect_kind_function_pointer,
+    sireflect_kind_enum
+} sireflect_kind_t;
+
+/* Returns a stable string for a kind, or "unknown" for an invalid kind value.
+ */
+SIREFLECT_API const char *sireflect_kind_name(sireflect_kind_t kind);
+
+/* Returns true for integer and floating-point kinds. */
+SIREFLECT_API bool sireflect_is_numeric(sireflect_kind_t kind);
+
+/* Qualifier flags stored on reflected fields. */
+typedef enum {
+    SIREFLECT_QUAL_CONST = 1u << 0,
+    SIREFLECT_QUAL_VOLATILE = 1u << 1
+} sireflect_qualifier_t;
+
+/* Metadata for a single reflected field. */
+typedef struct {
+    /* Field name as written in the reflected struct. */
+    const char *name;
+
+    /* Handle of the field type. Primitive types also have handles. */
+    sireflect_handle_t type;
+
+    /* Byte offset of the field from the start of the object. */
+    size_t offset;
+
+    /* Size of the field in bytes. */
+    size_t size;
+
+    /* Alignment of the field in bytes. */
+    size_t align;
+
+    /* Bitmask of sireflect_qualifier_t flags. */
+    uint32_t qualifiers;
+} sireflect_field_info_t;
+
+/* Borrowed view over the fields of a reflected type. */
+typedef struct {
+    sireflect_field_info_t *fields;
+    size_t field_count;
+} sireflect_fields_t;
+
+/* Metadata for a single enumerator. */
+typedef struct {
+    const char *name;
+    int64_t value;
+} sireflect_enum_value_t;
+
+/* Borrowed view over the values of a reflected enum type. */
+typedef struct {
+    sireflect_enum_value_t *values;
+    size_t value_count;
+} sireflect_enum_values_t;
+
+/* Metadata for a reflected type. */
+typedef struct {
+    /* Type name. */
+    const char *name;
+
+    /* Built-in kind of this type. */
+    sireflect_kind_t kind;
+
+    /* Size of the type in bytes. */
+    size_t size;
+
+    /* Alignment of the type in bytes. */
+    size_t align;
+
+    /* Fields owned by this type. Empty for non-struct types. */
+    sireflect_fields_t fields;
+
+    /* Enumerator values owned by this type. Empty for non-enum types. */
+    sireflect_enum_values_t enum_values;
+
+    /* Element type for arrays, pointee type for pointers, or return type for function pointers. */
+    sireflect_handle_t element_type;
+
+    /* Element count for array types, otherwise 0. */
+    size_t element_count;
+} sireflect_type_info_t;
+
+/* Type graph visits are preorder. A false callback result stops the walk. */
+typedef enum {
+    SIREFLECT_WALK_ROOT,
+    SIREFLECT_WALK_FIELD,
+    SIREFLECT_WALK_ARRAY_ELEMENT,
+    SIREFLECT_WALK_POINTER_TARGET,
+    SIREFLECT_WALK_FUNCTION_RETURN
+} sireflect_walk_relation_t;
+
+typedef struct {
+    sireflect_handle_t type;
+    const sireflect_type_info_t *info;
+    sireflect_walk_relation_t relation;
+    const sireflect_field_info_t *field;
+    sireflect_handle_t parent_type;
+    size_t depth;
+} sireflect_type_visit_t;
+
+typedef bool (*sireflect_type_visitor_t)(const sireflect_type_visit_t *, void *);
+
+typedef enum {
+    SIREFLECT_WALK_FOLLOW_POINTERS = 1u << 0,
+    SIREFLECT_WALK_DEDUPLICATE = 1u << 1
+} sireflect_walk_flag_t;
+
+typedef enum {
+    SIREFLECT_VALUE_ENTER_STRUCT,
+    SIREFLECT_VALUE_LEAVE_STRUCT,
+    SIREFLECT_VALUE_FIELD,
+    SIREFLECT_VALUE_ENTER_ARRAY,
+    SIREFLECT_VALUE_LEAVE_ARRAY,
+    SIREFLECT_VALUE_ARRAY_ELEMENT,
+    SIREFLECT_VALUE_LEAF,
+    SIREFLECT_VALUE_POINTER
+} sireflect_value_event_t;
+
+typedef struct {
+    sireflect_value_event_t event;
+    sireflect_handle_t type;
+    const sireflect_type_info_t *info;
+    const sireflect_field_info_t *field;
+    const void *ptr;
+    size_t index;
+    size_t depth;
+} sireflect_const_value_visit_t;
+
+typedef struct {
+    sireflect_value_event_t event;
+    sireflect_handle_t type;
+    const sireflect_type_info_t *info;
+    const sireflect_field_info_t *field;
+    void *ptr;
+    size_t index;
+    size_t depth;
+} sireflect_value_visit_t;
+
+typedef bool (*sireflect_const_value_visitor_t)(const sireflect_const_value_visit_t *, void *);
+typedef bool (*sireflect_value_visitor_t)(const sireflect_value_visit_t *, void *);
+
+typedef enum {
+    sireflect_category_invalid,
+    sireflect_category_boolean,
+    sireflect_category_integer,
+    sireflect_category_floating,
+    sireflect_category_enum,
+    sireflect_category_struct,
+    sireflect_category_array,
+    sireflect_category_cstring,
+    sireflect_category_pointer,
+    sireflect_category_function_pointer
+} sireflect_category_t;
+
+typedef enum {
+    SIREFLECT_META_STRING,
+    SIREFLECT_META_BOOL,
+    SIREFLECT_META_I64,
+    SIREFLECT_META_U64,
+    SIREFLECT_META_F64
+} sireflect_meta_kind_t;
+
+typedef struct {
+    const char *key;
+    sireflect_meta_kind_t kind;
+    union {
+        const char *string;
+        bool boolean;
+        int64_t i64;
+        uint64_t u64;
+        double f64;
+    } value;
+} sireflect_meta_t;
+
+/* Borrowed view. Its items pointer can change when metadata is added. */
+typedef struct {
+    const sireflect_meta_t *const *items;
+    size_t count;
+} sireflect_metas_t;
+
+typedef struct {
+    const char *name;
+    const char *fields;
+    size_t size;
+    size_t align;
+} sireflect_struct_desc_t;
+
+typedef struct {
+    const char *name;
+    const char *values;
+    size_t size;
+    size_t align;
+} sireflect_enum_desc_t;
+
+/* Transforms a struct type name into its descriptor symbol name. */
+#define sireflect_desc(type) __##type##_desc
+
+/*
+ * Declares a struct and stores its source field list for registration.
+ * Use sireflect(name) to register the generated metadata.
+ */
+#define SIREFLECT_STRUCT(type_name, ...)                                                           \
+    typedef struct type_name type_name;                                                             \
+    struct type_name __VA_ARGS__;                                                                   \
+    SIREFLECT_UNUSED static const sireflect_struct_desc_t sireflect_desc(type_name) = {            \
+        .name = #type_name,                                                                        \
+        .fields = #__VA_ARGS__,                                                                    \
+        .size = sizeof(type_name),                                                                 \
+        .align = _Alignof(type_name)                                                               \
+    }
+
+/* Declares an enum and stores its source enumerator list for registration. */
+#define SIREFLECT_ENUM(type_name, ...)                                                             \
+    typedef enum __VA_ARGS__ type_name;                                                            \
+    SIREFLECT_UNUSED static const sireflect_enum_desc_t sireflect_desc(type_name) = {              \
+        .name = #type_name,                                                                        \
+        .values = #__VA_ARGS__,                                                                    \
+        .size = sizeof(type_name),                                                                 \
+        .align = _Alignof(type_name)                                                               \
+    }
+
+/* Registers metadata generated by SIREFLECT_STRUCT or SIREFLECT_ENUM. */
+#define sireflect(name)                                                                            \
+    _Generic(                                                                                      \
+        &sireflect_desc(name),                                                                     \
+        const sireflect_struct_desc_t *: sireflect_register_struct,                               \
+        const sireflect_enum_desc_t *: sireflect_register_enum                                     \
+    )(&sireflect_desc(name))
+
+/* Initializes the process-wide reflection context. Calls are reference-counted. */
+SIREFLECT_API void sireflect_init(void);
+
+/* Releases one initialization reference and destroys metadata at the final release. */
+SIREFLECT_API void sireflect_fini(void);
+
+/*
+ * Returns the current recoverable error message, or NULL if there is no error.
+ * The returned pointer is owned by Sireflect and remains valid until the next
+ * public sireflect_* call except sireflect_error(), or until the final sireflect_fini().
+ */
+SIREFLECT_API const char *sireflect_error(void);
+
+/*
+ * Registers a struct type from its textual field list.
+ * Returns the existing handle if the same type was already registered.
+ */
+SIREFLECT_API sireflect_handle_t
+sireflect_register_struct(const sireflect_struct_desc_t *desc);
+
+/*
+ * Tries to register a struct type from its textual field list.
+ * Returns SIREFLECT_INVALID_HANDLE when the descriptor or reflected field syntax is invalid.
+ */
+SIREFLECT_API sireflect_handle_t
+sireflect_try_register_struct(const sireflect_struct_desc_t *desc);
+
+/* Registers an enum type from its textual enumerator list. */
+SIREFLECT_API sireflect_handle_t sireflect_register_enum(const sireflect_enum_desc_t *desc);
+
+/* Tries to register an enum type. Returns SIREFLECT_INVALID_HANDLE on invalid syntax. */
+SIREFLECT_API sireflect_handle_t sireflect_try_register_enum(const sireflect_enum_desc_t *desc);
+
+/*
+ * Tries to register a dynamic struct and derives its C layout from the
+ * registered field types. Returns SIREFLECT_INVALID_HANDLE on invalid input.
+ */
+SIREFLECT_API sireflect_handle_t sireflect_try_register_dynamic_struct(
+    const char *name,
+    const char *fields
+);
+
+/* Finds a type handle by name, or SIREFLECT_INVALID_HANDLE if missing. */
+SIREFLECT_API sireflect_handle_t sireflect_type_by_name(const char *name);
+
+/* Returns metadata for a type handle. */
+SIREFLECT_API const sireflect_type_info_t *sireflect_type_info(sireflect_handle_t ref);
+
+/* Returns the fields of a type. */
+SIREFLECT_API const sireflect_fields_t *sireflect_type_fields(sireflect_handle_t ref);
+
+/* Returns the size of a type in bytes. */
+SIREFLECT_API size_t sireflect_type_size(sireflect_handle_t ref);
+
+/* Returns the name of a type. */
+SIREFLECT_API const char *sireflect_type_name(sireflect_handle_t ref);
+
+/* Returns true when type metadata describes a struct type. */
+SIREFLECT_API bool sireflect_type_is_struct(const sireflect_type_info_t *info);
+
+/* Returns true when type metadata describes an enum type. */
+SIREFLECT_API bool sireflect_type_is_enum(const sireflect_type_info_t *info);
+
+/* Returns the enumerator values of an enum type. */
+SIREFLECT_API const sireflect_enum_values_t *
+sireflect_type_enum_values(sireflect_handle_t type);
+
+/* Finds an enum value by name or integer value. */
+SIREFLECT_API const sireflect_enum_value_t *
+sireflect_enum_value_by_name(sireflect_handle_t type, const char *name);
+SIREFLECT_API const sireflect_enum_value_t *
+sireflect_enum_value_by_value(sireflect_handle_t type, int64_t value);
+
+/* Returns true when type metadata describes an array type. */
+SIREFLECT_API bool sireflect_type_is_array(const sireflect_type_info_t *info);
+
+/* Returns true when type metadata describes a typed pointer type. */
+SIREFLECT_API bool sireflect_type_is_pointer(const sireflect_type_info_t *info);
+
+/* Returns the element type handle of an array type. */
+SIREFLECT_API sireflect_handle_t sireflect_type_element(sireflect_handle_t ref);
+
+/* Returns the element count of an array type. */
+SIREFLECT_API size_t sireflect_type_element_count(sireflect_handle_t ref);
+
+/* Returns the pointee type handle of a typed pointer type. */
+SIREFLECT_API sireflect_handle_t sireflect_type_pointee(sireflect_handle_t ref);
+
+/* Finds metadata for a field by name. */
+SIREFLECT_API const sireflect_field_info_t *sireflect_field_info(sireflect_handle_t type, const char *field);
+
+/* Returns the type handle of a field. */
+SIREFLECT_API sireflect_handle_t sireflect_field_type(sireflect_handle_t type, const char *field);
+
+/* Returns the size of a field in bytes. */
+SIREFLECT_API size_t sireflect_field_size(sireflect_handle_t ref, const char *field);
+
+/* Returns a const pointer to a field inside an object. */
+SIREFLECT_API const void *sireflect_field_ptr(
+    sireflect_handle_t type,
+    const void *obj,
+    const char *field
+);
+
+/* Returns a mutable pointer to a field inside an object. */
+SIREFLECT_API void *sireflect_field_mut_ptr(
+    sireflect_handle_t type,
+    void *obj,
+    const char *field
+);
+
+/* Copies value bytes into a field. Returns 0 on success. */
+SIREFLECT_API int sireflect_field_copy(
+    sireflect_handle_t type,
+    void *obj,
+    const char *field,
+    const void *value
+);
+
+/* Walks a type graph. Pointer targets are followed only with FOLLOW_POINTERS.
+ * Cycles are cut on the active path; DEDUPLICATE visits each handle once.
+ * Callback false returns false without setting an error. */
+SIREFLECT_API bool sireflect_walk_type(sireflect_handle_t root, uint32_t flags,
+    sireflect_type_visitor_t visitor, void *user);
+
+/* Walks actual values. Pointer and function pointer values are never dereferenced.
+ * FOLLOW_POINTERS is invalid for value walks. Callback false stops immediately. */
+SIREFLECT_API bool sireflect_walk_value(sireflect_handle_t type, void *value, uint32_t flags,
+    sireflect_value_visitor_t visitor, void *user);
+SIREFLECT_API bool sireflect_walk_const_value(sireflect_handle_t type, const void *value,
+    uint32_t flags, sireflect_const_value_visitor_t visitor, void *user);
+
+SIREFLECT_API sireflect_category_t sireflect_type_category(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_type_is_numeric_handle(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_type_is_scalar(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_type_is_cstring(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_type_is_integral(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_type_is_floating(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_type_is_function_pointer(sireflect_handle_t type);
+
+SIREFLECT_API const void *sireflect_array_element_ptr(sireflect_handle_t array_type,
+    const void *array, size_t index);
+SIREFLECT_API void *sireflect_array_element_mut_ptr(sireflect_handle_t array_type,
+    void *array, size_t index);
+
+/* Keys and string values are copied. Returned metadata is borrowed until the
+ * final fini; replacing a key updates the same object. */
+SIREFLECT_API bool sireflect_type_set_meta(sireflect_handle_t type, const sireflect_meta_t *meta);
+SIREFLECT_API const sireflect_meta_t *sireflect_type_meta(sireflect_handle_t type,
+    const char *key);
+SIREFLECT_API const sireflect_metas_t *sireflect_type_metas(sireflect_handle_t type);
+SIREFLECT_API bool sireflect_field_set_meta(sireflect_handle_t type, const char *field,
+    const sireflect_meta_t *meta);
+SIREFLECT_API const sireflect_meta_t *sireflect_field_meta(sireflect_handle_t type,
+    const char *field, const char *key);
+SIREFLECT_API const sireflect_metas_t *sireflect_field_metas(sireflect_handle_t type,
+    const char *field);
+
+SIREFLECT_API bool sireflect_enum_value_valid(sireflect_handle_t type, int64_t value);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

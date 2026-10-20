@@ -1,0 +1,5 @@
+if(EXISTS "/home/hugo/perso/morgane/build/linux-debug/server/server_tests-b12d07c_tests.cmake")
+  include("/home/hugo/perso/morgane/build/linux-debug/server/server_tests-b12d07c_tests.cmake")
+else()
+  add_test(server_tests_NOT_BUILT-b12d07c server_tests_NOT_BUILT-b12d07c)
+endif()

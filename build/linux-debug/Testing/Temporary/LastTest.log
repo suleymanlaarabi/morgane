@@ -1,0 +1,883 @@
+Start testing: Oct 19 17:35 CEST
+----------------------------------------------------------
+1/44 Testing: frames must fit in the payload
+1/44 Test: frames must fit in the payload
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "frames must fit in the payload"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"frames must fit in the payload" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "frames must fit in the payload"
+Randomness seeded to: 2024362592
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"frames must fit in the payload" end time: Oct 19 17:35 CEST
+"frames must fit in the payload" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/44 Testing: headers round-trip and reject malformed packets
+2/44 Test: headers round-trip and reject malformed packets
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "headers round-trip and reject malformed packets"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"headers round-trip and reject malformed packets" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "headers round-trip and reject malformed packets"
+Randomness seeded to: 2520852976
+===============================================================================
+All tests passed (18 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"headers round-trip and reject malformed packets" end time: Oct 19 17:35 CEST
+"headers round-trip and reject malformed packets" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/44 Testing: reading past the end invalidates the reader
+3/44 Test: reading past the end invalidates the reader
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "reading past the end invalidates the reader"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"reading past the end invalidates the reader" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "reading past the end invalidates the reader"
+Randomness seeded to: 145187669
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"reading past the end invalidates the reader" end time: Oct 19 17:35 CEST
+"reading past the end invalidates the reader" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/44 Testing: sequence comparison survives wrap-around
+4/44 Test: sequence comparison survives wrap-around
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "sequence comparison survives wrap-around"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"sequence comparison survives wrap-around" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "sequence comparison survives wrap-around"
+Randomness seeded to: 261977836
+===============================================================================
+All tests passed (4 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"sequence comparison survives wrap-around" end time: Oct 19 17:35 CEST
+"sequence comparison survives wrap-around" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/44 Testing: the receive window tracks the last 64 sequences
+5/44 Test: the receive window tracks the last 64 sequences
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "the receive window tracks the last 64 sequences"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"the receive window tracks the last 64 sequences" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "the receive window tracks the last 64 sequences"
+Randomness seeded to: 4106276426
+===============================================================================
+All tests passed (5 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"the receive window tracks the last 64 sequences" end time: Oct 19 17:35 CEST
+"the receive window tracks the last 64 sequences" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/44 Testing: type hashes are stable FNV-1a
+6/44 Test: type hashes are stable FNV-1a
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "type hashes are stable FNV-1a"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"type hashes are stable FNV-1a" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "type hashes are stable FNV-1a"
+Randomness seeded to: 1292814665
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"type hashes are stable FNV-1a" end time: Oct 19 17:35 CEST
+"type hashes are stable FNV-1a" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/44 Testing: wire values round-trip in little endian
+7/44 Test: wire values round-trip in little endian
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/net_tests" "wire values round-trip in little endian"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/net
+"wire values round-trip in little endian" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "wire values round-trip in little endian"
+Randomness seeded to: 1676306545
+===============================================================================
+All tests passed (5 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"wire values round-trip in little endian" end time: Oct 19 17:35 CEST
+"wire values round-trip in little endian" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/44 Testing: a fixed step moves bodies by their velocity
+8/44 Test: a fixed step moves bodies by their velocity
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/physics_tests" "a fixed step moves bodies by their velocity"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/physics
+"a fixed step moves bodies by their velocity" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "a fixed step moves bodies by their velocity"
+Randomness seeded to: 3581716318
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"a fixed step moves bodies by their velocity" end time: Oct 19 17:35 CEST
+"a fixed step moves bodies by their velocity" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/44 Testing: catch-up is bounded and the excess time is dropped
+9/44 Test: catch-up is bounded and the excess time is dropped
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/physics_tests" "catch-up is bounded and the excess time is dropped"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/physics
+"catch-up is bounded and the excess time is dropped" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "catch-up is bounded and the excess time is dropped"
+Randomness seeded to: 413936878
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"catch-up is bounded and the excess time is dropped" end time: Oct 19 17:35 CEST
+"catch-up is bounded and the excess time is dropped" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/44 Testing: filters prevent contacts between unrelated categories
+10/44 Test: filters prevent contacts between unrelated categories
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/physics_tests" "filters prevent contacts between unrelated categories"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/physics
+"filters prevent contacts between unrelated categories" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "filters prevent contacts between unrelated categories"
+Randomness seeded to: 3052376199
+===============================================================================
+All tests passed (1 assertion in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"filters prevent contacts between unrelated categories" end time: Oct 19 17:35 CEST
+"filters prevent contacts between unrelated categories" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/44 Testing: overlapping bodies report one contact
+11/44 Test: overlapping bodies report one contact
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/physics_tests" "overlapping bodies report one contact"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/physics
+"overlapping bodies report one contact" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "overlapping bodies report one contact"
+Randomness seeded to: 3322074827
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"overlapping bodies report one contact" end time: Oct 19 17:35 CEST
+"overlapping bodies report one contact" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/44 Testing: partial steps accumulate until a full step is available
+12/44 Test: partial steps accumulate until a full step is available
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/physics_tests" "partial steps accumulate until a full step is available"
+Directory: /home/hugo/perso/morgane/build/linux-debug/libs/physics
+"partial steps accumulate until a full step is available" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "partial steps accumulate until a full step is available"
+Randomness seeded to: 2796549822
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"partial steps accumulate until a full step is available" end time: Oct 19 17:35 CEST
+"partial steps accumulate until a full step is available" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/44 Testing: a shot destroys the enemy in front and itself
+13/44 Test: a shot destroys the enemy in front and itself
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "a shot destroys the enemy in front and itself"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"a shot destroys the enemy in front and itself" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "a shot destroys the enemy in front and itself"
+Randomness seeded to: 3303476947
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"a shot destroys the enemy in front and itself" end time: Oct 19 17:35 CEST
+"a shot destroys the enemy in front and itself" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/44 Testing: an empty server clears the arena and waits again
+14/44 Test: an empty server clears the arena and waits again
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "an empty server clears the arena and waits again"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"an empty server clears the arena and waits again" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "an empty server clears the arena and waits again"
+Randomness seeded to: 2112316621
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"an empty server clears the arena and waits again" end time: Oct 19 17:35 CEST
+"an empty server clears the arena and waits again" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/44 Testing: departures are announced with the player's slot and reason
+15/44 Test: departures are announced with the player's slot and reason
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "departures are announced with the player's slot and reason"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"departures are announced with the player's slot and reason" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "departures are announced with the player's slot and reason"
+Randomness seeded to: 2774965193
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"departures are announced with the player's slot and reason" end time: Oct 19 17:35 CEST
+"departures are announced with the player's slot and reason" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/44 Testing: diagonal input is not faster than straight input
+16/44 Test: diagonal input is not faster than straight input
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "diagonal input is not faster than straight input"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"diagonal input is not faster than straight input" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "diagonal input is not faster than straight input"
+Randomness seeded to: 1141607836
+===============================================================================
+All tests passed (1 assertion in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"diagonal input is not faster than straight input" end time: Oct 19 17:35 CEST
+"diagonal input is not faster than straight input" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/44 Testing: eliminated players stop moving
+17/44 Test: eliminated players stop moving
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "eliminated players stop moving"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"eliminated players stop moving" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "eliminated players stop moving"
+Randomness seeded to: 2459609983
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"eliminated players stop moving" end time: Oct 19 17:35 CEST
+"eliminated players stop moving" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/44 Testing: enemies aim at the nearest living player
+18/44 Test: enemies aim at the nearest living player
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "enemies aim at the nearest living player"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"enemies aim at the nearest living player" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "enemies aim at the nearest living player"
+Randomness seeded to: 2778537001
+===============================================================================
+All tests passed (6 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"enemies aim at the nearest living player" end time: Oct 19 17:35 CEST
+"enemies aim at the nearest living player" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/44 Testing: enemies hold fire without targets or while off-screen
+19/44 Test: enemies hold fire without targets or while off-screen
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "enemies hold fire without targets or while off-screen"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"enemies hold fire without targets or while off-screen" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "enemies hold fire without targets or while off-screen"
+Randomness seeded to: 4203775794
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"enemies hold fire without targets or while off-screen" end time: Oct 19 17:35 CEST
+"enemies hold fire without targets or while off-screen" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/44 Testing: enemy shots remove one health point per invulnerability window
+20/44 Test: enemy shots remove one health point per invulnerability window
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "enemy shots remove one health point per invulnerability window"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"enemy shots remove one health point per invulnerability window" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "enemy shots remove one health point per invulnerability window"
+Randomness seeded to: 1520911155
+===============================================================================
+All tests passed (4 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"enemy shots remove one health point per invulnerability window" end time: Oct 19 17:35 CEST
+"enemy shots remove one health point per invulnerability window" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/44 Testing: held fire shoots once per fire_interval
+21/44 Test: held fire shoots once per fire_interval
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "held fire shoots once per fire_interval"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"held fire shoots once per fire_interval" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "held fire shoots once per fire_interval"
+Randomness seeded to: 2229303626
+===============================================================================
+All tests passed (5 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"held fire shoots once per fire_interval" end time: Oct 19 17:35 CEST
+"held fire shoots once per fire_interval" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/44 Testing: hits report the destroyed body before it despawns
+22/44 Test: hits report the destroyed body before it despawns
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "hits report the destroyed body before it despawns"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"hits report the destroyed body before it despawns" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "hits report the destroyed body before it despawns"
+Randomness seeded to: 1433166864
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"hits report the destroyed body before it despawns" end time: Oct 19 17:35 CEST
+"hits report the destroyed body before it despawns" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/44 Testing: input moves the player at player speed
+23/44 Test: input moves the player at player speed
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "input moves the player at player speed"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"input moves the player at player speed" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "input moves the player at player speed"
+Randomness seeded to: 440370412
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"input moves the player at player speed" end time: Oct 19 17:35 CEST
+"input moves the player at player speed" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/44 Testing: one shot destroys only one of two overlapping enemies
+24/44 Test: one shot destroys only one of two overlapping enemies
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "one shot destroys only one of two overlapping enemies"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"one shot destroys only one of two overlapping enemies" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "one shot destroys only one of two overlapping enemies"
+Randomness seeded to: 2593658199
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"one shot destroys only one of two overlapping enemies" end time: Oct 19 17:35 CEST
+"one shot destroys only one of two overlapping enemies" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/44 Testing: out-of-range or non-finite input stops the player
+25/44 Test: out-of-range or non-finite input stops the player
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "out-of-range or non-finite input stops the player"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"out-of-range or non-finite input stops the player" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "out-of-range or non-finite input stops the player"
+Randomness seeded to: 1803368442
+===============================================================================
+All tests passed (6 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"out-of-range or non-finite input stops the player" end time: Oct 19 17:35 CEST
+"out-of-range or non-finite input stops the player" time elapsed: 00:00:00
+----------------------------------------------------------
+
+26/44 Testing: player shots do not hit players
+26/44 Test: player shots do not hit players
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "player shots do not hit players"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"player shots do not hit players" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "player shots do not hit players"
+Randomness seeded to: 4097505093
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"player shots do not hit players" end time: Oct 19 17:35 CEST
+"player shots do not hit players" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/44 Testing: players spawn with full health and a player collider
+27/44 Test: players spawn with full health and a player collider
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "players spawn with full health and a player collider"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"players spawn with full health and a player collider" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "players spawn with full health and a player collider"
+Randomness seeded to: 2197699942
+===============================================================================
+All tests passed (5 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"players spawn with full health and a player collider" end time: Oct 19 17:35 CEST
+"players spawn with full health and a player collider" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/44 Testing: players stay inside the playfield and stop at its edge
+28/44 Test: players stay inside the playfield and stop at its edge
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "players stay inside the playfield and stop at its edge"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"players stay inside the playfield and stop at its edge" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "players stay inside the playfield and stop at its edge"
+Randomness seeded to: 3120484232
+===============================================================================
+All tests passed (7220 assertions in 1 test case)
+
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"players stay inside the playfield and stop at its edge" end time: Oct 19 17:35 CEST
+"players stay inside the playfield and stop at its edge" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/44 Testing: players take the lowest free slot up to max_players
+29/44 Test: players take the lowest free slot up to max_players
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "players take the lowest free slot up to max_players"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"players take the lowest free slot up to max_players" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "players take the lowest free slot up to max_players"
+Randomness seeded to: 3509636691
+===============================================================================
+All tests passed (5 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"players take the lowest free slot up to max_players" end time: Oct 19 17:35 CEST
+"players take the lowest free slot up to max_players" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/44 Testing: released or expired fire stops shooting
+30/44 Test: released or expired fire stops shooting
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "released or expired fire stops shooting"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"released or expired fire stops shooting" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "released or expired fire stops shooting"
+Randomness seeded to: 16555556
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"released or expired fire stops shooting" end time: Oct 19 17:35 CEST
+"released or expired fire stops shooting" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/44 Testing: scene loads spawn points and skips replicated entities on the client
+31/44 Test: scene loads spawn points and skips replicated entities on the client
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "scene loads spawn points and skips replicated entities on the client"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"scene loads spawn points and skips replicated entities on the client" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "scene loads spawn points and skips replicated entities on the client"
+Randomness seeded to: 1286350972
+===============================================================================
+All tests passed (6 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"scene loads spawn points and skips replicated entities on the client" end time: Oct 19 17:35 CEST
+"scene loads spawn points and skips replicated entities on the client" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/44 Testing: shots follow their trajectory and despawn outside the playfield
+32/44 Test: shots follow their trajectory and despawn outside the playfield
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "shots follow their trajectory and despawn outside the playfield"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"shots follow their trajectory and despawn outside the playfield" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "shots follow their trajectory and despawn outside the playfield"
+Randomness seeded to: 963998628
+===============================================================================
+All tests passed (314 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"shots follow their trajectory and despawn outside the playfield" end time: Oct 19 17:35 CEST
+"shots follow their trajectory and despawn outside the playfield" time elapsed: 00:00:00
+----------------------------------------------------------
+
+33/44 Testing: three hits eliminate a player, who then stops acting and colliding
+33/44 Test: three hits eliminate a player, who then stops acting and colliding
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "three hits eliminate a player\, who then stops acting and colliding"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"three hits eliminate a player, who then stops acting and colliding" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "three hits eliminate a player\, who then stops acting and colliding"
+Randomness seeded to: 93362847
+===============================================================================
+All tests passed (11 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"three hits eliminate a player, who then stops acting and colliding" end time: Oct 19 17:35 CEST
+"three hits eliminate a player, who then stops acting and colliding" time elapsed: 00:00:00
+----------------------------------------------------------
+
+34/44 Testing: touching an enemy costs health and destroys the enemy
+34/44 Test: touching an enemy costs health and destroys the enemy
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "touching an enemy costs health and destroys the enemy"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"touching an enemy costs health and destroys the enemy" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "touching an enemy costs health and destroys the enemy"
+Randomness seeded to: 1227769057
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"touching an enemy costs health and destroys the enemy" end time: Oct 19 17:35 CEST
+"touching an enemy costs health and destroys the enemy" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/44 Testing: waves start once a player is alive and repeat
+35/44 Test: waves start once a player is alive and repeat
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/server_tests" "waves start once a player is alive and repeat"
+Directory: /home/hugo/perso/morgane/build/linux-debug/bin
+"waves start once a player is alive and repeat" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "waves start once a player is alive and repeat"
+Randomness seeded to: 2540316032
+===============================================================================
+All tests passed (30 assertions in 1 test case)
+
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"waves start once a player is alive and repeat" end time: Oct 19 17:35 CEST
+"waves start once a player is alive and repeat" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/44 Testing: a column stacks its children with gap and padding
+36/44 Test: a column stacks its children with gap and padding
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "a column stacks its children with gap and padding"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"a column stacks its children with gap and padding" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "a column stacks its children with gap and padding"
+Randomness seeded to: 249770471
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"a column stacks its children with gap and padding" end time: Oct 19 17:35 CEST
+"a column stacks its children with gap and padding" time elapsed: 00:00:00
+----------------------------------------------------------
+
+37/44 Testing: align and justify distribute the cross and main axes
+37/44 Test: align and justify distribute the cross and main axes
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "align and justify distribute the cross and main axes"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"align and justify distribute the cross and main axes" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "align and justify distribute the cross and main axes"
+Randomness seeded to: 1342459408
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"align and justify distribute the cross and main axes" end time: Oct 19 17:35 CEST
+"align and justify distribute the cross and main axes" time elapsed: 00:00:00
+----------------------------------------------------------
+
+38/44 Testing: anchors place a node on the screen and inside free parents
+38/44 Test: anchors place a node on the screen and inside free parents
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "anchors place a node on the screen and inside free parents"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"anchors place a node on the screen and inside free parents" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "anchors place a node on the screen and inside free parents"
+Randomness seeded to: 3459174394
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"anchors place a node on the screen and inside free parents" end time: Oct 19 17:35 CEST
+"anchors place a node on the screen and inside free parents" time elapsed: 00:00:00
+----------------------------------------------------------
+
+39/44 Testing: clicks are visible for one frame to on_click systems
+39/44 Test: clicks are visible for one frame to on_click systems
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "clicks are visible for one frame to on_click systems"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"clicks are visible for one frame to on_click systems" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "clicks are visible for one frame to on_click systems"
+Randomness seeded to: 1215726190
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"clicks are visible for one frame to on_click systems" end time: Oct 19 17:35 CEST
+"clicks are visible for one frame to on_click systems" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/44 Testing: fill takes the space left in a row
+40/44 Test: fill takes the space left in a row
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "fill takes the space left in a row"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"fill takes the space left in a row" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "fill takes the space left in a row"
+Randomness seeded to: 3449248555
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"fill takes the space left in a row" end time: Oct 19 17:35 CEST
+"fill takes the space left in a row" time elapsed: 00:00:00
+----------------------------------------------------------
+
+41/44 Testing: hidden subtrees take no space and disabled ones propagate
+41/44 Test: hidden subtrees take no space and disabled ones propagate
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "hidden subtrees take no space and disabled ones propagate"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"hidden subtrees take no space and disabled ones propagate" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "hidden subtrees take no space and disabled ones propagate"
+Randomness seeded to: 808846628
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"hidden subtrees take no space and disabled ones propagate" end time: Oct 19 17:35 CEST
+"hidden subtrees take no space and disabled ones propagate" time elapsed: 00:00:00
+----------------------------------------------------------
+
+42/44 Testing: nodes follow a world parent and die with a followed target
+42/44 Test: nodes follow a world parent and die with a followed target
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "nodes follow a world parent and die with a followed target"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"nodes follow a world parent and die with a followed target" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "nodes follow a world parent and die with a followed target"
+Randomness seeded to: 1650331684
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"nodes follow a world parent and die with a followed target" end time: Oct 19 17:35 CEST
+"nodes follow a world parent and die with a followed target" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/44 Testing: siblings keep their creation order across component tables
+43/44 Test: siblings keep their creation order across component tables
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "siblings keep their creation order across component tables"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"siblings keep their creation order across component tables" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "siblings keep their creation order across component tables"
+Randomness seeded to: 4072344452
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"siblings keep their creation order across component tables" end time: Oct 19 17:35 CEST
+"siblings keep their creation order across component tables" time elapsed: 00:00:00
+----------------------------------------------------------
+
+44/44 Testing: widgets bring their node, bounds and dispatch table
+44/44 Test: widgets bring their node, bounds and dispatch table
+Command: "/home/hugo/perso/morgane/build/linux-debug/bin/gui_tests" "widgets bring their node\, bounds and dispatch table"
+Directory: /home/hugo/perso/morgane/build/linux-debug/client
+"widgets bring their node, bounds and dispatch table" start time: Oct 19 17:35 CEST
+Output:
+----------------------------------------------------------
+Filters: "widgets bring their node\, bounds and dispatch table"
+Randomness seeded to: 3294977269
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"widgets bring their node, bounds and dispatch table" end time: Oct 19 17:35 CEST
+"widgets bring their node, bounds and dispatch table" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 19 17:35 CEST

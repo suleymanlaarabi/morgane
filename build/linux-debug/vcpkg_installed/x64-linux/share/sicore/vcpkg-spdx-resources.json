@@ -1,0 +1,19 @@
+{
+  "packages": [
+{
+  "SPDXID" : "SPDXRef-resource-0",
+  "checksums" : 
+  [
+    {
+      "algorithm" : "SHA512",
+      "checksumValue" : "4881c55789ba78d83d794089c451ac11acced42a4393713e9eb4e38f1b8e7b38697e529711190cf038f4e036ec5f2f9f04633f441f37bde190020d3263c176a3"
+    }
+  ],
+  "copyrightText" : "NOASSERTION",
+  "downloadLocation" : "git+https://github.com/suleymanlaarabi/sicore@9d3aa31ac98207e6ce9b6ce3f2d92e659b5842e8",
+  "licenseConcluded" : "NOASSERTION",
+  "licenseDeclared" : "NOASSERTION",
+  "name" : "suleymanlaarabi/sicore"
+}
+  ]
+}

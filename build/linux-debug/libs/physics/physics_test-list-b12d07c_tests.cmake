@@ -1,0 +1,1 @@
+set(physics_tests_TESTS [==[a fixed step moves bodies by their velocity]==] [==[catch-up is bounded and the excess time is dropped]==] [==[filters prevent contacts between unrelated categories]==] [==[overlapping bodies report one contact]==] [==[partial steps accumulate until a full step is available]==])

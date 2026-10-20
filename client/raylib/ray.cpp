@@ -2,6 +2,7 @@
 #include <client/scene/scene_manager.h>
 #include <cmath>
 #include <filesystem>
+#include <si2d_raylib.h>
 #include <unordered_map>
 #include <vector>
 
@@ -35,6 +36,8 @@ static Vector2 draw_position(
 
 void Window::import(const WindowConfig &config) {
     ecs::import<sispatial>();
+    si2d_raylib_props_t si2d_props{ .auto_draw = false };
+    ecs::import<si2d_raylib>(si2d_props);
     require_transform<Sprite>();
     require_transform<Camera>();
 
@@ -123,6 +126,14 @@ void Window::import(const WindowConfig &config) {
             sprite.tint
         );
     };
+
+    ecs::system("ray.DrawLevel")
+        .phase(EcsOnRender)
+        .after(camera)
+        .immediate()
+        .each([](ecs::res<const View> view, ecs::res<const Screen> screen) {
+            si2d_raylib_draw(view->camera, screen->width, screen->height);
+        });
 
     auto presented =
         ecs::system("ray.DrawPresentedSprites")

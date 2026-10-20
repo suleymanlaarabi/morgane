@@ -1,0 +1,14 @@
+x64-linux/
+x64-linux/include/
+x64-linux/include/siecs_editor/
+x64-linux/include/siecs_editor/contract.hpp
+x64-linux/include/siecs_editor/widgets.hpp
+x64-linux/lib/
+x64-linux/share/
+x64-linux/share/siecs-editor/
+x64-linux/share/siecs-editor/copyright
+x64-linux/share/siecs-editor/vcpkg.spdx.json
+x64-linux/share/siecs-editor/vcpkg_abi_info.txt
+x64-linux/share/siecs_editor/
+x64-linux/share/siecs_editor/siecs_editorConfig.cmake
+x64-linux/share/siecs_editor/siecs_editorTargets.cmake

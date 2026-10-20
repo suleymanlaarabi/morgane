@@ -1,0 +1,260 @@
+[
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/protocol.cpp.o -c /home/hugo/perso/morgane/libs/net/src/protocol.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/protocol.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/protocol.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/transport.cpp.o -c /home/hugo/perso/morgane/libs/net/src/transport.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/transport.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/transport.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/runtime.cpp.o -c /home/hugo/perso/morgane/libs/net/src/runtime.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/runtime.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/runtime.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/registry.cpp.o -c /home/hugo/perso/morgane/libs/net/src/registry.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/registry.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/registry.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/receive.cpp.o -c /home/hugo/perso/morgane/libs/net/src/receive.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/receive.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/receive.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/send.cpp.o -c /home/hugo/perso/morgane/libs/net/src/send.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/send.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/send.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/src/replication.cpp.o -c /home/hugo/perso/morgane/libs/net/src/replication.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/replication.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/src/replication.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/__/__/client/net/client.cpp.o -c /home/hugo/perso/morgane/client/net/client.cpp",
+  "file": "/home/hugo/perso/morgane/client/net/client.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/__/__/client/net/client.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/net/src -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/sinet.dir/__/__/server/net/server.cpp.o -c /home/hugo/perso/morgane/server/net/server.cpp",
+  "file": "/home/hugo/perso/morgane/server/net/server.cpp",
+  "output": "libs/net/CMakeFiles/sinet.dir/__/__/server/net/server.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/net/src -I/home/hugo/perso/morgane/libs/net/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/net/CMakeFiles/net_tests.dir/src/protocol_test.cpp.o -c /home/hugo/perso/morgane/libs/net/src/protocol_test.cpp",
+  "file": "/home/hugo/perso/morgane/libs/net/src/protocol_test.cpp",
+  "output": "libs/net/CMakeFiles/net_tests.dir/src/protocol_test.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/physics/CMakeFiles/sibox2d.dir/src/physics.cpp.o -c /home/hugo/perso/morgane/libs/physics/src/physics.cpp",
+  "file": "/home/hugo/perso/morgane/libs/physics/src/physics.cpp",
+  "output": "libs/physics/CMakeFiles/sibox2d.dir/src/physics.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/physics/CMakeFiles/sibox2d.dir/src/lifecycle.cpp.o -c /home/hugo/perso/morgane/libs/physics/src/lifecycle.cpp",
+  "file": "/home/hugo/perso/morgane/libs/physics/src/lifecycle.cpp",
+  "output": "libs/physics/CMakeFiles/sibox2d.dir/src/lifecycle.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/physics/CMakeFiles/sibox2d.dir/src/motion.cpp.o -c /home/hugo/perso/morgane/libs/physics/src/motion.cpp",
+  "file": "/home/hugo/perso/morgane/libs/physics/src/motion.cpp",
+  "output": "libs/physics/CMakeFiles/sibox2d.dir/src/motion.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/physics/CMakeFiles/sibox2d.dir/src/contacts.cpp.o -c /home/hugo/perso/morgane/libs/physics/src/contacts.cpp",
+  "file": "/home/hugo/perso/morgane/libs/physics/src/contacts.cpp",
+  "output": "libs/physics/CMakeFiles/sibox2d.dir/src/contacts.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o libs/physics/CMakeFiles/physics_tests.dir/src/physics_test.cpp.o -c /home/hugo/perso/morgane/libs/physics/src/physics_test.cpp",
+  "file": "/home/hugo/perso/morgane/libs/physics/src/physics_test.cpp",
+  "output": "libs/physics/CMakeFiles/physics_tests.dir/src/physics_test.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/morgane_server_gameplay.dir/src/movement.cpp.o -c /home/hugo/perso/morgane/server/src/movement.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/movement.cpp",
+  "output": "server/CMakeFiles/morgane_server_gameplay.dir/src/movement.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/morgane_server_gameplay.dir/src/players.cpp.o -c /home/hugo/perso/morgane/server/src/players.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/players.cpp",
+  "output": "server/CMakeFiles/morgane_server_gameplay.dir/src/players.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/morgane_server_gameplay.dir/src/combat.cpp.o -c /home/hugo/perso/morgane/server/src/combat.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/combat.cpp",
+  "output": "server/CMakeFiles/morgane_server_gameplay.dir/src/combat.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/morgane_server_gameplay.dir/src/waves.cpp.o -c /home/hugo/perso/morgane/server/src/waves.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/waves.cpp",
+  "output": "server/CMakeFiles/morgane_server_gameplay.dir/src/waves.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/morgane_server_gameplay.dir/src/match.cpp.o -c /home/hugo/perso/morgane/server/src/match.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/match.cpp",
+  "output": "server/CMakeFiles/morgane_server_gameplay.dir/src/match.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/r-type_server.dir/src/main.cpp.o -c /home/hugo/perso/morgane/server/src/main.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/main.cpp",
+  "output": "server/CMakeFiles/r-type_server.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/server_tests.dir/src/movement_test.cpp.o -c /home/hugo/perso/morgane/server/src/movement_test.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/movement_test.cpp",
+  "output": "server/CMakeFiles/server_tests.dir/src/movement_test.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/server_tests.dir/src/gameplay_test.cpp.o -c /home/hugo/perso/morgane/server/src/gameplay_test.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/gameplay_test.cpp",
+  "output": "server/CMakeFiles/server_tests.dir/src/gameplay_test.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsi2d_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o server/CMakeFiles/server_tests.dir/src/scene_test.cpp.o -c /home/hugo/perso/morgane/server/src/scene_test.cpp",
+  "file": "/home/hugo/perso/morgane/server/src/scene_test.cpp",
+  "output": "server/CMakeFiles/server_tests.dir/src/scene_test.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o tests/CMakeFiles/r-type_bot.dir/bot.cpp.o -c /home/hugo/perso/morgane/tests/bot.cpp",
+  "file": "/home/hugo/perso/morgane/tests/bot.cpp",
+  "output": "tests/CMakeFiles/r-type_bot.dir/bot.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_raygui.dir/gui/raygui.cpp.o -c /home/hugo/perso/morgane/client/gui/raygui.cpp",
+  "file": "/home/hugo/perso/morgane/client/gui/raygui.cpp",
+  "output": "client/CMakeFiles/morgane_raygui.dir/gui/raygui.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/raylib/ray.cpp.o -c /home/hugo/perso/morgane/client/raylib/ray.cpp",
+  "file": "/home/hugo/perso/morgane/client/raylib/ray.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/raylib/ray.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/raylib/animation.cpp.o -c /home/hugo/perso/morgane/client/raylib/animation.cpp",
+  "file": "/home/hugo/perso/morgane/client/raylib/animation.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/raylib/animation.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/raylib/audio.cpp.o -c /home/hugo/perso/morgane/client/raylib/audio.cpp",
+  "file": "/home/hugo/perso/morgane/client/raylib/audio.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/raylib/audio.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/scene/scene_manager.cpp.o -c /home/hugo/perso/morgane/client/scene/scene_manager.cpp",
+  "file": "/home/hugo/perso/morgane/client/scene/scene_manager.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/scene/scene_manager.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/gui/gui.cpp.o -c /home/hugo/perso/morgane/client/gui/gui.cpp",
+  "file": "/home/hugo/perso/morgane/client/gui/gui.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/gui/gui.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/gui/layout.cpp.o -c /home/hugo/perso/morgane/client/gui/layout.cpp",
+  "file": "/home/hugo/perso/morgane/client/gui/layout.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/gui/layout.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/gui/draw.cpp.o -c /home/hugo/perso/morgane/client/gui/draw.cpp",
+  "file": "/home/hugo/perso/morgane/client/gui/draw.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/gui/draw.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/morgane_graphics.dir/gui/widgets.cpp.o -c /home/hugo/perso/morgane/client/gui/widgets.cpp",
+  "file": "/home/hugo/perso/morgane/client/gui/widgets.cpp",
+  "output": "client/CMakeFiles/morgane_graphics.dir/gui/widgets.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/main.cpp.o -c /home/hugo/perso/morgane/client/src/main.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/main.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/effects.cpp.o -c /home/hugo/perso/morgane/client/src/effects.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/effects.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/effects.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/movement.cpp.o -c /home/hugo/perso/morgane/client/src/movement.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/movement.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/movement.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/preferences.cpp.o -c /home/hugo/perso/morgane/client/src/preferences.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/preferences.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/preferences.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/scenes.cpp.o -c /home/hugo/perso/morgane/client/src/scenes.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/scenes.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/scenes.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/session.cpp.o -c /home/hugo/perso/morgane/client/src/session.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/session.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/session.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/starfield.cpp.o -c /home/hugo/perso/morgane/client/src/starfield.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/starfield.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/starfield.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -I/home/hugo/perso/morgane/libs/net/include -I/home/hugo/perso/morgane/libs/physics/include -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/r-type_client.dir/src/visuals.cpp.o -c /home/hugo/perso/morgane/client/src/visuals.cpp",
+  "file": "/home/hugo/perso/morgane/client/src/visuals.cpp",
+  "output": "client/CMakeFiles/r-type_client.dir/src/visuals.cpp.o"
+},
+{
+  "directory": "/home/hugo/perso/morgane/build/linux-debug",
+  "command": "/usr/bin/c++ -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DSICORE_VEC=1 -Dsi2d_STATIC -Dsi2d_raylib_STATIC -Dsicore_STATIC -Dsiecs_STATIC -Dsiecs_scene_STATIC -Dsiecs_spatial_STATIC -Dsijson_STATIC -Dsireflect_STATIC -I/home/hugo/perso/morgane -isystem /home/hugo/perso/morgane/build/linux-debug/vcpkg_installed/x64-linux/include -g -std=c++23 -o client/CMakeFiles/gui_tests.dir/gui/layout_test.cpp.o -c /home/hugo/perso/morgane/client/gui/layout_test.cpp",
+  "file": "/home/hugo/perso/morgane/client/gui/layout_test.cpp",
+  "output": "client/CMakeFiles/gui_tests.dir/gui/layout_test.cpp.o"
+}
+]

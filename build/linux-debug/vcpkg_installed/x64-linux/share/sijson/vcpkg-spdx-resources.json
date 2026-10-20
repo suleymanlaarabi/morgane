@@ -1,0 +1,19 @@
+{
+  "packages": [
+{
+  "SPDXID" : "SPDXRef-resource-0",
+  "checksums" : 
+  [
+    {
+      "algorithm" : "SHA512",
+      "checksumValue" : "dbed83c4a5b92785b7003e69cab25ccec295cfc452a3637f5959ce886dac0314d27938763e8219a00d5d80b926d4f8857ca9c603392850e195bd3ef04dfa4e3d"
+    }
+  ],
+  "copyrightText" : "NOASSERTION",
+  "downloadLocation" : "git+https://github.com/suleymanlaarabi/sijson@0fdee96cb5e0c4ab3bf5dc790ca64f46ebd3998b",
+  "licenseConcluded" : "NOASSERTION",
+  "licenseDeclared" : "NOASSERTION",
+  "name" : "suleymanlaarabi/sijson"
+}
+  ]
+}

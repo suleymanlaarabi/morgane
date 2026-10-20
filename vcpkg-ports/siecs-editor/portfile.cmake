@@ -1,0 +1,11 @@
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+get_filename_component(SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../siecs-editor/sdk" ABSOLUTE)
+if(NOT EXISTS "${SOURCE_PATH}/include/siecs_editor/contract.hpp")
+    message(FATAL_ERROR "siecs-editor SDK not found at ${SOURCE_PATH}")
+endif()
+
+vcpkg_cmake_configure(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_cmake_install()
+vcpkg_cmake_config_fixup(PACKAGE_NAME siecs_editor CONFIG_PATH lib/cmake/siecs_editor)
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug")
+file(WRITE "${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright" "MIT")

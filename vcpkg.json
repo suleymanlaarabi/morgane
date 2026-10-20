@@ -8,9 +8,12 @@
     {
       "name": "siecs",
       "features": [
-        "spatial"
+        "spatial",
+        "scene"
       ]
     },
+    "si2d",
+    "siecs-editor",
     "sireflect"
   ],
   "features": {
@@ -18,7 +21,13 @@
       "description": "Graphical client with raylib and raygui",
       "dependencies": [
         "raygui",
-        "raylib"
+        "raylib",
+        {
+          "name": "si2d",
+          "features": [
+            "raylib"
+          ]
+        }
       ]
     }
   }

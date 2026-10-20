@@ -1,0 +1,230 @@
+#pragma once
+#include "siecs/cpp/component.hpp"
+#include "siecs/cpp/function_traits.hpp"
+#include "siecs/cpp/query.hpp"
+#include <concepts>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
+namespace ecs {
+
+/** Event tag for component additions. */
+struct OnAdd {};
+/** Event tag for component updates. */
+struct OnSet {};
+/** Event tag for component removals. */
+struct OnRemove {};
+/** Event tag for relation additions and retargeting. */
+struct OnRelationSet {};
+/** Event tag for relation removals. */
+struct OnRelationRemove {};
+
+/** Typed, callback-lifetime view of an observer event. */
+class observer_event {
+    ecs_observer_event_t *_event = nullptr;
+
+  public:
+    observer_event() noexcept = default;
+    /** Wrap a non-null C event payload; the wrapper does not own it. */
+    explicit observer_event(ecs_observer_event_t *event) noexcept : _event(event) {}
+    static observer_event init() noexcept { return {}; }
+    void event(ecs_observer_event_t *value) noexcept { _event = value; }
+
+    /** Return the entity that emitted the event. */
+    [[nodiscard]] entity target() const noexcept { return entity::from(_event->entity); }
+    /** Return the event id. */
+    [[nodiscard]] ecs_event_t id() const noexcept { return _event->event; }
+    /** Return opaque user data supplied when the observer was created. */
+    [[nodiscard]] uintptr_t user_data() const noexcept { return _event->user_data; }
+
+    /** Interpret user data as a borrowed pointer of type `T`. */
+    template <typename T> [[nodiscard]] T *user_data() const noexcept {
+        return reinterpret_cast<T *>(_event->user_data);
+    }
+
+    /** Interpret trigger payload as a borrowed const pointer of type `T`. */
+    template <typename T> [[nodiscard]] const T *trigger_data() const noexcept {
+        return static_cast<const T *>(_event->trigger_data);
+    }
+};
+
+namespace detail {
+
+template <typename T> inline constexpr ecs_event_t builtin_event = UINT16_MAX;
+template <> inline constexpr ecs_event_t builtin_event<OnAdd> = EcsOnAdd;
+template <> inline constexpr ecs_event_t builtin_event<OnSet> = EcsOnSet;
+template <> inline constexpr ecs_event_t builtin_event<OnRemove> = EcsOnRemove;
+template <> inline constexpr ecs_event_t builtin_event<OnRelationSet> = EcsOnRelationSet;
+template <> inline constexpr ecs_event_t builtin_event<OnRelationRemove> = EcsOnRelationRemove;
+template <typename T> inline ecs_event_t custom_event = UINT16_MAX;
+
+/**
+ * External event tags can provide their runtime event id with a static
+ * event_id() member. This lets addons expose typed C++ tags for events that
+ * they register themselves.
+ */
+template <typename T>
+concept event_id_provider = requires {
+    { T::event_id() } -> std::convertible_to<ecs_event_t>;
+};
+
+template <typename T> static ecs_event_t ecs_cpp_event_id() {
+    if constexpr (builtin_event<T> != UINT16_MAX)
+        return builtin_event<T>;
+    if constexpr (event_id_provider<T>)
+        return T::event_id();
+    if (custom_event<T> == UINT16_MAX) {
+        custom_event<T> = ecs_event();
+        ecs_fini_desc_t reset{
+            .callback = [](void *id) { *static_cast<ecs_event_t *>(id) = UINT16_MAX; },
+            .data = &custom_event<T>,
+        };
+        ecs_at_fini_init(&reset);
+    }
+    return custom_event<T>;
+}
+
+template <typename T>
+concept system_param_observer =
+    SystemParam<T> &&
+    requires(system_param_t<T> &value, ecs_observer_event_t *event) { value.event(event); };
+
+template <typename Args, std::size_t I, typename Params>
+decltype(auto) ecs_cpp_observer_arg(ecs_observer_event_t *event, Params &params) {
+    using arg = std::tuple_element_t<I, Args>;
+    if constexpr (SystemParam<arg>) {
+        return system_param_t<arg>(std::get<I>(params));
+    } else {
+        using raw = std::remove_cvref_t<arg>;
+        void *ptr = ecs_get_cid(event->entity, ecs_cpp_component_id<raw>());
+        if constexpr (std::is_const_v<std::remove_reference_t<arg>>)
+            return *static_cast<const raw *>(ptr);
+        else
+            return *static_cast<raw *>(ptr);
+    }
+}
+
+template <typename Func, typename Args, typename Changed = void>
+void ecs_cpp_observer_callback(ecs_observer_event_t *event) {
+    if constexpr (!std::is_void_v<Changed>) {
+        if (event->component != ecs_cpp_component_id<Changed>())
+            return;
+    }
+    Func func{};
+    constexpr auto indices = std::make_index_sequence<std::tuple_size_v<Args>>{};
+    auto params = init_system_params<Args>(indices);
+    [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+        (prepare_field<Args, Is>(std::get<Is>(params)), ...);
+    }(indices);
+    std::apply([&](auto &...param) { (prepare_world(param, ecs_world_current()), ...); }, params);
+    ecs_entity_t entity_id = event->entity;
+    ecs_iter_t it{};
+    it.count = 1;
+    it.entities = &entity_id;
+    std::apply([&](auto &...param) { (prepare_table(param, &it), ...); }, params);
+    std::apply([&](auto &...param) { (prepare_row(param, &it, 0), ...); }, params);
+    std::apply(
+        [&](auto &...param) {
+            (([&] {
+                 if constexpr (system_param_observer<decltype(param)>)
+                     param.event(event);
+             }()),
+             ...);
+        },
+        params
+    );
+    [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+        std::invoke(func, ecs_cpp_observer_arg<Args, Is>(event, params)...);
+    }(indices);
+}
+
+} // namespace detail
+
+/** Typed observer builder; callbacks must be stateless and default constructible. */
+template <typename T> class observer : public query {
+    uintptr_t _user_data = 0;
+    ecs_entity_t _target = 0;
+
+  public:
+    /** Start an empty observer query for event tag `T`. */
+    observer() = default;
+
+    /** Set opaque callback user data; the pointer is borrowed, not deleted. */
+    observer &user_data(uintptr_t value) {
+        _user_data = value;
+        return *this;
+    }
+
+    observer &target(ecs::entity value) noexcept {
+        _target = value.id();
+        return *this;
+    }
+
+    /** Store a typed user-data pointer for callback lifetime. */
+    template <typename U> observer &user_data(U *value) {
+        _user_data = reinterpret_cast<uintptr_t>(value);
+        return *this;
+    }
+
+    /** Register the callback and return its observer id. */
+    template <typename F> ecs_observer_id_t each(F &&) { return register_callback<void, F>(); }
+
+    /** Observe only lifecycle events caused by Component, while retaining the
+     * callback's other query terms. OnSet payload is the incoming value. */
+    template <typename Component, typename F> ecs_observer_id_t each_for(F &&) {
+        static_assert(
+            std::is_same_v<T, OnAdd> || std::is_same_v<T, OnSet> || std::is_same_v<T, OnRemove>
+        );
+        this->template require<Component>();
+        return register_callback<Component, F>();
+    }
+
+  private:
+    template <typename Changed, typename F> ecs_observer_id_t register_callback() {
+        using callback = std::remove_cvref_t<F>;
+        static_assert(
+            std::is_empty_v<callback> && std::is_default_constructible_v<callback>,
+            "observer callbacks must be stateless with the current C API"
+        );
+
+        using traits = function_traits<callback>;
+        using args = typename traits::args_tuple;
+        static_assert(
+            !std::is_void_v<Changed> ||
+                detail::field_index_before<args, std::tuple_size_v<args>>() > 0 ||
+                detail::builtin_event<T> == UINT16_MAX || std::is_same_v<T, OnRelationSet> ||
+                std::is_same_v<T, OnRelationRemove>,
+            "lifecycle observers must read at least one component"
+        );
+
+        ecs::detail::append_callback_terms<args>(
+            this->desc,
+            component_index,
+            resource_index,
+            relation_index
+        );
+
+        ecs_observer_desc_t observer_desc = {
+            .on = detail::ecs_cpp_event_id<T>(),
+            .entity = _target,
+            .query = this->desc,
+            .callback = detail::ecs_cpp_observer_callback<callback, args, Changed>,
+            .user_data = _user_data,
+        };
+
+        return ecs_observer_init(&observer_desc);
+    }
+};
+
+template <typename Event, typename F> ecs::entity entity::observe(F &&callback) {
+    ecs::observer<Event> value;
+    value.target(*this);
+    value.each(std::forward<F>(callback));
+    return *this;
+}
+
+} // namespace ecs

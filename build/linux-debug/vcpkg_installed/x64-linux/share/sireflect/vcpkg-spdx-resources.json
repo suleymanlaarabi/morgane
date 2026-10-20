@@ -1,0 +1,19 @@
+{
+  "packages": [
+{
+  "SPDXID" : "SPDXRef-resource-0",
+  "checksums" : 
+  [
+    {
+      "algorithm" : "SHA512",
+      "checksumValue" : "b1066c4c2f6727280b4bc525551c28b2e23aca81495bca832ef5a546d644bedc3af3d8e13ee051ba6c64399ee40433d5d637272fe0e9cfcd28fb398b5e0eaeb4"
+    }
+  ],
+  "copyrightText" : "NOASSERTION",
+  "downloadLocation" : "git+https://github.com/suleymanlaarabi/sireflect@f746eec167dc911d0103046105d0ffed01e09bc0",
+  "licenseConcluded" : "NOASSERTION",
+  "licenseDeclared" : "NOASSERTION",
+  "name" : "suleymanlaarabi/sireflect"
+}
+  ]
+}

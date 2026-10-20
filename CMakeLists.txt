@@ -11,6 +11,8 @@ project(morgane LANGUAGES C CXX)
 include(CTest)
 find_package(Threads REQUIRED)
 find_package(siecs CONFIG REQUIRED)
+find_package(si2d CONFIG REQUIRED)
+find_package(siecs_editor CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)
 if(BUILD_TESTING)
     find_package(Catch2 3 CONFIG REQUIRED)
@@ -31,6 +33,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 add_subdirectory(libs/net)
 add_subdirectory(libs/physics)
 add_subdirectory(server)
+
+set(MORGANE_SCENE_JSON "${PROJECT_SOURCE_DIR}/scenes/main.scene.json")
+set(MORGANE_SCENE_COOKED "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/scenes/main.scene.siecsscn")
+add_custom_command(
+    OUTPUT "${MORGANE_SCENE_COOKED}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/scenes"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+        "${PROJECT_SOURCE_DIR}/scenes" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/scenes"
+    COMMAND python3 "${PROJECT_SOURCE_DIR}/scripts/cook_scene.py"
+        "${MORGANE_SCENE_JSON}" "${MORGANE_SCENE_COOKED}"
+    DEPENDS "${MORGANE_SCENE_JSON}" "${PROJECT_SOURCE_DIR}/scripts/cook_scene.py"
+    COMMENT "Cooking scenes to SIECSSCN")
+add_custom_target(morgane_scenes ALL DEPENDS "${MORGANE_SCENE_COOKED}")
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/scenes" DESTINATION bin)
+install(FILES "${MORGANE_SCENE_COOKED}" DESTINATION bin/scenes)
 if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()

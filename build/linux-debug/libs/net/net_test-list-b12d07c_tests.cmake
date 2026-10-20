@@ -1,0 +1,1 @@
+set(net_tests_TESTS [==[frames must fit in the payload]==] [==[headers round-trip and reject malformed packets]==] [==[reading past the end invalidates the reader]==] [==[sequence comparison survives wrap-around]==] [==[the receive window tracks the last 64 sequences]==] [==[type hashes are stable FNV-1a]==] [==[wire values round-trip in little endian]==])

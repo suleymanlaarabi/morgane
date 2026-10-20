@@ -14,7 +14,7 @@ add_library(morgane_graphics STATIC
     gui/draw.cpp
     gui/widgets.cpp)
 target_include_directories(morgane_graphics PUBLIC "${PROJECT_SOURCE_DIR}")
-target_link_libraries(morgane_graphics PUBLIC siecs::spatial raylib morgane::raygui)
+target_link_libraries(morgane_graphics PUBLIC siecs::spatial siecs::scene si2d::si2d si2d::raylib raylib morgane::raygui siecs_editor::siecs_editor)
 
 add_executable(r-type_client
     src/main.cpp
@@ -32,7 +32,7 @@ add_custom_target(morgane_assets ALL
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
         "${PROJECT_SOURCE_DIR}/assets" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets"
     COMMENT "Copying client assets")
-add_dependencies(r-type_client morgane_assets)
+add_dependencies(r-type_client morgane_assets morgane_scenes)
 if(BUILD_TESTING)
     add_executable(gui_tests gui/layout_test.cpp)
     target_link_libraries(gui_tests PRIVATE morgane_graphics Catch2::Catch2WithMain)

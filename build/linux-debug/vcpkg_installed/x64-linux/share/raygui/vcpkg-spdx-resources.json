@@ -1,0 +1,19 @@
+{
+  "packages": [
+{
+  "SPDXID" : "SPDXRef-resource-0",
+  "checksums" : 
+  [
+    {
+      "algorithm" : "SHA512",
+      "checksumValue" : "5ef10217981c046e85959975cf920cbf020c0374524a67b0fa8f2fe76bd85e0cc1b3228c2821187e3c86f8d1485f2368d3672a06bfc0b5ce6ed5353360ccf028"
+    }
+  ],
+  "copyrightText" : "NOASSERTION",
+  "downloadLocation" : "git+https://github.com/raysan5/raygui@ca17a68d1a32abede1155c9826427482aa72d43f",
+  "licenseConcluded" : "NOASSERTION",
+  "licenseDeclared" : "NOASSERTION",
+  "name" : "raysan5/raygui"
+}
+  ]
+}

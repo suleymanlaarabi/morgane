@@ -1,0 +1,296 @@
+#pragma once
+#include "siecs/cpp/component.hpp"
+#include "siecs/cpp/system_param.hpp"
+#include <cassert>
+#include <cstring>
+#include <ranges>
+#include <span>
+#include <string>
+
+namespace ecs {
+
+struct IsA;
+struct ChildOf;
+
+namespace detail {
+
+class defer_scope {
+  public:
+    defer_scope() { ecs_defer_begin(); }
+    ~defer_scope() { ecs_defer_end(); }
+
+    defer_scope(const defer_scope &) = delete;
+    defer_scope &operator=(const defer_scope &) = delete;
+};
+
+} // namespace detail
+
+/** Small non-owning handle to an entity in the active world. */
+class entity {
+    ecs_entity_t _entity = 0;
+
+    template <typename> static ecs_entity_t &by_type() {
+        static ecs_entity_t id = 0;
+        return id;
+    }
+
+    template <bool Add, typename... T> entity mutate() {
+        if constexpr (sizeof...(T) > 1) {
+            detail::defer_scope scope;
+            ((Add ? ecs_add_cid(_entity, detail::ecs_cpp_component_id<T>())
+                  : ecs_remove_cid(_entity, detail::ecs_cpp_component_id<T>())),
+             ...);
+        } else {
+            ((Add ? ecs_add_cid(_entity, detail::ecs_cpp_component_id<T>())
+                  : ecs_remove_cid(_entity, detail::ecs_cpp_component_id<T>())),
+             ...);
+        }
+        return *this;
+    }
+
+  public:
+    /** Construct the null entity handle. */
+    entity() noexcept = default;
+    static entity init() noexcept { return {}; }
+    void row(ecs_iter_t *it, uint32_t row) noexcept { _entity = it->entities[row]; }
+
+    /** Wrap a raw id without validating it; use `is_alive()` to validate. */
+    entity(ecs_entity_t entity) noexcept : _entity(entity) {}
+
+    /** Look up a named live entity; returns null when names are disabled/missing. */
+    static inline entity lookup(const std::string &name) {
+        return entity::from(ecs_lookup(name.c_str()));
+    }
+
+    /** Create a new live entity in the active world. */
+    static entity create() noexcept { return entity(ecs_new()); }
+
+    /** Create a new live entity without reusing a freed entity index. */
+    static entity create_no_reuse() noexcept { return entity(ecs_new_no_reuse()); }
+
+    /** Look up or create a named entity; name storage is copied by the world. */
+    static entity create(const char *name) {
+        entity value = lookup(name);
+
+        if (value) {
+            return value;
+        }
+
+        value = create();
+
+        if (name != nullptr) {
+            char *copy = strdup(name);
+            value.set<Name>({ .value = copy });
+        }
+        return value;
+    }
+
+    /** Create an IsA instance and recursively snapshot the prefab's owned ChildOf subtree. */
+    static entity instantiate(entity prefab) { return create().is_a(prefab); }
+
+    /** Wrap an id without changing world state. */
+    static entity from(ecs_entity_t id) noexcept { return entity(id); }
+    /** Return the null entity handle. */
+    static entity null() noexcept { return from(static_cast<ecs_entity_t>(0)); }
+    /** Return the raw entity id. */
+    [[nodiscard]] ecs_entity_t id() const noexcept { return _entity; }
+    /** Explicit conversion used when calling low-level C APIs. */
+    operator ecs_entity_t() const noexcept { return _entity; }
+
+    /** Test whether this handle is non-null (not whether it is alive). */
+    operator bool() { return _entity != 0; }
+
+    /** Add one or more registered components; returns this handle for chaining. */
+    template <typename... T>
+        requires(sizeof...(T) > 0)
+    entity add() {
+        return mutate<true, T...>();
+    }
+
+    /** Mark this entity abstract; application mutation of abstract bases is restricted. */
+    entity abstract() {
+        ecs_abstract(_entity);
+        return *this;
+    }
+
+    /** Remove one or more components; missing components are ignored. */
+    template <typename... T>
+        requires(sizeof...(T) > 0)
+    entity remove() {
+        return mutate<false, T...>();
+    }
+
+    /** Test that all requested components are present on this entity. */
+    template <typename... T>
+        requires(sizeof...(T) > 0)
+    [[nodiscard]] bool has() const {
+        return (ecs_has_cid(_entity, detail::ecs_cpp_component_id<T>()) && ...);
+    }
+
+    /** Copy an lvalue or move an rvalue into this entity, adding it if absent. */
+    template <typename T> entity set(T &&value) {
+        using type = std::remove_cvref_t<T>;
+        if constexpr (std::is_lvalue_reference_v<T>)
+            ecs_set_cid(_entity, detail::ecs_cpp_component_id<type>(), &value);
+        else
+            detail::move_input(value, [&](type *input) {
+                ecs_move_cid(_entity, detail::ecs_cpp_component_id<type>(), input);
+            });
+        return *this;
+    }
+
+    /** Set multiple component values inside one deferred mutation scope. */
+    template <typename First, typename Second, typename... Rest>
+    entity set(First &&first, Second &&second, Rest &&...rest) {
+        detail::defer_scope scope;
+        set(std::forward<First>(first));
+        set(std::forward<Second>(second));
+        (set(std::forward<Rest>(rest)), ...);
+        return *this;
+    }
+
+    /** Return const component storage, or null when absent. */
+    template <typename T> [[nodiscard]] const T *try_get() {
+        return static_cast<const T *>(ecs_try_get_cid(_entity, detail::ecs_cpp_component_id<T>()));
+    }
+
+    /** Return const component storage; the component must be present. */
+    template <typename T> [[nodiscard]] const T &get() {
+        return *static_cast<const T *>(ecs_get_cid(_entity, detail::ecs_cpp_component_id<T>()));
+    }
+
+    /** Return mutable component storage, or null when absent. */
+    template <typename T> [[nodiscard]] T *try_get_mut() {
+        ecs_component_t id = detail::ecs_cpp_component_id<T>();
+#ifndef NDEBUG
+        assert(
+            ecs_component_info(id)->mutation != EcsSetOnly &&
+            "SetOnly component can only be modified with set()"
+        );
+#endif
+        return static_cast<T *>(ecs_try_get_cid(_entity, id));
+    }
+
+    /** Return mutable component storage; the component must be present. */
+    template <typename T> [[nodiscard]] T &get_mut() {
+        ecs_component_t id = detail::ecs_cpp_component_id<T>();
+#ifndef NDEBUG
+        assert(
+            ecs_component_info(id)->mutation != EcsSetOnly &&
+            "SetOnly component can only be modified with set()"
+        );
+#endif
+        return *static_cast<T *>(ecs_get_cid(_entity, id));
+    }
+
+    /** Return const component storage, or null when absent. */
+    template <typename T> [[nodiscard]] const T *try_get() const {
+        return static_cast<const T *>(ecs_try_get_cid(_entity, detail::ecs_cpp_component_id<T>()));
+    }
+
+    /** Return const component storage; the component must be present. */
+    template <typename T> [[nodiscard]] const T &get() const {
+        return *static_cast<const T *>(ecs_get_cid(_entity, detail::ecs_cpp_component_id<T>()));
+    }
+
+    /** Return whether the id is live in the active world. */
+    [[nodiscard]] bool is_alive() const { return _entity != 0 && ecs_is_alive(_entity); }
+    /** Kill this entity; subsequent component access is invalid. */
+    void kill() { ecs_kill(_entity); }
+
+    /** Observe events of type `Event` using the provided callback. */
+    template <typename Event, typename F> entity observe(F &&callback);
+
+    /** Add child entities to this entity. */
+    template <typename... Entities> entity children(Entities... entities) {
+        (entities.child_of(*this), ...);
+        return *this;
+    }
+
+    /** Add or retarget IsA; a new target recursively snapshots its owned ChildOf subtree. */
+    entity is_a(entity target);
+
+    /** Add IsA to the singleton for `T` with the same ChildOf snapshot semantics. */
+    template <typename T> entity is_a() { return is_a(ecs::entity::create<T>()); }
+
+    /** C-compatible IsA overload with the same ChildOf snapshot semantics. */
+    entity is_a(ecs_entity_t target) { return is_a(entity::from(target)); }
+
+    /** Test whether this entity is or inherits from the singleton `T`. */
+    template <typename T> bool is() { return ecs_is(_entity, ecs::entity::typed<T>()); }
+
+    /** Test whether this entity is or inherits from `target`. */
+    [[nodiscard]] bool is(entity target) const { return ecs_is(_entity, target._entity); }
+
+    /** Set the builtin `ChildOf` relation to `parent`. */
+    entity child_of(entity parent);
+
+    template <typename Relation> entity relate(entity target) {
+        ecs_relate_id(_entity, detail::ecs_cpp_relation_id<Relation>(), target.id());
+        return *this;
+    }
+
+    template <typename Relation> entity unrelate() {
+        ecs_unrelate_id(_entity, detail::ecs_cpp_relation_id<Relation>());
+        return *this;
+    }
+
+    template <typename Relation> [[nodiscard]] bool has_relation() const {
+        return ecs_has_relation_id(_entity, detail::ecs_cpp_relation_id<Relation>());
+    }
+
+    template <typename Relation> [[nodiscard]] entity target() const {
+        return entity(ecs_target_id(_entity, detail::ecs_cpp_relation_id<Relation>()));
+    }
+
+    /** Borrow sources of an indexed Dense/ByDepth relation (empty for ByTarget).
+     * The view expires when that relation is mutated. */
+    template <typename Relation> [[nodiscard]] auto sources() const {
+        const auto view = ecs_relation_sources(_entity, detail::ecs_cpp_relation_id<Relation>());
+        return std::span(view.entities, view.count) |
+               std::views::transform([](ecs_entity_t id) { return entity::from(id); });
+    }
+
+    /** Remove `Disabled`, allowing the entity in default queries. */
+    entity enable() {
+        ecs_remove(_entity, Disabled);
+        return *this;
+    }
+
+    /** Add `Disabled`, excluding the entity from default queries. */
+    entity disable() {
+        ecs_add(_entity, Disabled);
+        return *this;
+    }
+
+    /** Return whether the entity is not marked `Disabled`. */
+    [[nodiscard]] bool is_enabled() const { return !has<Disabled>(); }
+    /** Return whether the entity is marked `Disabled`. */
+    [[nodiscard]] bool is_disabled() const { return has<Disabled>(); }
+
+    /** Return/create the singleton entity associated with type `T`. */
+    template <typename T> static entity create(const char *name = nullptr) {
+        ecs_entity_t &id = by_type<T>();
+        if (id == 0 || !ecs_is_alive(id)) {
+            // A cached id from a previous world may name a live, unrelated entity in this
+            // one, so the cache is cleared at teardown; register that once per world.
+            if (id == 0) {
+                ecs_fini_desc_t reset{
+                    .callback = [](void *cached) { *static_cast<ecs_entity_t *>(cached) = 0; },
+                    .data = &id,
+                };
+                ecs_at_fini_init(&reset);
+            }
+            const std::string generated = std::string(type_name<T>());
+            id = create(name ? name : generated.c_str()).id();
+        }
+        return from(id);
+    }
+
+    /** Return the currently cached singleton entity for `T`, or null. */
+    template <typename T> static entity typed() { return from(by_type<T>()); }
+};
+
+} // namespace ecs
+
+#include "siecs/cpp/relation.hpp"

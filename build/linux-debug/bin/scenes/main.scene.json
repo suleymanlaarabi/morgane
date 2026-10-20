@@ -1,0 +1,68 @@
+{
+  "format": "siecs.scene",
+  "version": 1,
+  "entities": [
+    {
+      "id": "cam",
+      "name": "Camera",
+      "components": {
+        "Position2d": { "x": 0, "y": 0 },
+        "Camera2d": { "zoom": 1, "centered": true },
+        "MainCamera2d": {}
+      }
+    },
+    {
+      "id": "floor",
+      "name": "Playfield",
+      "components": {
+        "Position2d": { "x": 0, "y": 0 },
+        "Shape2d": {
+          "shape": "SI2D_SHAPE_RECT",
+          "size": { "x": 640, "y": 360 },
+          "color": { "r": 18, "g": 22, "b": 32, "a": 255 },
+          "layer": -20
+        }
+      }
+    },
+    {
+      "id": "spawn0",
+      "name": "Spawn P1",
+      "components": {
+        "Position2d": { "x": -272, "y": -60 },
+        "game::SpawnPoint": { "slot": 0 }
+      }
+    },
+    {
+      "id": "spawn1",
+      "name": "Spawn P2",
+      "components": {
+        "Position2d": { "x": -272, "y": -20 },
+        "game::SpawnPoint": { "slot": 1 }
+      }
+    },
+    {
+      "id": "spawn2",
+      "name": "Spawn P3",
+      "components": {
+        "Position2d": { "x": -272, "y": 20 },
+        "game::SpawnPoint": { "slot": 2 }
+      }
+    },
+    {
+      "id": "spawn3",
+      "name": "Spawn P4",
+      "components": {
+        "Position2d": { "x": -272, "y": 60 },
+        "game::SpawnPoint": { "slot": 3 }
+      }
+    },
+    {
+      "id": "director",
+      "name": "Director",
+      "components": {
+        "Position2d": { "x": 0, "y": 0 },
+        "net::Replicated": {}
+      }
+    }
+  ]
+}
